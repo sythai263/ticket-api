@@ -29,12 +29,12 @@ export class ConfigService {
 	}
 
 	get typeOrmConfig(): TypeOrmModuleOptions {
-		let entities = [__dirname + '/../../modules/**/*.entity{.ts,.js}'];
+		let entities = [__dirname + '/../../entities/**/*.entity{.ts,.js}'];
     let migrations = [__dirname + '/../../migrations/*{.ts,.js}'];
 
 		if ((<any>module).hot) {
 			const entityContext = (<any>require).context(
-				'./../../modules',
+				'./../../entities',
 				true,
 				/\.entity\.ts$/,
 			);

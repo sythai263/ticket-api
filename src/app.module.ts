@@ -12,6 +12,8 @@ import { SharedModule } from './shared/shared.module';
 		AuthModule,
 		TypeOrmModule.forRootAsync({
 			imports: [SharedModule],
+			useFactory: (configService: ConfigService) =>
+                configService.typeOrmConfig,
 			inject: [ConfigService],
 		}),
 	],

@@ -15,7 +15,7 @@ const providers = [ConfigService, ValidatorService];
 		JwtModule.registerAsync({
 			imports: [],
 			useFactory: (configService: ConfigService) => ({
-				secretOrPrivateKey: configService.get('JWT_SECRET_KEY'),
+				secretOrPrivateKey: configService.get('JWT_SECRET'),
 			}),
 			inject: [ConfigService],
 		}),

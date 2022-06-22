@@ -61,6 +61,7 @@ export class UserEntity extends AbstractEntity {
 		email: string;
 
 	@Column({
+		nullable: true,
 		name: 'birthday',
 	})
 		birthday: Date;
@@ -68,7 +69,8 @@ export class UserEntity extends AbstractEntity {
 	@Column({
 		name: 'gender',
 		type: 'enum',
-		enum: Gender
+		enum: Gender,
+		nullable: true,
 	})
 		gender?: Gender;
 

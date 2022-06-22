@@ -31,7 +31,8 @@ export class DiscountEntity extends AbstractEntity {
 	discount: number;
 
 	@Column({
-		name: 'description'
+		name: 'description',
+		type: 'text'
 	})
 	description: string;
 

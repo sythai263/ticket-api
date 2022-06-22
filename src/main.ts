@@ -46,7 +46,7 @@ async function bootstrap() {
 
 	app.use(
 		session({
-			secret: configService.get('JWT_SECRET_KEY'),
+			secret: configService.get('JWT_SECRET'),
 			resave: false,
 			saveUninitialized: false,
 		}),

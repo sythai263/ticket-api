@@ -1,21 +1,25 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { AuthModule } from './modules/auth/auth.module';
+import { GoogleAuthModule } from './modules/google-auth/google-auth.module';
+import { JwtAuthModule } from './modules/jwtAuth/jwtAuth.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
+import { LoginModule } from './modules/login/login.module';
 
 @Module({
 	imports: [
 		TicketModule,
-		AuthModule,
 		TypeOrmModule.forRootAsync({
 			imports: [SharedModule],
 			useFactory: (configService: ConfigService) =>
                 configService.typeOrmConfig,
 			inject: [ConfigService],
 		}),
+		GoogleAuthModule,
+		JwtAuthModule,
+		LoginModule
 	],
 	controllers: [],
 	providers: [],

@@ -43,6 +43,7 @@ export class ProgramEntity extends AbstractEntity {
 
 	@Column({
 		name: 'description',
+		type: 'text'
 	})
 	description: string;
 

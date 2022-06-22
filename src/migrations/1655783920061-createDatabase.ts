@@ -14,8 +14,8 @@ CREATE TABLE user (
 	last_name varchar(255) NOT NULL,
 	phone varchar(15) NULL,
 	email varchar(255) NOT NULL,
-	birthday date NOT NULL,
-	gender enum ('Male', 'Female', 'LGBT') NOT NULL,
+	birthday date NULL,
+	gender enum ('Male', 'Female', 'LGBT') NULL,
 	avatar varchar(255) NULL,
 	role enum ('User', 'Admin') NOT NULL DEFAULT 'User',
 	created_at timestamp NOT NULL DEFAULT NOW(),
@@ -40,7 +40,7 @@ CREATE TABLE product (
 	name varchar(255) NOT NULL,
 	remain int NOT NULL,
 	price int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	avatar varchar(255) NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -60,7 +60,7 @@ CREATE TABLE program (
 	end_date timestamp NOT NULL,
 	amount int NOT NULL,
 	price int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	avatar varchar(255) NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -136,13 +136,13 @@ CREATE TABLE discount (
 	start_date datetime NOT NULL,
 	expired_date datetime NOT NULL,
 	discount int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
-	deleted_by int NOT NULL,
+	deleted_by int NULL,
 	CONSTRAINT FK_DISCOUNT_PROGRAM FOREIGN KEY (program_id) REFERENCES program(id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
@@ -177,7 +177,7 @@ CREATE TABLE review_program (
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
-	deleted_by int NOT NULL,
+	deleted_by int NULL,
 	UNIQUE INDEX UQ_REVIEW_PROGRAM (user_id, program_id),
 	CONSTRAINT FK_REVIEW_PROGRAM_USER FOREIGN KEY (user_id) REFERENCES user (id),
 	CONSTRAINT FK_REVIEW_PROGRAM_PROGRAM FOREIGN KEY (program_id) REFERENCES program (id),
@@ -270,7 +270,7 @@ VALUES
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query('DROP TABLE detail_order');
-        await queryRunner.query('DROP TABLE order');
+        await queryRunner.query('DROP TABLE purchase');
         await queryRunner.query('DROP TABLE review_program');
         await queryRunner.query('DROP TABLE review_product');
         await queryRunner.query('DROP TABLE discount');
@@ -281,5 +281,4 @@ VALUES
         await queryRunner.query('DROP TABLE product');
         await queryRunner.query('DROP TABLE user');
     }
-
 }

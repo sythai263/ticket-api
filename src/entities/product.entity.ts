@@ -28,6 +28,7 @@ export class ProductEntity extends AbstractEntity {
 
 	@Column({
 		name: 'description',
+		type: 'text'
 	})
 	description: string;
 

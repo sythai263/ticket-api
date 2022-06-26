@@ -7,60 +7,61 @@ import { ReviewProductEntity } from './reviewProduct.entity';
 
 @Entity({ name: 'product' })
 export class ProductEntity extends AbstractEntity {
-	@Column({
-		nullable: false,
-		name: 'name',
-		length: 255,
-	})
-	name: string;
+  @Column({
+  	nullable: false,
+  	name: 'name',
+  	length: 255,
+  })
+  	name: string;
 
-	@Column({
-		nullable: false,
-		name: 'remain',
-	})
-	remain: number;
+  @Column({
+  	nullable: false,
+  	name: 'remain',
+  })
+  	remain: number;
 
-	@Column({
-		nullable: false,
-		name: 'price',
-	})
-	price: number;
+  @Column({
+  	nullable: false,
+  	name: 'price',
+  })
+  	price: number;
 
-	@Column({
-		name: 'description',
-	})
-	description: string;
+  @Column({
+  	name: 'description',
+  	type: 'text',
+  })
+  	description: string;
 
-	@Column({
-		nullable: true,
-		name: 'avatar',
-		length: 255,
-	})
-	avatar: string;
+  @Column({
+  	nullable: true,
+  	name: 'avatar',
+  	length: 255,
+  })
+  	avatar: string;
 
-	@OneToMany(() => DetailOderEntity, detail => detail.id)
-	detail: DetailOderEntity[];
-	
-	@OneToMany(() => ProgramItemEntity, item => item.id)
-	items: ProgramItemEntity[];
+  @OneToMany(() => DetailOderEntity, (detail) => detail.id)
+  	detail: DetailOderEntity[];
 
-	@OneToMany(() => ReviewProductEntity, reviewProduct => reviewProduct.id)
-	reviewedProducts: ReviewProductEntity[];
+  @OneToMany(() => ProgramItemEntity, (item) => item.id)
+  	items: ProgramItemEntity[];
 
-	constructor(
-		id?: number,
-		name?: string,
-		remain?: number,
-		price?: number, 
-		avatar?: string,
-		description?: string,
-	) {
-		super(id);
+  @OneToMany(() => ReviewProductEntity, (reviewProduct) => reviewProduct.id)
+  	reviewedProducts: ReviewProductEntity[];
 
-		this.name = name;
-		this.price = price;
-		this.remain = remain;
-		this.avatar = avatar;
-		this.description = description;
-	}
+  constructor(
+  	id?: number,
+  	name?: string,
+  	remain?: number,
+  	price?: number,
+  	avatar?: string,
+  	description?: string,
+  ) {
+  	super(id);
+
+  	this.name = name;
+  	this.price = price;
+  	this.remain = remain;
+  	this.avatar = avatar;
+  	this.description = description;
+  }
 }

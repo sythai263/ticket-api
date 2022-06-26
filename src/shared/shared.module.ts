@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Global,  Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { ConfigService } from './services/config.service';
@@ -15,7 +15,7 @@ const providers = [ConfigService, ValidatorService];
 		JwtModule.registerAsync({
 			imports: [],
 			useFactory: (configService: ConfigService) => ({
-				secretOrPrivateKey: configService.get('JWT_SECRET_KEY'),
+				secretOrPrivateKey: configService.get('JWT_SECRET'),
 			}),
 			inject: [ConfigService],
 		}),

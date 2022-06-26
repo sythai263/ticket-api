@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
 	ArgumentsHost,
 	Catch,
@@ -12,7 +13,7 @@ import { STATUS_CODES } from 'http';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-	private readonly _logger = new Logger(AllExceptionsFilter.name);
+	private readonly logger = new Logger(AllExceptionsFilter.name);
 	public reflector: Reflector;
 	constructor(reflector: Reflector) {
 		this.reflector = reflector;
@@ -25,7 +26,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 			? exception.getStatus()
 			: HttpStatus.INTERNAL_SERVER_ERROR;
 
-		this._logger.error(exception);
+		this.logger.error(exception);
 		const r: any = exception.getResponse ? exception.getResponse() : {};
 
 		r.statusCode = statusCode;

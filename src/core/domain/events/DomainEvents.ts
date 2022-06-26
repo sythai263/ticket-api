@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable no-prototype-builtins */
 
 import { AggregateRoot } from '../AggregateRoot';
 import { UniqueEntityID } from '../UniqueEntityID';
@@ -8,17 +12,17 @@ export class DomainEvents {
 	private static markedAggregates: AggregateRoot<any>[] = [];
 
 	/**
- * @method markAggregateForDispatch
- * @static
- * @desc Called by aggregate root objects that have created domain
- * events to eventually be dispatched when the infrastructure commits
- * the unit of work.
- */
+	 * @method markAggregateForDispatch
+	 * @static
+	 * @desc Called by aggregate root objects that have created domain
+	 * events to eventually be dispatched when the infrastructure commits
+	 * the unit of work.
+	 */
 
 	public static markAggregateForDispatch(aggregate: AggregateRoot<any>): void {
-		const aggregateFound = Boolean(this.findMarkedAggregateByID(aggregate.id));
+		const isAggregateFound = Boolean(this.findMarkedAggregateByID(aggregate.id));
 
-		if (!aggregateFound) {
+		if (!isAggregateFound) {
 			this.markedAggregates.push(aggregate);
 		}
 	}
@@ -32,7 +36,7 @@ export class DomainEvents {
 	private static removeAggregateFromMarkedDispatchList(
 		aggregate: AggregateRoot<any>,
 	): void {
-		const index = this.markedAggregates.findIndex(a => a.equals(aggregate));
+		const index = this.markedAggregates.findIndex((a) => a.equals(aggregate));
 		this.markedAggregates.splice(index, 1);
 	}
 

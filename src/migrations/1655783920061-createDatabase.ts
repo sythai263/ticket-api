@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class createDatabase1655783920061 implements MigrationInterface {
-    name = 'createDatabase1655783920061';
+	name = 'createDatabase1655783920061';
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
-			
 		await queryRunner.query(`
 CREATE TABLE user (
 	id int NOT NULL AUTO_INCREMENT,
@@ -14,10 +14,11 @@ CREATE TABLE user (
 	last_name varchar(255) NOT NULL,
 	phone varchar(15) NULL,
 	email varchar(255) NOT NULL,
-	birthday date NOT NULL,
-	gender enum ('Male', 'Female', 'LGBT') NOT NULL,
+	birthday date NULL,
+	gender enum ('Male', 'Female', 'LGBT') NULL,
 	avatar varchar(255) NULL,
 	role enum ('User', 'Admin') NOT NULL DEFAULT 'User',
+	verify tinyint(1) NOT NULL DEFAULT 0,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
@@ -33,14 +34,14 @@ CREATE TABLE user (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE product (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
 	remain int NOT NULL,
 	price int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	avatar varchar(255) NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -60,7 +61,7 @@ CREATE TABLE program (
 	end_date timestamp NOT NULL,
 	amount int NOT NULL,
 	price int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	avatar varchar(255) NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -110,8 +111,8 @@ CREATE TABLE program_item (
 	CONSTRAINT FK_ITEM_USER FOREIGN KEY (user_id) REFERENCES program(id)
 ) ENGINE = InnoDB
 `);
-			
-			await queryRunner.query(`
+
+		await queryRunner.query(`
 CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
 	user_id int NULL,
@@ -128,7 +129,7 @@ CREATE TABLE attendee (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-			
+
 		await queryRunner.query(`
 CREATE TABLE discount (
 	id int NOT NULL AUTO_INCREMENT,
@@ -136,18 +137,18 @@ CREATE TABLE discount (
 	start_date datetime NOT NULL,
 	expired_date datetime NOT NULL,
 	discount int NOT NULL,
-	description varchar(255) NOT NULL,
+	description text NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
-	deleted_by int NOT NULL,
+	deleted_by int NULL,
 	CONSTRAINT FK_DISCOUNT_PROGRAM FOREIGN KEY (program_id) REFERENCES program(id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE review_product (
 	id int NOT NULL AUTO_INCREMENT,
@@ -177,7 +178,7 @@ CREATE TABLE review_program (
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
-	deleted_by int NOT NULL,
+	deleted_by int NULL,
 	UNIQUE INDEX UQ_REVIEW_PROGRAM (user_id, program_id),
 	CONSTRAINT FK_REVIEW_PROGRAM_USER FOREIGN KEY (user_id) REFERENCES user (id),
 	CONSTRAINT FK_REVIEW_PROGRAM_PROGRAM FOREIGN KEY (program_id) REFERENCES program (id),
@@ -203,7 +204,7 @@ CREATE TABLE purchase (
 	CONSTRAINT FK_ORDER_RECEIPT FOREIGN KEY (receipt_id) REFERENCES receipt(id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE detail_order (
 	id int NOT NULL AUTO_INCREMENT,
@@ -263,23 +264,23 @@ VALUES
 		'-1',
 		NULL
 	)
-		`);
+		`,
+		);
 
 		// Password: admin123
-        }
+	}
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query('DROP TABLE detail_order');
-        await queryRunner.query('DROP TABLE order');
-        await queryRunner.query('DROP TABLE review_program');
-        await queryRunner.query('DROP TABLE review_product');
-        await queryRunner.query('DROP TABLE discount');
-        await queryRunner.query('DROP TABLE attendee');
-        await queryRunner.query('DROP TABLE program_item');
-        await queryRunner.query('DROP TABLE receipt');
-        await queryRunner.query('DROP TABLE program');
-        await queryRunner.query('DROP TABLE product');
-        await queryRunner.query('DROP TABLE user');
-    }
-
+	public async down(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query('DROP TABLE detail_order');
+		await queryRunner.query('DROP TABLE purchase');
+		await queryRunner.query('DROP TABLE review_program');
+		await queryRunner.query('DROP TABLE review_product');
+		await queryRunner.query('DROP TABLE discount');
+		await queryRunner.query('DROP TABLE attendee');
+		await queryRunner.query('DROP TABLE program_item');
+		await queryRunner.query('DROP TABLE receipt');
+		await queryRunner.query('DROP TABLE program');
+		await queryRunner.query('DROP TABLE product');
+		await queryRunner.query('DROP TABLE user');
+	}
 }

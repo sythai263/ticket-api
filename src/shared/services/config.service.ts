@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import * as dotenv from 'dotenv';
@@ -30,7 +34,7 @@ export class ConfigService {
 
 	get typeOrmConfig(): TypeOrmModuleOptions {
 		let entities = [__dirname + '/../../entities/**/*.entity{.ts,.js}'];
-    let migrations = [__dirname + '/../../migrations/*{.ts,.js}'];
+		let migrations = [__dirname + '/../../migrations/*{.ts,.js}'];
 
 		if ((<any>module).hot) {
 			const entityContext = (<any>require).context(
@@ -55,7 +59,6 @@ export class ConfigService {
 			});
 		}
 
-		console.log(this.get('DB_USERNAME'));
 		return {
 			entities,
 			migrations,
@@ -70,5 +73,4 @@ export class ConfigService {
 			logging: this.nodeEnv === 'development',
 		};
 	}
-
 }

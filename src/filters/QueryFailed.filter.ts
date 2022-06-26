@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
 	ArgumentsHost,
 	Catch,
@@ -24,8 +26,10 @@ export class QueryFailedFilter implements ExceptionFilter {
 
 		const errorMessage = ConstraintErrors[exception.constraint];
 
-		const status
-      = exception.constraint && exception.constraint.startsWith('UQ') ? HttpStatus.CONFLICT : HttpStatus.INTERNAL_SERVER_ERROR;
+		const status =
+      exception.constraint && exception.constraint.startsWith('UQ')
+      	? HttpStatus.CONFLICT
+      	: HttpStatus.INTERNAL_SERVER_ERROR;
 
 		response.status(status).json({
 			statusCode: status,

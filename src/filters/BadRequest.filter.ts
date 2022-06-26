@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
 	ArgumentsHost,
 	BadRequestException,
@@ -27,7 +29,7 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
 		if (_.isArray(r.message) && r.message[0] instanceof ValidationError) {
 			statusCode = HttpStatus.UNPROCESSABLE_ENTITY;
 			const validationErrors = <ValidationError[]>r.message;
-			this._validationFilter(validationErrors);
+			this.validationFilter(validationErrors);
 		}
 
 		r.statusCode = statusCode;
@@ -36,20 +38,20 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
 		response.status(statusCode).json(r);
 	}
 
-	private _validationFilter(validationErrors: ValidationError[]) {
+	private validationFilter(validationErrors: ValidationError[]) {
 		for (const validationError of validationErrors) {
 			for (const [constraintKey, constraint] of Object.entries(
 				validationError.constraints,
 			)) {
 				if (!constraint) {
 					// Convert error message to error.fields.{key} syntax for i18n translation
-					validationError.constraints[constraintKey]
-            = 'error.fields.' + _.snakeCase(constraintKey);
+					validationError.constraints[constraintKey] =
+            'error.fields.' + _.snakeCase(constraintKey);
 				}
 			}
 
 			if (!_.isEmpty(validationError.children)) {
-				this._validationFilter(validationError.children);
+				this.validationFilter(validationError.children);
 			}
 		}
 	}

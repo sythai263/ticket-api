@@ -1,11 +1,11 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import {
 	ExpressAdapter,
-	NestExpressApplication,
+	NestExpressApplication
 } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
 import Axios from 'axios';
@@ -16,7 +16,7 @@ import helmet from 'helmet';
 import * as morgan from 'morgan';
 import {
 	initializeTransactionalContext,
-	patchTypeORMRepositoryWithBaseRepository,
+	patchTypeORMRepositoryWithBaseRepository
 } from 'typeorm-transactional-cls-hooked';
 
 import { AppModule } from './app.module';
@@ -25,7 +25,7 @@ import { BadRequestExceptionFilter } from './filters/BadRequest.filter';
 import { QueryFailedFilter } from './filters/QueryFailed.filter';
 import { ConfigService } from './shared/services/config.service';
 import { SharedModule } from './shared/shared.module';
-import { setupSwagger } from './viveo-swagger';;
+import { setupSwagger } from './viveo-swagger';
 
 async function bootstrap() {
 	initializeTransactionalContext();
@@ -46,7 +46,7 @@ async function bootstrap() {
 
 	app.use(
 		session({
-			secret: configService.get('JWT_SECRET_KEY'),
+			secret: configService.get('JWT_SECRET'),
 			resave: false,
 			saveUninitialized: false,
 		}),
@@ -93,7 +93,7 @@ async function bootstrap() {
 		},
 	});
 	await app.startAllMicroservices();
-	
+
 	if (['development', 'staging'].includes(configService.nodeEnv)) {
 		setupSwagger(app);
 	}
@@ -101,6 +101,7 @@ async function bootstrap() {
 	const port = configService.getNumber('PORT');
 	await app.listen(port);
 
+	// eslint-disable-next-line no-restricted-syntax
 	console.info(`server running on port ${port}`);
 }
 

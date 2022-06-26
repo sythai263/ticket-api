@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { config } from 'dotenv';
@@ -9,34 +11,38 @@ import { ConfigService } from '../../shared/services/config.service';
 import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
 import { UserDto } from '../user/user.dto';
 import { GetUserErrors } from '../user/user.error';
-import { GetUserUseCase } from '../user/user.usecase';;
+import { GetUserUseCase } from '../user/user.usecase';
 
 config();
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-
 	constructor(
-		private configService: ConfigService,
-		private jwtService: JwtAuthService,
-		public readonly useCase: GetUserUseCase
+    private configService: ConfigService,
+    private jwtService: JwtAuthService,
+    public readonly useCase: GetUserUseCase,
 	) {
-    super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: process.env.GOOGLE_REDIRECT,
-      scope: ['email', 'profile'],
-    });
-  }
+		super({
+			clientID: process.env.GOOGLE_CLIENT_ID,
+			clientSecret: process.env.GOOGLE_SECRET,
+			callbackURL: process.env.GOOGLE_REDIRECT,
+			scope: ['email', 'profile'],
+		});
+	}
 
-  async validate (accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
-    const { name, emails, photos } = profile;
-    const user = {
-      email: emails[0].value,
-      firstName: name.givenName,
-      lastName: name.familyName,
-      picture: photos[0].value,
-      accessToken
+	async validate(
+		accessToken: string,
+		refreshToken: string,
+		profile: any,
+		done: VerifyCallback,
+	): Promise<any> {
+		const { name, emails, photos } = profile;
+		const user = {
+			email: emails[0].value,
+			firstName: name.givenName,
+			lastName: name.familyName,
+			picture: photos[0].value,
+			accessToken,
 		};
 		const expiredIn = this.configService.getNumber('JWT_EXPIRES_IN');
 		let userDto = new UserDto();
@@ -52,11 +58,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
 			// eslint-disable-next-line default-case
 			switch (error.constructor) {
-				case GetUserErrors.UserNotFound:
-					done('not found', null);
-					break;
-				case AppError.UnexpectedError:
-					done('exception', null);
+			case GetUserErrors.UserNotFound:
+				done('not found', null);
+				break;
+			case AppError.UnexpectedError:
+				done('exception', null);
 			}
 		} else {
 			userDto = result.value.getValue();
@@ -64,5 +70,5 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 			userDto.expiredIn = moment().add(expiredIn, 'd').toDate();
 			done(null, userDto);
 		}
-  }
+	}
 }

@@ -1,10 +1,10 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export class createDatabase1655783920061 implements MigrationInterface {
-    name = 'createDatabase1655783920061';
+	name = 'createDatabase1655783920061';
 
 	public async up(queryRunner: QueryRunner): Promise<void> {
-			
 		await queryRunner.query(`
 CREATE TABLE user (
 	id int NOT NULL AUTO_INCREMENT,
@@ -18,6 +18,7 @@ CREATE TABLE user (
 	gender enum ('Male', 'Female', 'LGBT') NULL,
 	avatar varchar(255) NULL,
 	role enum ('User', 'Admin') NOT NULL DEFAULT 'User',
+	verify tinyint(1) NOT NULL DEFAULT 0,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
@@ -33,7 +34,7 @@ CREATE TABLE user (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE product (
 	id int NOT NULL AUTO_INCREMENT,
@@ -110,8 +111,8 @@ CREATE TABLE program_item (
 	CONSTRAINT FK_ITEM_USER FOREIGN KEY (user_id) REFERENCES program(id)
 ) ENGINE = InnoDB
 `);
-			
-			await queryRunner.query(`
+
+		await queryRunner.query(`
 CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
 	user_id int NULL,
@@ -128,7 +129,7 @@ CREATE TABLE attendee (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-			
+
 		await queryRunner.query(`
 CREATE TABLE discount (
 	id int NOT NULL AUTO_INCREMENT,
@@ -147,7 +148,7 @@ CREATE TABLE discount (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE review_product (
 	id int NOT NULL AUTO_INCREMENT,
@@ -203,7 +204,7 @@ CREATE TABLE purchase (
 	CONSTRAINT FK_ORDER_RECEIPT FOREIGN KEY (receipt_id) REFERENCES receipt(id)
 ) ENGINE = InnoDB
 			`);
-		
+
 		await queryRunner.query(`
 CREATE TABLE detail_order (
 	id int NOT NULL AUTO_INCREMENT,
@@ -263,22 +264,23 @@ VALUES
 		'-1',
 		NULL
 	)
-		`);
+		`,
+		);
 
 		// Password: admin123
-        }
+	}
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query('DROP TABLE detail_order');
-        await queryRunner.query('DROP TABLE purchase');
-        await queryRunner.query('DROP TABLE review_program');
-        await queryRunner.query('DROP TABLE review_product');
-        await queryRunner.query('DROP TABLE discount');
-        await queryRunner.query('DROP TABLE attendee');
-        await queryRunner.query('DROP TABLE program_item');
-        await queryRunner.query('DROP TABLE receipt');
-        await queryRunner.query('DROP TABLE program');
-        await queryRunner.query('DROP TABLE product');
-        await queryRunner.query('DROP TABLE user');
-    }
+	public async down(queryRunner: QueryRunner): Promise<void> {
+		await queryRunner.query('DROP TABLE detail_order');
+		await queryRunner.query('DROP TABLE purchase');
+		await queryRunner.query('DROP TABLE review_program');
+		await queryRunner.query('DROP TABLE review_product');
+		await queryRunner.query('DROP TABLE discount');
+		await queryRunner.query('DROP TABLE attendee');
+		await queryRunner.query('DROP TABLE program_item');
+		await queryRunner.query('DROP TABLE receipt');
+		await queryRunner.query('DROP TABLE program');
+		await queryRunner.query('DROP TABLE product');
+		await queryRunner.query('DROP TABLE user');
+	}
 }

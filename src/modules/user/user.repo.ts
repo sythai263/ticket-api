@@ -7,23 +7,23 @@ import { UserDto } from './user.dto';
 import { UserAuthMap } from './user.mapper';
 
 export interface IUserAuthRepo {
-	findByUsername(email: string): Promise<UserDto>;
-	save(user: UserEntity): Promise<UserDto>;
+  findByEmail(email: string): Promise<UserDto>;
+  findByUsername(username: string): Promise<UserDto>;
+  save(user: UserEntity): Promise<UserDto>;
 }
 
 @Injectable()
 export class UserAuthRepository implements IUserAuthRepo {
-    constructor(
-        @InjectRepository(UserEntity)
-        protected repo: Repository<UserEntity>,
-        
-		) { }
+	constructor(
+    @InjectRepository(UserEntity)
+    protected repo: Repository<UserEntity>,
+	) {}
 
-	async findByUsername(email: string): Promise<UserDto>{
+	async findByUsername(username: string): Promise<UserDto> {
 		const entity = await this.repo.findOne({
 			where: {
-				email
-			}
+				username,
+			},
 		});
 		if (entity) {
 			return UserAuthMap.entityToDto(entity);
@@ -32,8 +32,20 @@ export class UserAuthRepository implements IUserAuthRepo {
 		return null;
 	}
 
-	async save(user: UserEntity): Promise<UserDto>{
-		
+	async findByEmail(email: string): Promise<UserDto> {
+		const entity = await this.repo.findOne({
+			where: {
+				email,
+			},
+		});
+		if (entity) {
+			return UserAuthMap.entityToDto(entity);
+		}
+
+		return null;
+	}
+
+	async save(user: UserEntity): Promise<UserDto> {
 		try {
 			const entity = await this.repo.save(user);
 
@@ -42,5 +54,4 @@ export class UserAuthRepository implements IUserAuthRepo {
 			return null;
 		}
 	}
-    
 }

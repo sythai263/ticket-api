@@ -7,33 +7,34 @@ import { RoleType } from '../../common/constants/roleType';
 import { ConfigService } from '../../shared/services/config.service';
 
 export interface JwtPayload {
-    username: string;
-    role: RoleType;
+	id: number;
+  username: string;
+  role: RoleType;
 }
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
-    constructor(configService: ConfigService) {
-        function extractJwtFromCookie(req: Request): string {
-            try {
-                return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-            } catch (error) {
-                throw new UnauthorizedException('Forbidden');
-            }
-        }
+	constructor(configService: ConfigService) {
+		function extractJwtFromCookie(req: Request): string {
+			try {
+				return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+			} catch (error) {
+				throw new UnauthorizedException('Forbidden');
+			}
+		}
 
-        super({
-            jwtFromRequest: extractJwtFromCookie,
-            ignoreExpiration: false,
-            secretOrKey: configService.get('JWT_SECRET'),
-        });
-    }
+		super({
+			jwtFromRequest: extractJwtFromCookie,
+			ignoreExpiration: false,
+			secretOrKey: configService.get('JWT_SECRET'),
+		});
+	}
 
-    validate(payload: JwtPayload): JwtPayload {
-        if (!payload) {
-            throw new UnauthorizedException('Forbidden');
-        }
+	validate(payload: JwtPayload): JwtPayload {
+		if (!payload) {
+			throw new UnauthorizedException('Forbidden');
+		}
 
-        return payload;
-    }
+		return payload;
+	}
 }

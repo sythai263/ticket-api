@@ -1,13 +1,13 @@
 import * as bcrypt from 'bcrypt';
 
-import { ANOTHER_SYSTEM } from "../../common/constants/system";
-import { UserEntity } from "../../entities/user.entity";
-import { UserDto } from "./user.dto";
+import { ANOTHER_SYSTEM } from '../../common/constants/system';
+import { UserEntity } from '../../entities/user.entity';
+import { UserDto } from './user.dto';
 
-export class UserAuthMap{
-
+export class UserAuthMap {
 	static entityToDto(entity: UserEntity): UserDto {
 		const userDto = new UserDto();
+		userDto.id = entity.id;
 		userDto.avatar = entity.avatar;
 		userDto.email = entity.email;
 		userDto.username = entity.username;
@@ -34,10 +34,11 @@ export class UserAuthMap{
 		return entity;
 	}
 
-	static async hashPassword(password: string, genSalt: number): Promise<string>{
-	
+	static async hashPassword(
+		password: string,
+		genSalt: number,
+	): Promise<string> {
 		const hashPwd = await bcrypt.hash(password, genSalt);
 		return hashPwd;
 	}
-
 }

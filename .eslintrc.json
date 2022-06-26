@@ -18,8 +18,12 @@
   "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
   "rules": {
     "new-cap": "off",
+    "no-void": "off",
+    "max-params": ["warn", 8],
+    "no-useless-escape": "off",
     "indent": ["error", "tab"],
     "no-useless-constructor": "off",
+    "no-case-declarations": "off",
     "simple-import-sort/imports": "error",
     "@typescript-eslint/camelcase": "off",
     "@typescript-eslint/no-unused-vars": "off",
@@ -81,7 +85,7 @@
       },
       {
         "selector": "variable",
-        "format": ["camelCase", "UPPER_CASE"]
+        "format": ["camelCase", "UPPER_CASE", "PascalCase"]
       },
       {
         "selector": "interface",
@@ -94,7 +98,8 @@
       {
         "selector": "memberLike",
         "modifiers": ["private"],
-        "format": ["camelCase"]
+        "format": ["camelCase"],
+        "leadingUnderscore": "allow"
       },
       {
         "selector": "variable",
@@ -146,12 +151,7 @@
     "import/no-internal-modules": "off",
     "import/order": "off",
     "max-classes-per-file": ["error", 5],
-    "max-len": [
-      "error",
-      {
-        "code": 150
-      }
-    ],
+    "max-len": "off",
     "new-parens": "error",
     "no-bitwise": "error",
     "no-caller": "error",
@@ -207,12 +207,7 @@
     "no-sequences": "error",
     "no-sparse-arrays": "error",
     "no-template-curly-in-string": "error",
-    "no-shadow": [
-      "error",
-      {
-        "hoist": "all"
-      }
-    ],
+    "no-shadow": "off",
     "no-throw-literal": "error",
     "no-trailing-spaces": "error",
     "no-undef-init": "error",

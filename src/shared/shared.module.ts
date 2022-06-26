@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Global,  Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { ConfigService } from './services/config.service';

@@ -1,31 +1,31 @@
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
-import { PageOptionsDto } from './PageOptionsDto'
+import { PageOptionsDto } from './PageOptionsDto';
 export class PageMetaDto {
   @ApiProperty()
-    page: number
+  	page: number;
 
   @ApiProperty()
-    take: number
+  	take: number;
 
   @ApiProperty()
-    itemCount: number
+  	itemCount: number;
 
   @ApiProperty()
-    pageCount: number
+  	pageCount: number;
 
   @ApiProperty()
-    hasPreviousPage: boolean
+  	hasPreviousPage: boolean;
 
   @ApiProperty()
-    hasNextPage: boolean
+  	hasNextPage: boolean;
 
-  constructor (pageOptionsDto: PageOptionsDto, itemCount: number) {
-    this.page = pageOptionsDto.page
-    this.take = pageOptionsDto.take
-    this.itemCount = itemCount
-    this.pageCount = Math.ceil(itemCount / this.take)
-    this.hasPreviousPage = this.page > 1
-    this.hasNextPage = this.page < this.pageCount
+  constructor(pageOptionsDto: PageOptionsDto, itemCount: number) {
+  	this.page = pageOptionsDto.page;
+  	this.take = pageOptionsDto.take;
+  	this.itemCount = itemCount;
+  	this.pageCount = Math.ceil(itemCount / this.take);
+  	this.hasPreviousPage = this.page > 1;
+  	this.hasNextPage = this.page < this.pageCount;
   }
 }

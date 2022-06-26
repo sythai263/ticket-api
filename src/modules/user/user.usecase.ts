@@ -9,27 +9,25 @@ import { UserAuthMap } from './user.mapper';
 import { IUserAuthRepo } from './user.repo';
 
 type Response = Either<
-    AppError.UnexpectedError | GetUserErrors.UserNotFound,
-    Result<UserDto>
+  AppError.UnexpectedError | GetUserErrors.UserNotFound,
+  Result<UserDto>
 >;
 
 @Injectable()
 export class GetUserUseCase implements IUseCase<UserDto, Promise<Response>> {
-	constructor(
-		@Inject('IUserAuthRepo') public readonly repo: IUserAuthRepo
-	) { }
+	constructor(@Inject('IUserAuthRepo') public readonly repo: IUserAuthRepo) {}
 
 	async execute(userDto: UserDto): Promise<Response> {
 		try {
-			const foundUser = await this.repo.findByUsername(userDto.email);
+			const foundUser = await this.repo.findByEmail(userDto.email);
 			if (foundUser) {
 				return right(Result.ok(foundUser));
 			}
 
 			const entity = await UserAuthMap.dtoToEntity(userDto);
+			entity.verify = true;
 			const user = await this.repo.save(entity);
 			return right(Result.ok(user));
-
 		} catch (err) {
 			return left(new AppError.UnexpectedError(err));
 		}

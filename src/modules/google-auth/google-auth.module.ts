@@ -10,9 +10,7 @@ import { GoogleAuthService } from './google-auth.service';
 import { GoogleStrategy } from './google-auth.strategy';
 
 @Module({
-	imports: [JwtAuthModule,
-		TypeOrmModule.forFeature([UserEntity]),
-	],
+	imports: [JwtAuthModule, TypeOrmModule.forFeature([UserEntity])],
 	providers: [
 		GoogleAuthService,
 		GoogleStrategy,
@@ -20,8 +18,8 @@ import { GoogleStrategy } from './google-auth.strategy';
 		{
 			provide: 'IUserAuthRepo',
 			useClass: UserAuthRepository,
-    },
+		},
 	],
-  controllers: [GoogleAuthController]
+	controllers: [GoogleAuthController],
 })
 export class GoogleAuthModule {}

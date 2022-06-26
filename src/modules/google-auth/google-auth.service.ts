@@ -5,12 +5,11 @@ import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
 
 @Injectable()
 export class GoogleAuthService {
-	constructor(private _jwtService: JwtAuthService) {
-	}
+	constructor(private _jwtService: JwtAuthService) {}
 
 	googleLogin(@Req() req: Request) {
-    return {
-      user: req.user
-    };
-  }
+		return {
+			user: req.user,
+		};
+	}
 }

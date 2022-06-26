@@ -5,20 +5,19 @@ import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-	private readonly _reflector: Reflector;
+	private readonly reflector: Reflector;
 	constructor(reflector: Reflector) {
-		this._reflector = reflector;
+		this.reflector = reflector;
 	}
 
 	canActivate(context: ExecutionContext): boolean {
-		const roles = this._reflector.get<string[]>('roles', context.getHandler());
+		const roles = this.reflector.get<string[]>('roles', context.getHandler());
 
 		if (!roles) {
 			return true;
 		}
 
-		const request = context.switchToHttp().getRequest();
-		const user = <UserEntity>request.user;
+		const user = context.switchToHttp().getRequest<UserEntity>();
 		return roles.includes(user.role);
 	}
 }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { UniqueEntityID } from './UniqueEntityID';
 
 const isEntity = (v: any): v is Entity<any> => v instanceof Entity;

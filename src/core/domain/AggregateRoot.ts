@@ -31,11 +31,9 @@ export abstract class AggregateRoot<T> extends Entity<T> {
 	private logDomainEventAdded(domainEvent: IDomainEvent): void {
 		const thisClass = Reflect.getPrototypeOf(this);
 		const domainEventClass = Reflect.getPrototypeOf(domainEvent);
+		// eslint-disable-next-line no-restricted-syntax
 		console.info(
-			'[Domain Event Created]:',
-			thisClass.constructor.name,
-			'==>',
-			domainEventClass.constructor.name,
+			`[Domain Event Created]: ${thisClass.constructor.name}==>${domainEventClass.constructor.name}`,
 		);
 	}
 }

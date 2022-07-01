@@ -16,9 +16,9 @@ export class ProductEntity extends AbstractEntity {
 
   @Column({
   	nullable: false,
-  	name: 'remain',
+  	name: 'total',
   })
-  	remain: number;
+  	total: number;
 
   @Column({
   	nullable: false,
@@ -60,7 +60,7 @@ export class ProductEntity extends AbstractEntity {
 
   	this.name = name;
   	this.price = price;
-  	this.remain = remain;
+  	this.total = remain;
   	this.avatar = avatar;
   	this.description = description;
   }

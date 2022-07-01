@@ -39,7 +39,7 @@ CREATE TABLE user (
 CREATE TABLE product (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
-	remain int NOT NULL,
+	total int NOT NULL,
 	price int NOT NULL,
 	description text NOT NULL,
 	avatar varchar(255) NULL,
@@ -57,9 +57,9 @@ CREATE TABLE product (
 CREATE TABLE program (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
-	start_date timestamp NOT NULL,
-	end_date timestamp NOT NULL,
-	amount int NOT NULL,
+	start_date timestamp NULL,
+	end_date timestamp NULL,
+	total int NOT NULL,
 	price int NOT NULL,
 	description text NOT NULL,
 	avatar varchar(255) NULL,

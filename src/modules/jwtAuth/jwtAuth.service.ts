@@ -15,6 +15,7 @@ export class JwtAuthService {
 		const payload = {
 			username: user.username,
 			role: user.role,
+			id: user.id
 		} as JwtPayload;
 		return this._jwtService.sign(payload, {
 			expiresIn: `${this.configService.get('JWT_EXPIRES_IN')}d`,

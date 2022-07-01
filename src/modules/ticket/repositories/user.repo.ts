@@ -52,13 +52,18 @@ export class UserRepository implements IRepo<UserEntity, UserDomain> {
       | string[]
       | number[]
       | Date[]
-      | UniqueEntityID[],
+			| UniqueEntityID[],
+		userId?: number
 	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
 		try {
 			await queryRunner.manager.softDelete(UserEntity, criteria);
+			await queryRunner.manager.update(UserEntity, criteria, {
+				deletedBy: userId,
+				updatedBy: userId
+			});
 			await queryRunner.commitTransaction();
 			return true;
 		} catch (error) {

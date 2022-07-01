@@ -8,7 +8,7 @@ export class PageOptionsDto {
   @ApiPropertyOptional({
   	enum: Order,
   	default: Order.ASC,
-  	description: 'Order by',
+  	description: 'Order ID',
   })
   @IsEnum(Order)
   @IsOptional()

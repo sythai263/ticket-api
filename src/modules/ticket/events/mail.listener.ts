@@ -10,7 +10,8 @@ import { MailEvent } from './mail.event';
 @Injectable()
 export class EventListener {
 	constructor(
-		public configService: ConfigService
+		public configService: ConfigService,
+
 	) {}
 
   @OnEvent('password.reset')

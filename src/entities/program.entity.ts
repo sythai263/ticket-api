@@ -16,14 +16,14 @@ export class ProgramEntity extends AbstractEntity {
   	name: string;
 
   @Column({
-  	nullable: false,
+  	nullable: true,
   	name: 'start_date',
   	type: 'timestamp',
   })
   	startDate: Date;
 
   @Column({
-  	nullable: false,
+  	nullable: true,
   	name: 'end_date',
   	type: 'timestamp',
   })
@@ -31,9 +31,9 @@ export class ProgramEntity extends AbstractEntity {
 
   @Column({
   	nullable: false,
-  	name: 'amount',
+  	name: 'total',
   })
-  	amount: number;
+  	total: number;
 
   @Column({
   	nullable: false,
@@ -79,7 +79,7 @@ export class ProgramEntity extends AbstractEntity {
   	this.name = name;
   	this.startDate = startDate;
   	this.endDate = endDate;
-  	this.amount = amount;
+  	this.total = amount;
   	this.description = description;
   }
 }

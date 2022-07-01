@@ -3,35 +3,87 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { UserEntity } from '../../entities/user.entity';
+import {
+	ProductEntity,
+	ProgramEntity,
+	UserEntity
+} from '../../entities';
 import { EventListener } from './events/mail.listener';
-import { UserRepository } from './repositories/user.repo';
-import { CreateUserUsecase } from './useCases/users/create/createUser.usecase';
-import { DeleteUserUsecase } from './useCases/users/delete/deleteUser.usecase';
-import { GetUserUseCase } from './useCases/users/get/userInfo.usecase';
-import { ChangePasswordUseCase } from './useCases/users/update/changePassword.usecase';
-import { ForgotPasswordUseCase } from './useCases/users/update/forgotPassword.usecase';
-import { UpdateUserUseCase } from './useCases/users/update/updateUser.usecase';
-import { UserController } from './useCases/users/user.controller';
+import {
+	ProductRepository,
+	ProgramRepository,
+	UserRepository
+} from './repositories';
+import {
+	CreateProductUsecase,
+	DeleteProductUsecase,
+	GetProductByIdUsecase,
+	GetProductsUsecase,
+	ProductController,
+	UpdateProductUsecase
+} from './useCases/products';
+import {
+	CreateProgramUsecase,
+	DeleteProgramUsecase,
+	GetProgramByIdUsecase,
+	GetProgramsUsecase,
+	ProgramController,
+	UpdateProgramUsecase
+} from './useCases/programs';
+import {
+	ChangePasswordUseCase,
+	CreateUserUsecase,
+	DeleteUserUsecase,
+	ForgotPasswordUseCase,
+	GetUserUseCase,
+	UpdateUserUseCase,
+	UserController
+} from './useCases/users';
 
 @Module({
 	imports: [
 		HttpModule,
-		TypeOrmModule.forFeature([UserEntity]),
+		TypeOrmModule.forFeature([
+			UserEntity,
+			ProgramEntity,
+			ProductEntity
+		]),
 		EventEmitterModule.forRoot()
 	],
-	controllers: [UserController],
+	controllers: [
+		UserController,
+		ProgramController,
+		ProductController,
+	],
 	providers: [
+		EventListener,
 		GetUserUseCase,
 		UpdateUserUseCase,
 		ChangePasswordUseCase,
 		CreateUserUsecase,
 		DeleteUserUsecase,
 		ForgotPasswordUseCase,
-		EventListener,
+		CreateProgramUsecase,
+		GetProgramsUsecase,
+		GetProgramByIdUsecase,
+		UpdateProgramUsecase,
+		DeleteProgramUsecase,
+		CreateProductUsecase,
+		GetProductsUsecase,
+		UpdateProductUsecase,
+		DeleteProductUsecase,
+		GetProductByIdUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,
+		},
+		{
+			provide: 'ProgramRepository',
+			useClass: ProgramRepository,
+		},
+		{
+			provide: 'ProductRepository',
+			useClass: ProductRepository,
 		},
 	],
 })

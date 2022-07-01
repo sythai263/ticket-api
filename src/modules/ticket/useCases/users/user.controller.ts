@@ -22,16 +22,20 @@ import { SuccessNotification } from '../../../../core/infra/Success';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { UserDto } from '../../../user/user.dto';
-import { CreateUserDto } from '../../infrastructures/dtos/user/createUser.dto';
-import { ForgotPasswordDto } from '../../infrastructures/dtos/user/forgotPassword.dto';
-import { PasswordDto } from '../../infrastructures/dtos/user/password.dto';
-import { UpdateUserDto } from '../../infrastructures/dtos/user/updateUser.dto';
-import { CreateUserUsecase } from './create/createUser.usecase';
-import { DeleteUserUsecase } from './delete/deleteUser.usecase';
-import { GetUserUseCase } from './get/userInfo.usecase';
-import { ChangePasswordUseCase } from './update/changePassword.usecase';
-import { ForgotPasswordUseCase } from './update/forgotPassword.usecase';
-import { UpdateUserUseCase } from './update/updateUser.usecase';
+import {
+	CreateUserDto,
+	ForgotPasswordDto,
+	PasswordDto,
+	UpdateUserDto
+} from '../../infrastructures/dtos/user';
+import {
+	ChangePasswordUseCase,
+	CreateUserUsecase,
+	DeleteUserUsecase,
+	ForgotPasswordUseCase,
+	GetUserUseCase,
+	UpdateUserUseCase
+} from './';
 import { GetUserErrors } from './user.error';
 
 @Controller('api/user')
@@ -76,7 +80,7 @@ export class UserController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async delete(@Req() req: Request): Promise<SuccessNotification> {
   	const user = req.user as JwtPayload;
-  	const result = await this.deleteUser.execute(user.username);
+  	const result = await this.deleteUser.execute(user.username, user.id);
   	if (result.isLeft()) {
   		const err = result.value;
   		switch (err.constructor) {

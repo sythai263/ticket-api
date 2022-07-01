@@ -8,7 +8,6 @@ import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 
 interface IUserProps {
-  id?: number;
   username?: string;
   password?: string;
   firstName?: string;
@@ -104,16 +103,16 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 	}
 
 	get verify(): boolean{
-		return this.verify;
+		return this.props.verify;
 	}
 
 	set verify(verify: boolean) {
-		this.verify = verify;
+		this.props.verify = verify;
 	}
 
-	isAdmin = () => this.role === RoleType.ADMIN;
+	isAdmin = () => this.props.role === RoleType.ADMIN;
 
-	isUser = () => this.role === RoleType.USER;
+	isUser = () => this.props.role === RoleType.USER;
 
 	checkPassword(password: string) {
 		return bcrypt.compareSync(password, this.props.password);
@@ -121,37 +120,37 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 
 	changeBirthday(birthday: Date) {
 		if (birthday && birthday !== this.birthday) {
-			this.birthday = birthday;
+			this.props.birthday = birthday;
 		}
 	}
 
 	changeLastName(lastName: string) {
 		if (lastName && lastName !== this.lastName) {
-			this.lastName= lastName;
+			this.props.lastName= lastName;
 		}
 	}
 
 	changeGender(gender: Gender) {
 		if (gender && gender !== this.gender) {
-			this.gender= gender;
+			this.props.gender= gender;
 		}
 	}
 
 	changeFirstName(firstName: string) {
 		if (firstName && firstName !== this.firstName) {
-			this.firstName= firstName;
+			this.props.firstName= firstName;
 		}
 	}
 
 	changePhone(phone: string) {
 		if (phone && phone !== this.phone) {
-			this.phone= phone;
+			this.props.phone= phone;
 		}
 	}
 
 	changeEmail(email: string) {
 		if (email && email !== this.email) {
-			this.email= email;
+			this.props.email= email;
 		}
 	}
 
@@ -165,7 +164,7 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 				return 2;
 			}
 
-			this.password = bcrypt.hashSync(password, salt);
+			this.props.password = bcrypt.hashSync(password, salt);
 			return 0;
 		}
 
@@ -173,7 +172,7 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 	}
 
 	confirmPassword(rePassword: string): boolean{
-		return this.password === rePassword;
+		return this.props.password === rePassword;
 	}
 
 	hashPassword(password: string) {

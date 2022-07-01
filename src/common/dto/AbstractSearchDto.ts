@@ -1,14 +1,9 @@
 'use strict';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class AbstractSearchDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  	q: string;
-
   @ApiProperty()
   @IsNumber()
   @IsNotEmpty()

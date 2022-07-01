@@ -44,7 +44,6 @@ export class UserMap {
 		const { id } = entity;
 		const userOrError = UserDomain.create(
 			{
-				id: entity.id,
 				username: entity.username,
 				email: entity.email,
 				phone: entity.phone,

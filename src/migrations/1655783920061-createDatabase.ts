@@ -74,7 +74,7 @@ CREATE TABLE program (
 			`);
 
 		await queryRunner.query(`
-CREATE TABLE receipt (
+CREATE TABLE invoice (
 	id int NOT NULL AUTO_INCREMENT,
 	amount int NOT NULL,
 	currency_code enum ('USD', 'VND', 'EUR', 'GBP') NOT NULL DEFAULT 'VND',
@@ -117,6 +117,7 @@ CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
 	user_id int NULL,
 	program_id int NULL,
+	invoice_id int NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
@@ -124,8 +125,9 @@ CREATE TABLE attendee (
 	updated_by int NOT NULL,
 	deleted_by int NULL,
 	UNIQUE INDEX UQ_ATTENDEE (user_id, program_id),
-	CONSTRAINT FK_ATTENDEE_USER FOREIGN KEY (user_id) REFERENCES user (id),
-	CONSTRAINT FK_ATTENDEE_PROGRAM FOREIGN KEY (program_id) REFERENCES program (id),
+	CONSTRAINT FK_ATTENDEE_USER FOREIGN KEY (user_id) REFERENCES user(id),
+	CONSTRAINT FK_ATTENDEE_PROGRAM FOREIGN KEY (program_id) REFERENCES program(id),
+	CONSTRAINT FK_ATTENDEE_INVOICE FOREIGN KEY (invoice_id) REFERENCES invoice(id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 			`);
@@ -191,17 +193,17 @@ CREATE TABLE purchase (
 	id int NOT NULL AUTO_INCREMENT,
 	order_date timestamp NOT NULL,
 	user_id int NULL,
-	receipt_id int NULL,
+	invoice_id int NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
 	deleted_by int,
-	UNIQUE INDEX REL_RECEIPT_ID (receipt_id),
+	UNIQUE INDEX REL_INVOICE_ID (invoice_id),
 	PRIMARY KEY (id),
 	CONSTRAINT FK_ORDER_USER FOREIGN KEY (user_id) REFERENCES user(id),
-	CONSTRAINT FK_ORDER_RECEIPT FOREIGN KEY (receipt_id) REFERENCES receipt(id)
+	CONSTRAINT FK_ORDER_INVOICE FOREIGN KEY (invoice_id) REFERENCES invoice(id)
 ) ENGINE = InnoDB
 			`);
 
@@ -278,7 +280,7 @@ VALUES
 		await queryRunner.query('DROP TABLE discount');
 		await queryRunner.query('DROP TABLE attendee');
 		await queryRunner.query('DROP TABLE program_item');
-		await queryRunner.query('DROP TABLE receipt');
+		await queryRunner.query('DROP TABLE invoice');
 		await queryRunner.query('DROP TABLE program');
 		await queryRunner.query('DROP TABLE product');
 		await queryRunner.query('DROP TABLE user');

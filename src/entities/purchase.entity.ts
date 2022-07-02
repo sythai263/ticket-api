@@ -4,12 +4,12 @@ import {
 	JoinColumn,
 	ManyToOne,
 	OneToMany,
-	OneToOne,
+	OneToOne
 } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
 import { DetailOderEntity } from './detailOrder.entity';
-import { ReceiptEntity } from './receipt.entity';
+import { InvoiceEntity } from './invoice.entity';
 import { UserEntity } from './user.entity';
 
 @Entity({ name: 'purchase' })
@@ -20,11 +20,11 @@ export class PurchaseEntity extends AbstractEntity {
   @ManyToOne(() => UserEntity, (user) => user.orders)
   	user: UserEntity;
 
-  @OneToOne(() => ReceiptEntity)
+  @OneToOne(() => InvoiceEntity)
   @JoinColumn({
-  	name: 'receipt_id',
+  	name: 'invoice_id',
   })
-  	receipt: ReceiptEntity;
+  	invoice: InvoiceEntity;
 
   @Column({
   	name: 'order_date',
@@ -37,11 +37,11 @@ export class PurchaseEntity extends AbstractEntity {
   constructor(
   	id?: number,
   	userId?: number,
-  	receiptId?: number,
+  	invoiceId?: number,
   	orderDate?: Date,
   ) {
   	super(id);
-  	this.receipt = new ReceiptEntity(receiptId);
+  	this.invoice = new InvoiceEntity(invoiceId);
   	this.user = new UserEntity(userId);
   	this.orderDate = orderDate;
   }

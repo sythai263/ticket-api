@@ -1,6 +1,7 @@
-import { Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToOne, Unique } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
+import { InvoiceEntity } from '.';
 import { ProgramEntity } from './program.entity';
 import { UserEntity } from './user.entity';
 
@@ -19,11 +20,16 @@ export class AttendeeEntity extends AbstractEntity {
   @ManyToOne(() => ProgramEntity)
   	program: ProgramEntity;
 
-  constructor(id?: number, userId?: number, programId?: number) {
-  	super(id);
-  	const user = new UserEntity(userId);
-  	const program = new ProgramEntity(programId);
-  	this.user = user;
-  	this.program = program;
-  }
+	@OneToOne(() => InvoiceEntity)
+	@JoinColumn({
+		name: 'invoice_id'
+	})
+		invoice: InvoiceEntity;
+
+	constructor(id?: number, userId?: number, programId?: number, invoiceId?: number) {
+		super(id);
+		this.user = new UserEntity(userId);
+		this.program = new ProgramEntity(programId);
+		this.invoice = new InvoiceEntity(invoiceId);
+	}
 }

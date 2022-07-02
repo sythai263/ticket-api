@@ -3,8 +3,8 @@ import { Column, Entity } from 'typeorm';
 import { AbstractEntity } from '../common/abstract.entity';
 import { CurrencyCode } from '../common/constants/currencyCode';
 
-@Entity({ name: 'receipt' })
-export class ReceiptEntity extends AbstractEntity {
+@Entity({ name: 'invoice' })
+export class InvoiceEntity extends AbstractEntity {
   @Column({
   	name: 'amount',
   	nullable: false,

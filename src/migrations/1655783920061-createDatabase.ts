@@ -83,6 +83,7 @@ CREATE TABLE invoice (
 	card_type varchar(50) NOT NULL,
 	pay_date timestamp NOT NULL DEFAULT NOW(),
 	info varchar(255) NOT NULL,
+	status varchar(255) NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
@@ -97,18 +98,18 @@ CREATE TABLE invoice (
 		await queryRunner.query(`
 CREATE TABLE program_item (
 	id int NOT NULL AUTO_INCREMENT,
+	program_id int NULL,
 	product_id int NULL,
-	user_id int NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
 	deleted_by int,
-	UNIQUE INDEX UQ_PROGRAM_ITEM (user_id, product_id),
+	UNIQUE INDEX UQ_PROGRAM_ITEM (program_id, product_id),
 	PRIMARY KEY (id),
 	CONSTRAINT FK_ITEM_PRODUCT FOREIGN KEY (product_id) REFERENCES product(id),
-	CONSTRAINT FK_ITEM_USER FOREIGN KEY (user_id) REFERENCES program(id)
+	CONSTRAINT FK_ITEM_USER FOREIGN KEY (program_id) REFERENCES program(id)
 ) ENGINE = InnoDB
 `);
 

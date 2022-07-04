@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
-import { DetailOderEntity } from './detailOrder.entity';
+import { DetailOrderEntity } from './detailOrder.entity';
 import { InvoiceEntity } from './invoice.entity';
 import { UserEntity } from './user.entity';
 
@@ -31,8 +31,8 @@ export class PurchaseEntity extends AbstractEntity {
   })
   	orderDate: Date;
 
-  @OneToMany(() => DetailOderEntity, (detail) => detail.id)
-  	detail: DetailOderEntity[];
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+  	details: DetailOrderEntity[];
 
   constructor(
   	id?: number,

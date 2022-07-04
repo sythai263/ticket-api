@@ -6,11 +6,11 @@ import { ProductEntity } from './product.entity';
 import { PurchaseEntity } from './purchase.entity';
 
 @Entity({ name: 'detail_order' })
-export class DetailOderEntity extends AbstractEntity {
+export class DetailOrderEntity extends AbstractEntity {
   @JoinColumn({
   	name: 'purchase_id',
   })
-  @ManyToOne(() => PurchaseEntity, (order) => order.detail)
+  @ManyToOne(() => PurchaseEntity, (order) => order.details)
   	purchase: PurchaseEntity;
 
   @JoinColumn({

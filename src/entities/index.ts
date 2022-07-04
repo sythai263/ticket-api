@@ -1,5 +1,5 @@
 export { AttendeeEntity } from './attendee.entity';
-export { DetailOderEntity } from './detailOrder.entity';
+export { DetailOrderEntity } from './detailOrder.entity';
 export { DiscountEntity } from './discount.entity';
 export { InvoiceEntity } from './invoice.entity';
 export { ProductEntity } from './product.entity';

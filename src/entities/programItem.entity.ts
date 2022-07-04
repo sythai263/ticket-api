@@ -14,7 +14,7 @@ export class ProgramItemEntity extends AbstractEntity {
   	product: ProductEntity;
 
   @JoinColumn({
-  	name: 'user_id',
+  	name: 'program_id',
   })
   @ManyToOne(() => ProgramEntity, (program) => program.items)
   	program: ProgramEntity;

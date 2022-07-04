@@ -49,19 +49,26 @@ export class InvoiceEntity extends AbstractEntity {
   })
   	info: string;
 
-  constructor(
+	@Column({
+  	name: 'status',
+	})
+  	status: string;
+
+	constructor(
   	id?: number,
   	amount?: number,
   	bankCode?: string,
   	bankTransNo?: string,
   	payDate?: Date,
-  	info?: string,
-  ) {
+		info?: string,
+		status?: string,
+	) {
   	super(id);
   	this.amount = amount;
   	this.bankCode = bankCode;
   	this.bankTransNo = bankTransNo;
   	this.payDate = payDate;
-  	this.info = info;
-  }
+		this.info = info;
+		this.status = status;
+	}
 }

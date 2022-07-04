@@ -22,12 +22,12 @@ export class ReviewProgramDomain extends AggregateRoot<IReviewProgramProps>{
 		this.props.user = val;
 	}
 
-	get product(): ProgramDomain {
+	get program(): ProgramDomain {
 		return this.props.program;
 
 	}
 
-	set product(val: ProgramDomain) {
+	set program(val: ProgramDomain) {
 		this.props.program = val;
 	}
 

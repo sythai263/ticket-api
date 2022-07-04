@@ -4,12 +4,12 @@ import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { ProductDomain, ProgramDomain } from '.';
 
-interface IProductItemProps {
+interface IProgramItemProps {
 	program?: ProgramDomain;
 	product?: ProductDomain;
 }
 
-export class ProductItemDomain extends AggregateRoot<IProductItemProps>{
+export class ProgramItemDomain extends AggregateRoot<IProgramItemProps>{
 
 	get program(): ProgramDomain {
 		return this.props.program;
@@ -30,19 +30,19 @@ export class ProductItemDomain extends AggregateRoot<IProductItemProps>{
 	}
 
 	public static create(
-		props: IProductItemProps,
+		props: IProgramItemProps,
 		id?: UniqueEntityID,
-	): Result<ProductItemDomain> {
+	): Result<ProgramItemDomain> {
 		const propsResult = Guard.againstNullOrUndefinedBulk([]);
 		if (!propsResult.succeeded) {
-			return Result.fail<ProductItemDomain>(propsResult.message);
+			return Result.fail<ProgramItemDomain>(propsResult.message);
 		}
 
 		const defaultValues = {
 			...props,
 		};
-		const domain = new ProductItemDomain(defaultValues, id);
-		return Result.ok<ProductItemDomain>(domain);
+		const domain = new ProgramItemDomain(defaultValues, id);
+		return Result.ok<ProgramItemDomain>(domain);
 	}
 }
 

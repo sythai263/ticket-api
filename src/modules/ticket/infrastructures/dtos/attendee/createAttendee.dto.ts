@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsOptional } from 'class-validator';
 
 export class CreateAttendeeDto{
 
@@ -8,5 +8,12 @@ export class CreateAttendeeDto{
 	})
 	@IsNumber()
 		programId: number;
+
+	@ApiProperty({
+		example: 10
+	})
+	@IsNumber()
+	@IsOptional()
+		userId?: number;
 
 }

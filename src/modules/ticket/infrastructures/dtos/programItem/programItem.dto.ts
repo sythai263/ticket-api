@@ -16,9 +16,8 @@ export class ProgramItemDto{
 		program: ProgramDto;
 
 	@ApiProperty({
-		isArray: true,
 		type: ProductDto
 	})
-		product: ProductDto[];
+		product: ProductDto;
 
 }

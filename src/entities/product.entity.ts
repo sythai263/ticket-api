@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
-import { DetailOderEntity } from './detailOrder.entity';
+import { DetailOrderEntity } from './detailOrder.entity';
 import { ProgramItemEntity } from './programItem.entity';
 import { ReviewProductEntity } from './reviewProduct.entity';
 
@@ -39,8 +39,8 @@ export class ProductEntity extends AbstractEntity {
   })
   	avatar: string;
 
-  @OneToMany(() => DetailOderEntity, (detail) => detail.id)
-  	detail: DetailOderEntity[];
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+  	detail: DetailOrderEntity[];
 
   @OneToMany(() => ProgramItemEntity, (item) => item.id)
   	items: ProgramItemEntity[];

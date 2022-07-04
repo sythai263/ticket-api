@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DiscountDto } from '../discount';
 import { ProductDto } from '../product';
+import { PurchaseDto } from '../purchase';
 
 export class DetailOrderDto{
 
@@ -9,6 +10,11 @@ export class DetailOrderDto{
 		example: 123
 	})
 		id: number;
+
+	@ApiProperty({
+		type: PurchaseDto
+	})
+		purchase: PurchaseDto;
 
 	@ApiProperty({
 		type: ProductDto

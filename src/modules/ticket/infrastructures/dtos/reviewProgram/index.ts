@@ -1,3 +1,3 @@
-export { CreateReviewProgramDto as CreateReviewProductDto } from './createReviewProgram.dto';
-export { ReviewProgramDto as ReviewProductDto } from './reviewProgram.dto';
+export { CreateReviewProgramDto } from './createReviewProgram.dto';
+export { ReviewProgramDto } from './reviewProgram.dto';
 

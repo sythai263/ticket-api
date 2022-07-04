@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
-import { DetailOderEntity } from './detailOrder.entity';
+import { DetailOrderEntity } from './detailOrder.entity';
 import { ProgramEntity } from './program.entity';
 
 @Entity({ name: 'discount' })
@@ -35,8 +35,8 @@ export class DiscountEntity extends AbstractEntity {
   })
   	description: string;
 
-  @OneToMany(() => DetailOderEntity, (detail) => detail.id)
-  	detail: DetailOderEntity[];
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+  	detail: DetailOrderEntity[];
 
   constructor(
   	id?: number,

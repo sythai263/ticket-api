@@ -54,16 +54,16 @@ export class ProgramEntity extends AbstractEntity {
   })
   	avatar: string;
 
-  @OneToMany(() => AttendeeEntity, (attendee) => attendee.id)
+  @OneToMany(() => AttendeeEntity, (attendee) => attendee.program)
   	attendees: AttendeeEntity[];
 
-  @OneToMany(() => DiscountEntity, (discount) => discount.id)
+  @OneToMany(() => DiscountEntity, (discount) => discount.program)
   	discounts: DiscountEntity[];
 
-  @OneToMany(() => ProgramItemEntity, (item) => item.id)
+  @OneToMany(() => ProgramItemEntity, (item) => item.program)
   	items: ProgramItemEntity[];
 
-  @OneToMany(() => ReviewProgramEntity, (reviewProgram) => reviewProgram.id)
+  @OneToMany(() => ReviewProgramEntity, (reviewProgram) => reviewProgram.program)
   	reviewedPrograms: ReviewProgramEntity[];
 
   constructor(

@@ -3,6 +3,8 @@ import { IsNumber } from 'class-validator';
 
 export class UpdateProgramItemDto{
 
+	id?: number;
+
 	@ApiProperty({
 		example: 10
 	})
@@ -11,9 +13,9 @@ export class UpdateProgramItemDto{
 
 	@ApiProperty({
 		isArray: true,
-		description: 'Mảng các id sản phẩm có bán trong program',
-		example: [1, 2, 3, 4]
+		example: 1
 	})
-		productIds: number[];
+	@IsNumber()
+		productId: number;
 
 }

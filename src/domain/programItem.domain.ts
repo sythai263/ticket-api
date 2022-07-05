@@ -29,6 +29,15 @@ export class ProgramItemDomain extends AggregateRoot<IProgramItemProps>{
 		this.props.product = val;
 	}
 
+	checkDuplicate(item: ProgramItemDomain): boolean{
+		if (item.props.product.id.toValue() === this.props.product.id.toValue()
+			&& item.props.program.id.toValue() === this.props.program.id.toValue()) {
+			return true;
+		}
+
+		return false;
+	}
+
 	public static create(
 		props: IProgramItemProps,
 		id?: UniqueEntityID,

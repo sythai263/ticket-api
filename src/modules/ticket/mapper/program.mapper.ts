@@ -3,6 +3,8 @@ import { ProgramDomain } from '../../../domain/program.domain';
 import { ProgramEntity } from '../../../entities/program.entity';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
 import { ProgramDto } from '../infrastructures/dtos/program/program.dto';
+import { ProgramItemsDto } from '../infrastructures/dtos/programItem';
+import { ProductMap } from './product.mapper';
 
 export class ProgramMap {
 	static entityToDto(entity: ProgramEntity): ProgramDto {
@@ -105,6 +107,17 @@ export class ProgramMap {
 		}
 
 		return null;
+	}
+
+	static toProgramItemDto(domain: ProgramDomain): ProgramItemsDto{
+		if (domain) {
+			const program = this.toDto(domain);
+			const products = ProductMap.toDtos(domain.items);
+			return new ProgramItemsDto(program, products);
+		}
+
+		return null;
+
 	}
 
 	static entitiesToDomains(entities: ProgramEntity[]): ProgramDomain[] {

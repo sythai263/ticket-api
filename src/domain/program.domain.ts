@@ -2,6 +2,7 @@ import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
+import { ProductDomain } from './product.domain';
 
 interface IProgramProps {
   name?: string;
@@ -12,6 +13,7 @@ interface IProgramProps {
 	avatar?: string;
 	description?: string;
 	remain?: number;
+	items?: ProductDomain[];
 }
 
 export class ProgramDomain extends AggregateRoot<IProgramProps> {
@@ -85,6 +87,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		else {
 			this.props.remain = 0;
 		}
+	}
+
+	get items(): ProductDomain[]{
+		return this.props.items;
+	}
+
+	set items(items: ProductDomain[]) {
+		this.props.items = items;
 	}
 
 	changeName(name: string) {

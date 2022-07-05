@@ -45,6 +45,16 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		return null;
 	}
 
+	async findByIds(ids: number[]): Promise<ProductDomain[]> {
+		const queryBuilder = this.repo.createQueryBuilder('product').whereInIds(ids);
+		const entities = await queryBuilder.getMany();
+		if (entities.length !== 0) {
+			return ProductMap.entitiesToDomains(entities);
+		}
+
+		return null;
+	}
+
 	async findOne(options: FindOneOptions<ProductEntity>): Promise<ProductDomain> {
 		const entity = await this.repo.findOne(options);
 		if (entity) {
@@ -123,21 +133,21 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 
 	async search(search?: SearchProductDto): Promise<[ProductDomain[], number]> {
 
-		const queryBuilder = this.repo.createQueryBuilder('program')
-			.orderBy('program.id', search.order)
+		const queryBuilder = this.repo.createQueryBuilder('product')
+			.orderBy('product.id', search.order)
 			.skip(search.skip)
 			.take(search.take);
 		if (search.keyword) {
-			queryBuilder.andWhere('program.name like :name', { name: `%${search.keyword}%` })
-				.orWhere('program.description like :name');
+			queryBuilder.andWhere('product.name like :name', { name: `%${search.keyword}%` })
+				.orWhere('product.description like :name');
 		}
 
 		if (search.min) {
-			queryBuilder.andWhere('program.price >= :min', { min: search.min });
+			queryBuilder.andWhere('product.price >= :min', { min: search.min });
 		}
 
 		if (search.max) {
-			queryBuilder.andWhere('program.price <= :max', { max: search.max });
+			queryBuilder.andWhere('product.price <= :max', { max: search.max });
 		}
 
 		const [entities, count] = await queryBuilder.getManyAndCount();

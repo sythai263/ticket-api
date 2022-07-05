@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { IsArray, IsNumber } from 'class-validator';
 
 export class CreateProgramItemDto{
 
@@ -10,8 +10,10 @@ export class CreateProgramItemDto{
 		programId: number;
 
 	@ApiProperty({
-		isArray: true
+		isArray: true,
+		example: [1, 2, 3]
 	})
+	@IsArray()
 		productIds: number[];
 
 }

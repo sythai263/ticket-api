@@ -6,11 +6,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {
 	ProductEntity,
 	ProgramEntity,
+	ProgramItemEntity,
 	UserEntity
 } from '../../entities';
 import { EventListener } from './events/mail.listener';
 import {
 	ProductRepository,
+	ProgramItemRepository,
 	ProgramRepository,
 	UserRepository
 } from './repositories';
@@ -22,6 +24,7 @@ import {
 	ProductController,
 	UpdateProductUsecase
 } from './useCases/products';
+import { CreateProgramItemUsecase, DeleteProgramItemByProgramIdUsecase, DeleteProgramItemUsecase, GetProgramItemUsecase, ProgramItemController, UpdateProgramItemUsecase } from './useCases/programItem';
 import {
 	CreateProgramUsecase,
 	DeleteProgramUsecase,
@@ -46,7 +49,8 @@ import {
 		TypeOrmModule.forFeature([
 			UserEntity,
 			ProgramEntity,
-			ProductEntity
+			ProductEntity,
+			ProgramItemEntity
 		]),
 		EventEmitterModule.forRoot()
 	],
@@ -54,6 +58,7 @@ import {
 		UserController,
 		ProgramController,
 		ProductController,
+		ProgramItemController
 	],
 	providers: [
 		EventListener,
@@ -73,6 +78,11 @@ import {
 		UpdateProductUsecase,
 		DeleteProductUsecase,
 		GetProductByIdUsecase,
+		CreateProgramItemUsecase,
+		GetProgramItemUsecase,
+		DeleteProgramItemUsecase,
+		DeleteProgramItemByProgramIdUsecase,
+		UpdateProgramItemUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,
@@ -85,6 +95,10 @@ import {
 			provide: 'ProductRepository',
 			useClass: ProductRepository,
 		},
+		{
+			provide: 'ProgramItemRepository',
+			useClass: ProgramItemRepository,
+		}
 	],
 })
 export class TicketModule {}

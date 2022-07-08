@@ -47,6 +47,13 @@ export class ProgramEntity extends AbstractEntity {
   })
   	description: string;
 
+	@Column({
+  	nullable: true,
+  	name: 'place',
+  	length: 500,
+	})
+  	place: string;
+
   @Column({
   	nullable: true,
   	name: 'avatar',

@@ -1,10 +1,12 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
+import { UserDomain } from '../../../domain';
 import { ProgramDomain } from '../../../domain/program.domain';
 import { ProgramEntity } from '../../../entities/program.entity';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
 import { ProgramDto } from '../infrastructures/dtos/program/program.dto';
 import { ProgramItemsDto } from '../infrastructures/dtos/programItem';
 import { ProductMap } from './product.mapper';
+import { UserMap } from './user.mapper';
 
 export class ProgramMap {
 	static entityToDto(entity: ProgramEntity): ProgramDto {
@@ -19,6 +21,7 @@ export class ProgramMap {
 		dto.name = entity.name;
 		dto.remain = entity.total;
 		dto.description = entity.description;
+		dto.place = entity.place;
 		return dto;
 	}
 
@@ -32,6 +35,7 @@ export class ProgramMap {
 		entity.endDate = dto.endDate;
 		entity.name = dto.name;
 		entity.description = dto.description;
+		entity.place = dto.place;
 
 		return entity;
 	}
@@ -46,6 +50,7 @@ export class ProgramMap {
 		entity.endDate = dto.endDate;
 		entity.name = dto.name;
 		entity.description = dto.description;
+		entity.place = dto.place;
 		return entity;
 	}
 
@@ -54,7 +59,15 @@ export class ProgramMap {
 			return null;
 		}
 
+		let attendees = new Array<UserDomain>();
+		if(entity.attendees){
+			attendees = entity.attendees.map(attendee =>
+				UserMap.entityToDomain(attendee.user)
+			);
+		}
+
 		const { id } = entity;
+
 		const programOrError = ProgramDomain.create(
 			{
 				total: entity.total,
@@ -63,7 +76,9 @@ export class ProgramMap {
 				endDate: entity.endDate,
 				startDate: entity.startDate,
 				name: entity.name,
-				price: entity.price
+				price: entity.price,
+				place: entity.place,
+				attendees
 			},
 			new UniqueEntityID(id),
 		);
@@ -81,6 +96,7 @@ export class ProgramMap {
 		entity.endDate = domain.endDate;
 		entity.name = domain.name;
 		entity.description = domain.description;
+		entity.place = domain.place;
 		return entity;
 	}
 
@@ -96,6 +112,7 @@ export class ProgramMap {
 		dto.name = domain.name;
 		dto.remain = domain.remain;
 		dto.description = domain.description;
+		dto.place = domain.place;
 
 		return dto;
 	}
@@ -138,7 +155,9 @@ export class ProgramMap {
 				endDate: dto.endDate,
 				startDate: dto.startDate,
 				name: dto.name,
-				price: dto.price
+				price: dto.price,
+				place: dto.place
+
 			}
 		);
 		return programOrError.isSuccess ? programOrError.getValue() : null;

@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Min } from 'class-validator';
 
-import { UserDto } from '../../../../user/user.dto';
 import { InvoiceDto } from '../invoice';
 import { ProgramDto } from '../program';
+import { UserDto } from '../user';
 
 export class ReviewProgramDto{
 

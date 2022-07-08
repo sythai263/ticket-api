@@ -5,12 +5,12 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 	Post,
-	Req,
+	Req
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { UserDto } from '../user/user.dto';
+import { UserLoginDto } from '../user/user.dto';
 import { GetUserErrors } from '../user/user.error';
 import { LoginDto } from './login.dto';
 import { LoginService } from './login.service';
@@ -22,13 +22,13 @@ export class LoginController {
 
   @Post('')
   @ApiCreatedResponse({
-  	type: UserDto,
+  	type: UserLoginDto,
   	description: 'Login successfully !',
   })
 	async login(
     @Body() loginDto: LoginDto,
     @Req() req: Request,
-	): Promise<UserDto> {
+	): Promise<UserLoginDto> {
 		const result = await this.loginService.execute(loginDto);
 		if (result.isLeft()) {
 			const error = result.value;

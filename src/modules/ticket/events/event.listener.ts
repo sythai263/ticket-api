@@ -54,5 +54,4 @@ export class EventListener {
 		await transport.sendMail(mailOption);
 
 	}
-
 }

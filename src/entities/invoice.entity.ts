@@ -22,6 +22,7 @@ export class InvoiceEntity extends AbstractEntity {
   @Column({
   	name: 'bank_code',
   	length: 50,
+  	nullable: true
   })
   	bankCode?: string;
 
@@ -29,12 +30,16 @@ export class InvoiceEntity extends AbstractEntity {
   	name: 'bank_trans_no',
   	length: 50,
   	unique: true,
+  	nullable: true
+
   })
   	bankTransNo: string;
 
   @Column({
   	name: 'card_type',
   	length: 50,
+  	nullable: true
+
   })
   	cardType: string;
 
@@ -50,7 +55,7 @@ export class InvoiceEntity extends AbstractEntity {
   	info: string;
 
 	@Column({
-  	name: 'status',
+		name: 'status',
 	})
   	status: string;
 

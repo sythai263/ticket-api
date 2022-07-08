@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, ManyToOne, OneToOne, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, Unique } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
 import { InvoiceEntity } from '.';
@@ -26,10 +26,18 @@ export class AttendeeEntity extends AbstractEntity {
 	})
 		invoice: InvoiceEntity;
 
-	constructor(id?: number, userId?: number, programId?: number, invoiceId?: number) {
+	@Column({
+		name: 'image_qr',
+		length: 255,
+		nullable: true
+	})
+		imageQR: string;
+
+	constructor(id?: number, userId?: number, programId?: number, invoiceId?: number, imageQR?: string) {
 		super(id);
 		this.user = new UserEntity(userId);
 		this.program = new ProgramEntity(programId);
 		this.invoice = new InvoiceEntity(invoiceId);
+		this.imageQR = imageQR;
 	}
 }

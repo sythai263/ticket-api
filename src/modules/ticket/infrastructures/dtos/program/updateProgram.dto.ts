@@ -46,6 +46,12 @@ export class UpdateProgramDto{
 		price?: number;
 
 	@ApiProperty({
+		example: 'Địa điểm tổ chức'
+	})
+	@IsString()
+		place?: string;
+
+	@ApiProperty({
 		example: 'http://localhost/avatar'
 	})
 	@IsOptional()

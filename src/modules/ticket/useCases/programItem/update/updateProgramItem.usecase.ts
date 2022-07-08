@@ -44,6 +44,20 @@ export class UpdateProgramItemUsecase implements IUseCase<UpdateProgramItemDto, 
 			return left(new ProgramItemErrors.NotFound());
 		}
 
+		const check = await this.repo.find({
+			where: {
+				program: {
+					id: dto.programId
+				},
+				product: {
+					id: dto.productId
+				}
+			}
+		});
+		if (check) {
+			return left(new ProgramItemErrors.Error('Duplicate product in this program!'));
+		}
+
 		item.product = productDomain;
 		item.program = programDomain;
 

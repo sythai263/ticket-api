@@ -3,6 +3,7 @@ import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { ProductDomain } from './product.domain';
+import { UserDomain } from './user.domain';
 
 interface IProgramProps {
   name?: string;
@@ -11,9 +12,10 @@ interface IProgramProps {
 	total?: number;
 	price?: number;
 	avatar?: string;
+	place?: string;
 	description?: string;
-	remain?: number;
 	items?: ProductDomain[];
+	attendees?: UserDomain[];
 }
 
 export class ProgramDomain extends AggregateRoot<IProgramProps> {
@@ -68,6 +70,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.avatar = avatar;
 	}
 
+	get place(): string{
+		return this.props.place;
+	}
+
+	set place(place: string) {
+		this.props.place = place;
+	}
+
 	get description(): string{
 		return this.props.description;
 	}
@@ -77,16 +87,8 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 	}
 
 	get remain(): number{
-		return this.props.remain;
-	}
+		return this.props.total - this.props.attendees.length;
 
-	set remain(purchased: number) {
-		if (this.props.total > purchased) {
-			this.props.remain = this.props.total - purchased;
-		}
-		else {
-			this.props.remain = 0;
-		}
 	}
 
 	get items(): ProductDomain[]{
@@ -95,6 +97,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 
 	set items(items: ProductDomain[]) {
 		this.props.items = items;
+	}
+
+	get attendees(): UserDomain[]{
+		return this.props.attendees;
+	}
+
+	set attendees(attendees: UserDomain[]) {
+		this.props.attendees = attendees;
 	}
 
 	changeName(name: string) {
@@ -137,6 +147,19 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		if (endDate && endDate !== this.props.endDate) {
 			this.props.endDate = endDate;
 		}
+	}
+
+	isFree(): boolean {
+		return this.props.price === 0;
+	}
+
+	canRegister(): boolean {
+		const now = new Date();
+		if (now > this.props.startDate || this.remain <= 0) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public static create(

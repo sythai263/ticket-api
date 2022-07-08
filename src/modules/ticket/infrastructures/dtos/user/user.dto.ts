@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsEmail, IsFQDN, IsNotEmpty, IsOptional } from 'class-validator';
 
-import { Gender } from '../../common/constants/gender';
-import { RoleType } from '../../common/constants/roleType';
+import { Gender } from '../../../../../common/constants/gender';
+import { RoleType } from '../../../../../common/constants/roleType';
 
-export class UserLoginDto {
+export class UserDto {
   @ApiProperty({ example: 1526 })
   @IsOptional()
   	id?: number;
@@ -13,8 +13,6 @@ export class UserLoginDto {
   @IsNotEmpty({ message: 'ERROR_EMPTY_ALIAS_FIELD' })
   	username: string;
 
-  @ApiProperty({ example: 'password hash' })
-  @IsNotEmpty({ message: 'ERROR_EMPTY_ALIAS_FIELD' })
   	password: string;
 
   @ApiProperty({ example: 'Thái' })
@@ -59,12 +57,4 @@ export class UserLoginDto {
   @ApiProperty({ example: new Date() })
   @IsOptional()
   	updatedAt?: Date;
-
-  @IsOptional()
-  @ApiProperty({ example: 'jwt token' })
-  	token?: string;
-
-  @IsOptional()
-  @ApiProperty({ example: new Date() })
-  	expiredIn?: Date;
 }

@@ -2,11 +2,11 @@ import * as bcrypt from 'bcrypt';
 
 import { ANOTHER_SYSTEM } from '../../common/constants/system';
 import { UserEntity } from '../../entities/user.entity';
-import { UserDto } from './user.dto';
+import { UserLoginDto } from './user.dto';
 
 export class UserAuthMap {
-	static entityToDto(entity: UserEntity): UserDto {
-		const userDto = new UserDto();
+	static entityToDto(entity: UserEntity): UserLoginDto {
+		const userDto = new UserLoginDto();
 		userDto.id = entity.id;
 		userDto.avatar = entity.avatar;
 		userDto.email = entity.email;
@@ -20,7 +20,7 @@ export class UserAuthMap {
 		return userDto;
 	}
 
-	static async dtoToEntity(dto: UserDto): Promise<UserEntity> {
+	static async dtoToEntity(dto: UserLoginDto): Promise<UserEntity> {
 		const entity = new UserEntity();
 		entity.avatar = dto.avatar;
 		entity.email = dto.email;

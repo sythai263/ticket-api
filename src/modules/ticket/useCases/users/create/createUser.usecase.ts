@@ -5,7 +5,7 @@ import { SYSTEM } from '../../../../../common/constants/system';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { UserDto } from '../../../../user/user.dto';
+import { UserLoginDto } from '../../../../user/user.dto';
 import { CreateUserDto } from '../../../infrastructures/dtos/user/createUser.dto';
 import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
@@ -13,7 +13,7 @@ import { GetUserErrors } from '../user.error';
 
 type Response = Either<
   AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<UserDto>
+  Result<UserLoginDto>
 >;
 
 @Injectable()

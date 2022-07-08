@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { UserDto } from '../../../../user/user.dto';
 import { InvoiceDto } from '../invoice';
+import { UserDto } from '../user';
 
 export class PurchaseDto{
 

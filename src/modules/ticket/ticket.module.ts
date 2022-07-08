@@ -4,18 +4,23 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
+	AttendeeEntity,
+	InvoiceEntity,
 	ProductEntity,
 	ProgramEntity,
 	ProgramItemEntity,
 	UserEntity
 } from '../../entities';
-import { EventListener } from './events/mail.listener';
+import { EventListener } from './events/event.listener';
 import {
+	AttendeeRepository,
+	InvoiceRepository,
 	ProductRepository,
 	ProgramItemRepository,
 	ProgramRepository,
 	UserRepository
 } from './repositories';
+import { AttendeeController, CreateAttendeeUsecase, GetAttendeeUsecase } from './useCases/attendee';
 import {
 	CreateProductUsecase,
 	DeleteProductUsecase,
@@ -50,7 +55,9 @@ import {
 			UserEntity,
 			ProgramEntity,
 			ProductEntity,
-			ProgramItemEntity
+			ProgramItemEntity,
+			InvoiceEntity,
+			AttendeeEntity,
 		]),
 		EventEmitterModule.forRoot()
 	],
@@ -58,7 +65,8 @@ import {
 		UserController,
 		ProgramController,
 		ProductController,
-		ProgramItemController
+		ProgramItemController,
+		AttendeeController,
 	],
 	providers: [
 		EventListener,
@@ -83,6 +91,8 @@ import {
 		DeleteProgramItemUsecase,
 		DeleteProgramItemByProgramIdUsecase,
 		UpdateProgramItemUsecase,
+		CreateAttendeeUsecase,
+		GetAttendeeUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,
@@ -98,6 +108,14 @@ import {
 		{
 			provide: 'ProgramItemRepository',
 			useClass: ProgramItemRepository,
+		},
+		{
+			provide: 'InvoiceRepository',
+			useClass: InvoiceRepository,
+		},
+		{
+			provide: 'AttendeeRepository',
+			useClass: AttendeeRepository,
 		}
 	],
 })

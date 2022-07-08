@@ -58,7 +58,6 @@ async function bootstrap() {
 	app.use(compression());
 	app.use(morgan('combined'));
 	app.use(cookieParser());
-
 	const reflector = app.get(Reflector);
 
 	app.useGlobalFilters(
@@ -103,6 +102,7 @@ async function bootstrap() {
 
 	// eslint-disable-next-line no-restricted-syntax
 	console.info(`server running on port ${port}`);
+
 }
 
 void bootstrap();

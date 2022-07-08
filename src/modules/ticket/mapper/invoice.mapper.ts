@@ -1,3 +1,4 @@
+import { SYSTEM } from '../../../common/constants/system';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { InvoiceDomain } from '../../../domain';
 import { InvoiceEntity } from '../../../entities';
@@ -81,6 +82,21 @@ export class InvoiceMap{
 		return entity;
 	}
 
+	static toCreateEntity(domain: InvoiceDomain): InvoiceEntity {
+		const entity = new InvoiceEntity();
+		entity.amount = domain.amount;
+		entity.bankCode = domain.bankCode;
+		entity.bankTransNo = domain.bankTransNo;
+		entity.cardType = domain.cardType;
+		entity.currencyCode = domain.currencyCode;
+		entity.info = domain.info;
+		entity.payDate = domain.payDate;
+		entity.status = domain.status;
+		entity.createdBy = SYSTEM;
+		entity.updatedBy = SYSTEM;
+		return entity;
+	}
+
 	static toDto(domain: InvoiceDomain): InvoiceDto {
 		const dto = new InvoiceDto();
 		dto.id = domain.id.toValue();
@@ -91,6 +107,7 @@ export class InvoiceMap{
 		dto.currencyCode = domain.currencyCode;
 		dto.info = domain.info;
 		dto.payDate = domain.payDate;
+		dto.isPaid = domain.isPaid();
 
 		return dto;
 	}

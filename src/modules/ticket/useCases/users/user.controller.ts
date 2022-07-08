@@ -21,12 +21,12 @@ import { Request } from 'express';
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
-import { UserDto } from '../../../user/user.dto';
 import {
 	CreateUserDto,
 	ForgotPasswordDto,
 	PasswordDto,
-	UpdateUserDto
+	UpdateUserDto,
+	UserDto
 } from '../../infrastructures/dtos/user';
 import {
 	ChangePasswordUseCase,

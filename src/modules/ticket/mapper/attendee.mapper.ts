@@ -51,7 +51,8 @@ export class AttendeeMap{
 			{
 				user: UserMap.entityToDomain(entity.user),
 				program: ProgramMap.entityToDomain(entity.program),
-				invoice: InvoiceMap.entityToDomain(entity.invoice)
+				invoice: InvoiceMap.entityToDomain(entity.invoice),
+				imageQR: entity.imageQR
 			},
 			new UniqueEntityID(id),
 		);
@@ -64,6 +65,16 @@ export class AttendeeMap{
 		entity.program = ProgramMap.toEntity(domain.program);
 		entity.user = UserMap.toEntity(domain.user);
 		entity.invoice = InvoiceMap.toEntity(domain.invoice);
+		entity.imageQR = domain.imageQR;
+
+		return entity;
+	}
+
+	static toCreateEntity(domain: AttendeeDomain): AttendeeEntity {
+		const entity = new AttendeeEntity();
+		entity.program = ProgramMap.toEntity(domain.program);
+		entity.user = UserMap.toEntity(domain.user);
+		entity.invoice = InvoiceMap.toEntity(domain.invoice);
 		return entity;
 	}
 
@@ -73,7 +84,7 @@ export class AttendeeMap{
 		dto.program = ProgramMap.toDto(domain.program);
 		dto.user = UserMap.toDto(domain.user);
 		dto.invoice = InvoiceMap.toDto(domain.invoice);
-
+		dto.imageQR = domain.imageQR;
 		return dto;
 	}
 

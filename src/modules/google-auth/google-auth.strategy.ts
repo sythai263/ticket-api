@@ -9,7 +9,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { AppError } from '../../core/logic/AppError';
 import { ConfigService } from '../../shared/services/config.service';
 import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
-import { UserDto } from '../user/user.dto';
+import { UserLoginDto } from '../user/user.dto';
 import { GetUserErrors } from '../user/user.error';
 import { GetUserUseCase } from '../user/user.usecase';
 
@@ -45,7 +45,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 			accessToken,
 		};
 		const expiredIn = this.configService.getNumber('JWT_EXPIRES_IN');
-		let userDto = new UserDto();
+		let userDto = new UserLoginDto();
 		userDto.avatar = user.picture;
 		userDto.email = user.email;
 		userDto.lastName = user.lastName;

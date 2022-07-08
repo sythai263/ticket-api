@@ -190,8 +190,10 @@ export class ProgramItemController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProductErrors.Error:
-			case ProductErrors.NotFound:
+			case ProgramItemErrors.Error:
 				throw new BadRequestException(err.errorValue());
+			case ProductErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}

@@ -34,4 +34,10 @@ export class AttendeeDto{
 	})
 		imageQR: string;
 
+	@ApiProperty({
+		example: true
+
+	})
+		isCheckIn: boolean;
+
 }

@@ -33,6 +33,13 @@ export class AttendeeEntity extends AbstractEntity {
 	})
 		imageQR: string;
 
+	@Column({
+  	nullable: false,
+		name: 'is_check_in',
+		default: false
+	})
+  	isCheckIn: boolean;
+
 	constructor(id?: number, userId?: number, programId?: number, invoiceId?: number, imageQR?: string) {
 		super(id);
 		this.user = new UserEntity(userId);

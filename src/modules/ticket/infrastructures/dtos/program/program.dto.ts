@@ -56,4 +56,14 @@ export class ProgramDto{
 	})
 		description: string;
 
+	@ApiProperty({
+		example:'image/qrcode.png'
+	})
+		imageQR: string;
+
+	@ApiProperty({
+		example: true
+	})
+		allowCheckIn: boolean;
+
 }

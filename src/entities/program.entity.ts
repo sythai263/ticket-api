@@ -61,6 +61,20 @@ export class ProgramEntity extends AbstractEntity {
   })
   	avatar: string;
 
+	@Column({
+		name: 'image_qr',
+		length: 255,
+		nullable: true
+	})
+		imageQR: string;
+
+	@Column({
+  	nullable: false,
+		name: 'allow_check_in',
+		default: false
+	})
+  	allowCheckIn: boolean;
+
   @OneToMany(() => AttendeeEntity, (attendee) => attendee.program)
   	attendees: AttendeeEntity[];
 

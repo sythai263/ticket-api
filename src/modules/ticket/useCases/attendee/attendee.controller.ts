@@ -1,9 +1,9 @@
 import {
 	BadRequestException,
 	Body,
-	Controller, ForbiddenException, Get, HttpCode,
+	Controller, Delete, ForbiddenException, Get, HttpCode,
 	HttpStatus,
-	InternalServerErrorException, NotFoundException, Param, Post, Req,
+	InternalServerErrorException, NotFoundException, Param, Patch, Post, Req,
 	UseGuards,
 	UsePipes,
 	ValidationPipe
@@ -13,14 +13,14 @@ import {
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse,
-	ApiResponse,
+	ApiNotFoundResponse, ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
+import { SuccessNotification } from '../../../../core/infra/Success';
 import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
@@ -29,17 +29,19 @@ import { AttendeeDto, CreateAttendeeDto } from '../../infrastructures/dtos/atten
 import { ProgramErrors } from '../programs';
 import { AttendeeErrors } from './attendee.error';
 import { CreateAttendeeUsecase } from './create/createAttendee.usecase';
+import { DeleteAttendeeUsecase } from './delete/deleteAttendee.usecase';
 import { GetAttendeeUsecase } from './get/getAttendee.usecase';
-@Controller('api/attends')
+import { AdminCheckInAttendeeUsecase } from './update/adminCheckInAttendee.usecase';
+import { UserCheckInAttendeeUsecase } from './update/userCheckInAttendee.usecase';
+@Controller('api/attendees')
 @ApiTags('Attendee')
 export class AttendeeController {
 	constructor(
 		public readonly createAttendee: CreateAttendeeUsecase,
 		public readonly getAttendee: GetAttendeeUsecase,
-		// // Public readonly getProductById: GetProductByIdUsecase,
-		// public readonly updateItem: UpdateProgramItemUsecase,
-		// public readonly deleteByProgramId: DeleteProgramItemByProgramIdUsecase,
-		// public readonly deleteItem: DeleteProgramItemUsecase,
+		public readonly deleteItem: DeleteAttendeeUsecase,
+		public readonly checkIn: AdminCheckInAttendeeUsecase,
+		public readonly userCheckInAttendee: UserCheckInAttendeeUsecase,
 
 	) { }
 
@@ -136,6 +138,147 @@ export class AttendeeController {
 		}
 
 		return result.value.getValue();
+	}
+
+	@Delete(':id')
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN, RoleType.USER)
+	@ApiResponse({
+		type: AttendeeDto
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized'
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden'
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request'
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error'
+	})
+
+	@ApiNotFoundResponse({
+		description: 'Not found'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async delete(
+		@Req() req: Request,
+		@Param('id') id: number): Promise<SuccessNotification> {
+		const user = req.user as JwtPayload;
+		const result = await this.deleteItem.execute(id, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case AttendeeErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+			case AttendeeErrors.Forbidden:
+				throw new ForbiddenException(err.errorValue());
+			case AttendeeErrors.Error:
+				throw new BadRequestException(err.errorValue());
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return new SuccessNotification('Delete program successfully !', HttpStatus.CREATED);
+	}
+
+	@Patch(':id/check-in')
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+	@ApiResponse({
+		type: AttendeeDto
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized'
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden'
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request'
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error'
+	})
+
+	@ApiNotFoundResponse({
+		description: 'Not found'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async checkInAttendee(
+		@Req() req: Request,
+		@Param('id') id: number): Promise<SuccessNotification> {
+		const user = req.user as JwtPayload;
+		const result = await this.checkIn.execute(id, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case AttendeeErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+			case AttendeeErrors.Forbidden:
+				throw new ForbiddenException(err.errorValue());
+			case AttendeeErrors.Error:
+				throw new BadRequestException(err.errorValue());
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return new SuccessNotification('Check-in thành công !', HttpStatus.CREATED);
+	}
+
+	@Patch('program/:id/check-in')
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.USER)
+	@ApiResponse({
+		type: AttendeeDto
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized'
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden'
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request'
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error'
+	})
+
+	@ApiNotFoundResponse({
+		description: 'Not found'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async userCheckIn(
+		@Req() req: Request,
+		@Param('id') id: number): Promise<SuccessNotification> {
+		const user = req.user as JwtPayload;
+		const result = await this.userCheckInAttendee.execute(id, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case AttendeeErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+			case AttendeeErrors.Forbidden:
+				throw new ForbiddenException(err.errorValue());
+			case AttendeeErrors.Error:
+				throw new BadRequestException(err.errorValue());
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return new SuccessNotification('Check-in thành công !', HttpStatus.CREATED);
 	}
 
 }

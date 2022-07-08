@@ -3,7 +3,7 @@ import {
 	Body,
 	Controller, Delete, Get, HttpCode,
 	HttpStatus,
-	InternalServerErrorException, Param, Patch, Post, Query, Req,
+	InternalServerErrorException, NotFoundException, Param, Patch, Post, Query, Req,
 	UseGuards,
 	UsePipes,
 	ValidationPipe
@@ -18,15 +18,18 @@ import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { PaginationProgramDto } from '../../infrastructures/dtos/program';
-import { CreateProgramDto } from '../../infrastructures/dtos/program/createProgram.dto';
-import { ProgramDto } from '../../infrastructures/dtos/program/program.dto';
-import { SearchProgramDto } from '../../infrastructures/dtos/program/searchProgram.dto';
-import { UpdateProgramDto } from '../../infrastructures/dtos/program/updateProgram.dto';
+import {
+	CreateProgramDto,
+	ProgramDto,
+	SearchProgramDto,
+	UpdateProgramDto
+} from '../../infrastructures/dtos/program/';
 import { CreateProgramUsecase } from './create/createProgram.usecase';
 import { DeleteProgramUsecase } from './delete/deleteProgram.usecase';
 import { GetProgramByIdUsecase } from './get/getProgramById.usecase';
 import { GetProgramsUsecase } from './get/getPrograms.usecase';
 import { ProgramErrors } from './program.error';
+import { ChangeCheckInProgramUsecase } from './update/changeCheckInProgram.usecase';
 import { UpdateProgramUsecase } from './update/updateProgram.usecase';
 
 @Controller('api/programs')
@@ -37,6 +40,7 @@ export class ProgramController {
 		public readonly getProgram: GetProgramsUsecase,
 		public readonly getProgramById: GetProgramByIdUsecase,
 		public readonly updateProgram: UpdateProgramUsecase,
+		public readonly changeStatus: ChangeCheckInProgramUsecase,
 		public readonly deleteProgram: DeleteProgramUsecase,
 	) { }
 
@@ -118,13 +122,17 @@ export class ProgramController {
 		description: 'Internal Server Error'
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async getById(@Req() req: Request, @Param('id') id: number): Promise<ProgramDto> {
+	async getById(
+	@Req() req: Request,
+	@Param('id') id: number): Promise<ProgramDto> {
 		const result = await this.getProgramById.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -167,8 +175,52 @@ export class ProgramController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
-			case ProgramErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return result.value.getValue();
+
+	}
+
+	@Patch(':id/status')
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+	@ApiResponse({
+		type: ProgramDto
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized'
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden'
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request'
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async changeStatusCheckIn(
+		@Req() req: Request,
+		@Param('id') id: number,
+	): Promise<ProgramDto> {
+		const user = req.user as JwtPayload;
+		const result = await this.changeStatus.execute(id, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case ProgramErrors.Error:
+				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -209,8 +261,9 @@ export class ProgramController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
-			case ProgramErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}

@@ -22,6 +22,8 @@ export class ProgramMap {
 		dto.remain = entity.total;
 		dto.description = entity.description;
 		dto.place = entity.place;
+		dto.allowCheckIn = entity.allowCheckIn;
+		dto.imageQR = entity.imageQR;
 		return dto;
 	}
 
@@ -36,6 +38,7 @@ export class ProgramMap {
 		entity.name = dto.name;
 		entity.description = dto.description;
 		entity.place = dto.place;
+		entity.imageQR = dto.imageQR;
 
 		return entity;
 	}
@@ -78,6 +81,8 @@ export class ProgramMap {
 				name: entity.name,
 				price: entity.price,
 				place: entity.place,
+				allowCheckIn: entity.allowCheckIn,
+				imageQR: entity.imageQR,
 				attendees
 			},
 			new UniqueEntityID(id),
@@ -97,6 +102,8 @@ export class ProgramMap {
 		entity.name = domain.name;
 		entity.description = domain.description;
 		entity.place = domain.place;
+		entity.imageQR = domain.imageQR;
+		entity.allowCheckIn = domain.allowCheckIn;
 		return entity;
 	}
 
@@ -113,6 +120,8 @@ export class ProgramMap {
 		dto.remain = domain.remain;
 		dto.description = domain.description;
 		dto.place = domain.place;
+		dto.imageQR = domain.imageQR;
+		dto.allowCheckIn = domain.allowCheckIn;
 
 		return dto;
 	}
@@ -156,7 +165,7 @@ export class ProgramMap {
 				startDate: dto.startDate,
 				name: dto.name,
 				price: dto.price,
-				place: dto.place
+				place: dto.place,
 
 			}
 		);

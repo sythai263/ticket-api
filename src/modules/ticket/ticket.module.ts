@@ -20,7 +20,8 @@ import {
 	ProgramRepository,
 	UserRepository
 } from './repositories';
-import { AttendeeController, CreateAttendeeUsecase, GetAttendeeUsecase } from './useCases/attendee';
+import { AdminCheckInAttendeeUsecase, AttendeeController, CreateAttendeeUsecase, DeleteAttendeeUsecase, GetAttendeeUsecase, UserCheckInAttendeeUsecase } from './useCases/attendee';
+import { GetInvoiceUsecase, InvoiceController } from './useCases/invoice';
 import {
 	CreateProductUsecase,
 	DeleteProductUsecase,
@@ -31,6 +32,7 @@ import {
 } from './useCases/products';
 import { CreateProgramItemUsecase, DeleteProgramItemByProgramIdUsecase, DeleteProgramItemUsecase, GetProgramItemUsecase, ProgramItemController, UpdateProgramItemUsecase } from './useCases/programItem';
 import {
+	ChangeCheckInProgramUsecase,
 	CreateProgramUsecase,
 	DeleteProgramUsecase,
 	GetProgramByIdUsecase,
@@ -67,6 +69,7 @@ import {
 		ProductController,
 		ProgramItemController,
 		AttendeeController,
+		InvoiceController,
 	],
 	providers: [
 		EventListener,
@@ -91,8 +94,13 @@ import {
 		DeleteProgramItemUsecase,
 		DeleteProgramItemByProgramIdUsecase,
 		UpdateProgramItemUsecase,
+		ChangeCheckInProgramUsecase,
 		CreateAttendeeUsecase,
 		GetAttendeeUsecase,
+		DeleteAttendeeUsecase,
+		AdminCheckInAttendeeUsecase,
+		UserCheckInAttendeeUsecase,
+		GetInvoiceUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,

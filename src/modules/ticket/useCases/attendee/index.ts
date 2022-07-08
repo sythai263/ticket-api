@@ -1,8 +1,8 @@
-// Export { DeleteProgramItemUsecase } from './delete/deleteProgramItem.usecase';
-// export { DeleteProgramItemByProgramIdUsecase } from './delete/deleteProgramItemByProgramId.usecase';
 export { AttendeeController } from './attendee.controller';
 export { AttendeeErrors } from './attendee.error';
 export { CreateAttendeeUsecase } from './create/createAttendee.usecase';
+export { DeleteAttendeeUsecase } from './delete/deleteAttendee.usecase';
 export { GetAttendeeUsecase } from './get/getAttendee.usecase';
-// Export { UpdateProgramItemUsecase } from './update/updateProgramItem.usecase';
+export { AdminCheckInAttendeeUsecase } from './update/adminCheckInAttendee.usecase';
+export { UserCheckInAttendeeUsecase } from './update/userCheckInAttendee.usecase';
 

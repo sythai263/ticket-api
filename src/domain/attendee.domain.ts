@@ -14,6 +14,7 @@ interface IAttendeeProps {
 	program?: ProgramDomain;
 	invoice?: InvoiceDomain;
 	imageQR?: string;
+	isCheckIn?: boolean;
 }
 
 const urlQR = join(__dirname,'..', '..',STATIC_FOLDER, QR_FOLDER);
@@ -51,6 +52,14 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 		this.props.imageQR = imageQR;
 	}
 
+	get isCheckIn(): boolean{
+		return this.props.isCheckIn;
+	}
+
+	checkIn() {
+		this.props.isCheckIn = true;
+	}
+
 	async generateQRCode() {
 		const now = moment().format('YYYYMMDD');
 		const qrFilename = `${this.props.user.username}_attend_${this.props.program.id.toString()}_${now}.png`;
@@ -58,7 +67,7 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 			user: this.user.id.toValue(),
 			program: this.program.id.toValue(),
 			attendee: this.id.toValue(),
-			name: this.program.name
+			name: this.program.name,
 		});
 		await toFile(join(urlQR, qrFilename), content, {
 			width: 500,

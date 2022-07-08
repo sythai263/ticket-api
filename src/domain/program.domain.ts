@@ -1,9 +1,16 @@
+import * as moment from 'moment';
+import { join } from 'path';
+import { toFile } from 'qrcode';
+
+import { QR_FOLDER, STATIC_FOLDER } from '../common/constants/system';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { ProductDomain } from './product.domain';
 import { UserDomain } from './user.domain';
+
+const urlQR = join(__dirname,'..', '..',STATIC_FOLDER, QR_FOLDER);
 
 interface IProgramProps {
   name?: string;
@@ -13,7 +20,9 @@ interface IProgramProps {
 	price?: number;
 	avatar?: string;
 	place?: string;
+	imageQR?: string;
 	description?: string;
+	allowCheckIn?: boolean;
 	items?: ProductDomain[];
 	attendees?: UserDomain[];
 }
@@ -78,6 +87,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.place = place;
 	}
 
+	get imageQR(): string{
+		return this.props.imageQR;
+	}
+
+	set imageQR(imageQR: string) {
+		this.props.imageQR = imageQR;
+	}
+
 	get description(): string{
 		return this.props.description;
 	}
@@ -105,6 +122,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 
 	set attendees(attendees: UserDomain[]) {
 		this.props.attendees = attendees;
+	}
+
+	get allowCheckIn(): boolean{
+		return this.props.allowCheckIn;
+	}
+
+	changeStatusCheckIn() {
+		this.props.allowCheckIn = !this.props.allowCheckIn;
 	}
 
 	changeName(name: string) {
@@ -160,6 +185,21 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		}
 
 		return true;
+	}
+
+	async generateQRCode() {
+		const now = moment().format('YYYYMMDD');
+		const qrFilename = `qrcode_program_${this.id.toValue()}_${now}.png`;
+		const content = JSON.stringify({
+			program: this.id.toValue(),
+			name: this.name,
+		});
+		await toFile(join(urlQR, qrFilename), content, {
+			width: 500,
+			type: 'png',
+		});
+		this.props.imageQR = join(QR_FOLDER, qrFilename);
+
 	}
 
 	public static create(

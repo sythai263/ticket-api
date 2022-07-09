@@ -55,10 +55,28 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 				user: {
 					id: dto.userId
 				}
-			}
+			},
+			relations:['user', 'program', 'invoice']
 		});
-		if (check){
-			return left(new AttendeeErrors.Error('Bạn đã đăng ký tham gia sự kiện này rồi'));
+		if (check) {
+
+			if (!check.invoice.isPaid()) {
+				return left(
+					new AttendeeErrors.Error('Bạn chưa thanh toán phí tham gia, hãy thanh toán rồi hãy check-in!')
+				);
+			}
+
+			if (!check.program.allowCheckIn) {
+				return left(
+					new AttendeeErrors.Error('Chương trình này chưa cho phép check-in. Hãy thử lại sau!')
+				);
+			}
+
+			check.checkIn();
+			const entity = AttendeeMap.toEntity(check);
+			await this.repo.save(entity);
+			return right(Result.ok(AttendeeMap.toDto(check)));
+
 		}
 
 		const invoiceDomain = new InvoiceDomain({

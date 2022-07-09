@@ -20,7 +20,7 @@ import {
 	ProgramRepository,
 	UserRepository
 } from './repositories';
-import { AdminCheckInAttendeeUsecase, AttendeeController, CreateAttendeeUsecase, DeleteAttendeeUsecase, GetAttendeeUsecase, UserCheckInAttendeeUsecase } from './useCases/attendee';
+import { AdminCheckInAttendeeUsecase, AttendeeController, CreateAttendeeUsecase, DeleteAttendeeUsecase, GetAttendeeUsecase } from './useCases/attendee';
 import { GetInvoiceUsecase, InvoiceController } from './useCases/invoice';
 import {
 	CreateProductUsecase,
@@ -99,7 +99,6 @@ import {
 		GetAttendeeUsecase,
 		DeleteAttendeeUsecase,
 		AdminCheckInAttendeeUsecase,
-		UserCheckInAttendeeUsecase,
 		GetInvoiceUsecase,
 		{
 			provide: 'UserRepository',

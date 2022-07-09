@@ -32,7 +32,6 @@ import { CreateAttendeeUsecase } from './create/createAttendee.usecase';
 import { DeleteAttendeeUsecase } from './delete/deleteAttendee.usecase';
 import { GetAttendeeUsecase } from './get/getAttendee.usecase';
 import { AdminCheckInAttendeeUsecase } from './update/adminCheckInAttendee.usecase';
-import { UserCheckInAttendeeUsecase } from './update/userCheckInAttendee.usecase';
 @Controller('api/attendees')
 @ApiTags('Attendee')
 export class AttendeeController {
@@ -41,7 +40,6 @@ export class AttendeeController {
 		public readonly getAttendee: GetAttendeeUsecase,
 		public readonly deleteItem: DeleteAttendeeUsecase,
 		public readonly checkIn: AdminCheckInAttendeeUsecase,
-		public readonly userCheckInAttendee: UserCheckInAttendeeUsecase,
 
 	) { }
 
@@ -49,7 +47,7 @@ export class AttendeeController {
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(RoleType.ADMIN)
+	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
 		type: AttendeeDto
 	})
@@ -217,53 +215,6 @@ export class AttendeeController {
 		@Param('id') id: number): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		const result = await this.checkIn.execute(id, user.id);
-		if (result.isLeft()) {
-			const err = result.value;
-			switch (err.constructor) {
-			case AttendeeErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case AttendeeErrors.Forbidden:
-				throw new ForbiddenException(err.errorValue());
-			case AttendeeErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
-			}
-		}
-
-		return new SuccessNotification('Check-in thành công !', HttpStatus.CREATED);
-	}
-
-	@Patch('program/:id/check-in')
-	@ApiBearerAuth()
-	@HttpCode(HttpStatus.CREATED)
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(RoleType.USER)
-	@ApiResponse({
-		type: AttendeeDto
-	})
-	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
-	})
-	@ApiForbiddenResponse({
-		description: 'Forbidden'
-	})
-	@ApiBadRequestResponse({
-		description: 'Bad Request'
-	})
-	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
-	})
-
-	@ApiNotFoundResponse({
-		description: 'Not found'
-	})
-	@UsePipes(new ValidationPipe({ transform: true }))
-	async userCheckIn(
-		@Req() req: Request,
-		@Param('id') id: number): Promise<SuccessNotification> {
-		const user = req.user as JwtPayload;
-		const result = await this.userCheckInAttendee.execute(id, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {

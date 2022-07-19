@@ -81,7 +81,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 			const entity = await queryRunner.manager.save(product);
 			await queryRunner.commitTransaction();
 
-			return ProductMap.entityToDomain(entity);
+			return ProductMap.createEntityToDomain(entity);
 		} catch (err) {
 			await queryRunner.rollbackTransaction();
 			return null;
@@ -103,7 +103,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID
@@ -134,6 +134,8 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 	async search(search?: SearchProductDto): Promise<[ProductDomain[], number]> {
 
 		const queryBuilder = this.repo.createQueryBuilder('product')
+			.leftJoinAndSelect('product.reviewedProducts', 'reviews')
+			.leftJoinAndSelect('reviews.user', 'user')
 			.orderBy('product.id', search.order)
 			.skip(search.skip)
 			.take(search.take);
@@ -150,6 +152,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 			queryBuilder.andWhere('product.price <= :max', { max: search.max });
 		}
 
+		queryBuilder.relation('product.reviewedProducts');
 		const [entities, count] = await queryBuilder.getManyAndCount();
 
 		if (entities) {

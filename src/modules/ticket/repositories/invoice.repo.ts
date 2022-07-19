@@ -92,7 +92,7 @@ export class InvoiceRepository implements IRepo<InvoiceEntity, InvoiceDomain> {
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID
@@ -106,6 +106,32 @@ export class InvoiceRepository implements IRepo<InvoiceEntity, InvoiceDomain> {
 		await queryRunner.startTransaction();
 		try {
 			await queryRunner.manager.softDelete(InvoiceEntity, criteria);
+			await queryRunner.manager.update(InvoiceEntity, criteria, {
+				deletedBy: userId,
+				updatedBy: userId
+			});
+			await queryRunner.commitTransaction();
+			return true;
+		} catch (error) {
+			await queryRunner.rollbackTransaction();
+			return false;
+		}
+	}
+
+	async delete(criteria: string
+		| number
+		| Date
+		| UniqueEntityID
+		| string[]
+		| number[]
+		| Date[]
+		| UniqueEntityID[]
+		| FindOptionsWhere<InvoiceEntity>, userId?: number): Promise<boolean> {
+		const queryRunner = this.dataSource.createQueryRunner();
+		await queryRunner.connect();
+		await queryRunner.startTransaction();
+		try {
+			await queryRunner.manager.delete(InvoiceEntity, criteria);
 			await queryRunner.manager.update(InvoiceEntity, criteria, {
 				deletedBy: userId,
 				updatedBy: userId

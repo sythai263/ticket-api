@@ -16,7 +16,7 @@ export class DeleteUserUsecase implements IUseCase<string, Promise<Response>> {
 	constructor(@Inject('UserRepository') public readonly repo: UserRepository) {}
 
 	async execute(username: string, userId?: number): Promise<Response> {
-		const isSuccess = await this.repo.delete({
+		const isSuccess = await this.repo.softDelete({
 			username
 		}, userId);
 		if (!isSuccess) {

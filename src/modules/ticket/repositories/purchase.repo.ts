@@ -92,7 +92,7 @@ export class PurchaseRepository implements IRepo<PurchaseEntity, PurchaseDomain>
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID

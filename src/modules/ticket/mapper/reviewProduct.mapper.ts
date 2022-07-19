@@ -11,7 +11,6 @@ export class ReviewProductMap{
 
 		const dto = new ReviewProductDto();
 		dto.id = entity.id;
-		dto.product = ProductMap.entityToDto(entity.product);
 		dto.star = entity.star;
 		dto.comment = entity.comment;
 		dto.user = UserMap.entityToDto(entity.user);
@@ -22,7 +21,6 @@ export class ReviewProductMap{
 		const entity = new ReviewProductEntity();
 		entity.id = dto.id;
 		entity.user = UserMap.dtoToEntity(dto.user);
-		entity.product = ProductMap.dtoToEntity(dto.product);
 		entity.star = dto.star;
 		entity.comment = dto.comment;
 		return entity;
@@ -68,7 +66,6 @@ export class ReviewProductMap{
 	static toDto(domain: ReviewProductDomain): ReviewProductDto {
 		const dto = new ReviewProductDto();
 		dto.id = domain.id.toValue();
-		dto.product = ProductMap.toDto(domain.product);
 		dto.comment = domain.comment;
 		dto.star = domain.star;
 		dto.user = UserMap.toDto(domain.user);

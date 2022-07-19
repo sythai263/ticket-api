@@ -11,7 +11,6 @@ export class ReviewProgramMap{
 
 		const dto = new ReviewProgramDto();
 		dto.id = entity.id;
-		dto.program = ProgramMap.entityToDto(entity.program);
 		dto.star = entity.star;
 		dto.comment = entity.comment;
 		dto.user = UserMap.entityToDto(entity.user);
@@ -22,7 +21,6 @@ export class ReviewProgramMap{
 		const entity = new ReviewProgramEntity();
 		entity.id = dto.id;
 		entity.user = UserMap.dtoToEntity(dto.user);
-		entity.program = ProgramMap.dtoToEntity(dto.program);
 		entity.star = dto.star;
 		entity.comment = dto.comment;
 		return entity;
@@ -68,7 +66,6 @@ export class ReviewProgramMap{
 	static toDto(domain: ReviewProgramDomain): ReviewProgramDto {
 		const dto = new ReviewProgramDto();
 		dto.id = domain.id.toValue();
-		dto.program = ProgramMap.toDto(domain.program);
 		dto.comment = domain.comment;
 		dto.star = domain.star;
 		dto.user = UserMap.toDto(domain.user);

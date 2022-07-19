@@ -31,8 +31,8 @@ export class DeleteAttendeeUsecase implements IUseCase<number, Promise<Response>
 			return left(new AttendeeErrors.Forbidden());
 		}
 
-		await this.repo.delete(id, userId);
-		await this.invoiceRepo.delete(domain.invoice.id.toValue(), userId);
+		await this.repo.softDelete(id, userId);
+		await this.invoiceRepo.softDelete(domain.invoice.id.toValue(), userId);
 		return right(Result.ok(true));
 	}
 

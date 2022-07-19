@@ -9,5 +9,8 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "skipLibCheck": true
+  },
+  "watchOptions": {
+    "excludeDirectories": ["public"]
   }
 }

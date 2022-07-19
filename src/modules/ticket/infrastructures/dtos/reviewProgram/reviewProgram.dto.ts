@@ -1,8 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Min } from 'class-validator';
 
-import { InvoiceDto } from '../invoice';
-import { ProgramDto } from '../program';
 import { UserDto } from '../user';
 
 export class ReviewProgramDto{
@@ -17,15 +15,7 @@ export class ReviewProgramDto{
 	})
 		user: UserDto;
 
-	@ApiProperty({
-		isArray: true,
-		type: ProgramDto
-	})
-		program: ProgramDto;
-
-	@ApiProperty({
-		type: InvoiceDto
-	})
+	@ApiProperty()
 	@Min(0)
 		star: number;
 

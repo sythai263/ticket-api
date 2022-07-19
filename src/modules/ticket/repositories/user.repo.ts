@@ -43,7 +43,7 @@ export class UserRepository implements IRepo<UserEntity, UserDomain> {
 		return null;
 	}
 
-	async delete(
+	async softDelete(
 		criteria:
       | string
       | number

@@ -92,7 +92,7 @@ export class DetailOrderRepository implements IRepo<DetailOrderEntity, DetailOrd
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID

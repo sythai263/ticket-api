@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
@@ -22,6 +23,7 @@ import {
 } from './repositories';
 import { AdminCheckInAttendeeUsecase, AttendeeController, CreateAttendeeUsecase, DeleteAttendeeUsecase, GetAttendeeUsecase } from './useCases/attendee';
 import { GetInvoiceUsecase, InvoiceController } from './useCases/invoice';
+import { PaymentController, PaymentReturnUsecase, PaymentUsecase } from './useCases/payment';
 import {
 	CreateProductUsecase,
 	DeleteProductUsecase,
@@ -40,6 +42,7 @@ import {
 	ProgramController,
 	UpdateProgramUsecase
 } from './useCases/programs';
+import { UploadController } from './useCases/upload/upload.controller';
 import {
 	ChangePasswordUseCase,
 	CreateUserUsecase,
@@ -61,15 +64,19 @@ import {
 			InvoiceEntity,
 			AttendeeEntity,
 		]),
-		EventEmitterModule.forRoot()
+		EventEmitterModule.forRoot(),
+		ScheduleModule.forRoot()
+
 	],
 	controllers: [
+		UploadController,
 		UserController,
 		ProgramController,
 		ProductController,
 		ProgramItemController,
 		AttendeeController,
 		InvoiceController,
+		PaymentController
 	],
 	providers: [
 		EventListener,
@@ -100,6 +107,8 @@ import {
 		DeleteAttendeeUsecase,
 		AdminCheckInAttendeeUsecase,
 		GetInvoiceUsecase,
+		PaymentUsecase,
+		PaymentReturnUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,

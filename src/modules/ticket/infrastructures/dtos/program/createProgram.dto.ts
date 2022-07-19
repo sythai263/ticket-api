@@ -1,7 +1,6 @@
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNotEmpty, IsString, Min, MinDate } from 'class-validator';
-import * as moment from 'moment';
+import { IsDateString, IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
 export class CreateProgramDto{
 
 	@ApiProperty({
@@ -20,7 +19,7 @@ export class CreateProgramDto{
 	@IsNotEmpty({
 		message:'Ngày bắt đầu không để trống !'
 	})
-	@MinDate(moment().add(1, 'd').toDate())
+	// @MinDate(moment().add(1, 'd').toDate())
 		startDate?: Date;
 
 	@ApiProperty({
@@ -30,7 +29,7 @@ export class CreateProgramDto{
 	@IsNotEmpty({
 		message:'Ngày kết thúc không để trống !'
 	})
-	@MinDate(moment().add(1, 'd').toDate())
+	// @MinDate(moment().add(1, 'd').toDate())
 		endDate?: Date;
 
 	@ApiProperty({

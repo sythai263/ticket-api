@@ -92,7 +92,7 @@ export class ProgramItemRepository implements IRepo<ProgramItemEntity, ProgramIt
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID

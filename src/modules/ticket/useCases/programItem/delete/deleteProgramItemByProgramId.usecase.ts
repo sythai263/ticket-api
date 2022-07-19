@@ -31,7 +31,7 @@ export class DeleteProgramItemByProgramIdUsecase implements IUseCase<number, Pro
 
 		const ids = domains.map(domain => domain.id.toValue());
 
-		const isSuccess = await this.repo.delete(ids, userId);
+		const isSuccess = await this.repo.softDelete(ids, userId);
 		if (!isSuccess) {
 			return left(new ProgramErrors.Error('Can\'t delete this product!'));
 		}

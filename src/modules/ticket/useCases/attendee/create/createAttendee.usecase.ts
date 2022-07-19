@@ -1,16 +1,17 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { join } from 'path';
 
 import { StatusInvoice } from '../../../../../common/constants/statusReceipt';
 import { STATIC_FOLDER } from '../../../../../common/constants/system';
-import { UniqueEntityID } from '../../../../../core/domain/UniqueEntityID';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { AttendeeDomain, InvoiceDomain, UserDomain } from '../../../../../domain';
+import { AttendeeDomain, InvoiceDomain } from '../../../../../domain';
+import { removeAccents } from '../../../../../utils/normalize';
 import { AttendeeDto, CreateAttendeeDto } from '../../../infrastructures/dtos/attendee';
 import { AttendeeMap, InvoiceMap } from '../../../mapper';
-import { AttendeeRepository, InvoiceRepository, ProgramRepository } from '../../../repositories';
+import { AttendeeRepository, InvoiceRepository, ProgramRepository, UserRepository } from '../../../repositories';
 import { ProgramErrors } from '../../programs';
 import { AttendeeErrors } from '../attendee.error';
 
@@ -26,8 +27,9 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 	constructor(
 		@Inject('AttendeeRepository') public readonly repo: AttendeeRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('UserRepository') public readonly userRepo: ProgramRepository,
+		@Inject('UserRepository') public readonly userRepo: UserRepository,
 		@Inject('InvoiceRepository') public readonly invoiceRepo: InvoiceRepository,
+		private event: EventEmitter2,
 
 	) { }
 
@@ -81,7 +83,7 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 
 		const invoiceDomain = new InvoiceDomain({
 			amount: program.price,
-			info: `Thanh toán phí đăng ký tham gia sự kiện ${program.name}`,
+			info: `Thanh toan phi dang ky tham gia su kien ${removeAccents(program.name)}`,
 			status: StatusInvoice.PENDING
 		});
 
@@ -89,9 +91,7 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 
 		const invoice = await this.invoiceRepo.save(invoiceEntity);
 
-		const user = new UserDomain({
-			username: dto.username
-		}, new UniqueEntityID(dto.userId));
+		const user = await this.userRepo.findById(dto.userId);
 		const attendee = new AttendeeDomain({ invoice, user, program });
 		const entity = AttendeeMap.toCreateEntity(attendee);
 		entity.createdBy = dto.userId;
@@ -99,12 +99,16 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 		const result = await this.repo.save(entity);
 		if (program.isFree()) {
 			result.invoice.paid();
+			const invEntity = InvoiceMap.toEntity(result.invoice);
+			await this.invoiceRepo.save(invEntity);
 			await result.generateQRCode();
 			const updateAttendee = AttendeeMap.toEntity(result);
 			await this.repo.save(updateAttendee);
 		}
 
-		return right(Result.ok(AttendeeMap.toDto(result)));
+		const attendeeDto = AttendeeMap.toDto(result);
+		this.event.emit('program.register', attendeeDto);
+		return right(Result.ok(attendeeDto));
 	}
 
 }

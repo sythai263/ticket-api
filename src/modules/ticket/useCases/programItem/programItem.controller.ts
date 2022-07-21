@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
-	ApiBearerAuth,
-	ApiForbiddenResponse,
+	ApiBearerAuth, ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
+	ApiOperation,
+	ApiParam,
 	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse
@@ -42,7 +43,6 @@ export class ProgramItemController {
 	constructor(
 		public readonly createProduct: CreateProgramItemUsecase,
 		public readonly getProducts: GetProgramItemUsecase,
-		// Public readonly getProductById: GetProductByIdUsecase,
 		public readonly updateItem: UpdateProgramItemUsecase,
 		public readonly deleteByProgramId: DeleteProgramItemByProgramIdUsecase,
 		public readonly deleteItem: DeleteProgramItemUsecase,
@@ -50,6 +50,10 @@ export class ProgramItemController {
 	) { }
 
 	@Post()
+	@ApiOperation({
+		description: 'Thêm các sản phẩm cần bán vào 1 chương trình, sự kiện',
+		summary:'Thêm các sản phẩm cần bán vào 1 chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -96,37 +100,15 @@ export class ProgramItemController {
 		return result.value.getValue();
 	}
 
-	// @Get()
-	// @HttpCode(HttpStatus.OK)
-	// @ApiResponse({
-	// 	type: PaginationProductDto,
-	// })
-	// @ApiBadRequestResponse({
-	// 	description: 'Bad Request'
-	// })
-	// @ApiInternalServerErrorResponse({
-	// 	description: 'Internal Server Error'
-	// })
-	// @UsePipes(new ValidationPipe({ transform: true }))
-	// async search(
-	// 	@Req() req: Request,
-	// 	@Query() dto: SearchProductDto): Promise<PaginationProductDto> {
-
-	// 	const result = await this.getProducts.execute(dto);
-	// 	if (result.isLeft()) {
-	// 		const err = result.value;
-	// 		switch (err.constructor) {
-	// 		case ProductErrors.Error:
-	// 			throw new BadRequestException(err.errorValue());
-	// 		default:
-	// 			throw new InternalServerErrorException(err.errorValue());
-	// 		}
-	// 	}
-
-	// 	return result.value.getValue();
-	// }
-
 	@Get('program/:id')
+	@ApiOperation({
+		description: 'Lấy danh sách sản phẩm bán trong 1 chương trình',
+		summary:'Lấy danh sách sản phẩm bán trong 1 chương trình'
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID của chương trình'
+	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: ProgramItemsDto
@@ -158,6 +140,14 @@ export class ProgramItemController {
 	}
 
 	@Patch(':id')
+	@ApiOperation({
+		description: 'Thay thế 1 sản phẩm nào đó trong chương trình, sự kiện',
+		summary:'Thay thế 1 sản phẩm nào đó trong chương trình, sự kiện'
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID của sản phẩm cũ trong chương trình cần thay thế'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -204,6 +194,14 @@ export class ProgramItemController {
 	}
 
 	@Delete('program/:id')
+	@ApiOperation({
+		description: 'Xóa toàn bộ sản phẩm trong chương trình',
+		summary:'Xóa toàn bộ sản phẩm trong chương trình'
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID của chương trình cần xóa'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)
@@ -245,6 +243,14 @@ export class ProgramItemController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({
+		description: 'Xóa 1 sản phẩm trong chương trình nào đó',
+		summary:'Xóa 1 sản phẩm trong chương trình nào đó'
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'ID của sản phẩm trong chương trình'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)

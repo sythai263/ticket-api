@@ -11,7 +11,7 @@ import {
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse, ApiResponse,
+	ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
@@ -35,6 +35,14 @@ export class PaymentController {
 	) { }
 
 	@Get('invoice/:id')
+	@ApiOperation({
+		description: 'Tạo một chương trình/ sự kiện mới',
+		summary:'Tạo một chương trình/ sự kiện mới'
+	})
+	@ApiParam({
+		name: 'id',
+		description: 'Mã hóa đơn'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiResponse({
@@ -93,11 +101,14 @@ export class PaymentController {
 
 			paymentGateway += '?' + stringify(vnpData);
 			res.redirect(paymentGateway);
-
 		}
 	}
 
 	@Get('return')
+	@ApiOperation({
+		description: 'Nhận kết quả từ hệ thống thanh toán VNPay',
+		summary:'Nhận kết quả từ hệ thống thanh toán VNPay'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@ApiResponse({
@@ -123,7 +134,7 @@ export class PaymentController {
 	async returnPayment(
 		@Req() req: Request,
 		@Res() res: Response,
-		@Query() dto: PaymentReturnDto): Promise<SuccessNotification> {
+		@Query() dto: PaymentReturnDto): Promise<InvoiceDto> {
 		const result = await this.paymentReturn.execute(dto);
 		if (result.isLeft()) {
 			const err = result.value;
@@ -134,12 +145,14 @@ export class PaymentController {
 				throw new BadRequestException(err.errorValue());
 			case PaymentErrors.Paid:
 				res.statusCode = HttpStatus.OK;
-				res.json({ info: err.errorValue() });
+				res.json(err.errorValue());
 				return;
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
 		}
+
+		res.json(result.value.getValue());
 	}
 
 }

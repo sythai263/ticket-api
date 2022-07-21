@@ -8,7 +8,7 @@ import {
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
@@ -46,6 +46,10 @@ export class ProgramController {
 
 	@Post()
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Tạo một chương trình/ sự kiện mới',
+		summary:'Tạo một chương trình/ sự kiện mới'
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -83,6 +87,10 @@ export class ProgramController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy danh sách các chương trình, sự kiện',
+		summary:'Lấy danh sách các chương trình, sự kiện'
+	})
 	@ApiResponse({
 		type: PaginationProgramDto
 	})
@@ -111,7 +119,15 @@ export class ProgramController {
 	}
 
 	@Get(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy thông tin về 1 sự kiện',
+		summary:'Lấy thông tin về 1 sự kiện'
+	})
 	@ApiResponse({
 		type: ProgramDto
 	})
@@ -143,7 +159,15 @@ export class ProgramController {
 	}
 
 	@Patch(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Cập nhật thông tin của 1 chương trình, sự kiện',
+		summary:'Cập nhật thông tin của 1 chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -188,7 +212,15 @@ export class ProgramController {
 	}
 
 	@Patch(':id/status')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Thay đổi trạng thái check-in của sự kiện',
+		summary:'Thay đổi trạng thái check-in của sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -231,7 +263,15 @@ export class ProgramController {
 	}
 
 	@Delete(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Xóa chương trình, sự kiện',
+		summary:'Xóa chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)

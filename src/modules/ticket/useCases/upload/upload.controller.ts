@@ -1,5 +1,5 @@
 import { Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 import * as fs from 'fs';
 import * as Jimp from 'jimp';
@@ -20,6 +20,10 @@ export class UploadController {
 
 	@Post('image')
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Upload hình ảnh',
+		summary:'Upload hình ảnh'
+	})
 	@UseGuards(JwtAuthGuard)
 	@UseInterceptors(FilesInterceptor({
 		fieldName: 'file',
@@ -60,6 +64,10 @@ export class UploadController {
 
 	@Post('avatar')
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Upload avatar',
+		summary:'Upload avatar'
+	})
 	@UseGuards(JwtAuthGuard)
 	@UseInterceptors(FilesInterceptor({
 		fieldName: 'avatar',

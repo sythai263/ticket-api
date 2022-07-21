@@ -49,6 +49,15 @@ export class DetailOrderDomain extends AggregateRoot<IDetailOrderProps>{
 		this.props.amount = val;
 	}
 
+	get total(): number{
+		let total = this.amount * this.product.price;
+		if (this.discount.discount) {
+			total = total * (100-this.discount.discount)/100;
+		}
+
+		return total;
+	}
+
 	public static create(
 		props: IDetailOrderProps,
 		id?: UniqueEntityID,

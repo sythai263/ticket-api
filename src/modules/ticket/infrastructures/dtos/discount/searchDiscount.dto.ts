@@ -9,7 +9,7 @@ export class SearchDiscountDto extends PageOptionsDto{
 
 	@ApiProperty({
 		required: false,
-		description:'Keyword search'
+		description:'Từ khóa tìm kiếm'
 	})
 	@IsOptional()
   @IsString()
@@ -17,9 +17,9 @@ export class SearchDiscountDto extends PageOptionsDto{
 
 	@ApiProperty({
 		required: false,
-		description:'Keyword search by program'
+		description:'Code giảm giá'
 	})
 	@IsOptional()
   @IsString()
-		nameProgram?: string;
+		code?: string;
 }

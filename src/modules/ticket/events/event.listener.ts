@@ -4,6 +4,7 @@ import { OnEvent } from '@nestjs/event-emitter';
 import { OAuth2Client } from 'google-auth-library';
 import * as moment from 'moment';
 import * as nodemailer from 'nodemailer';
+import { join } from 'path';
 
 import { ConfigService } from '../../../shared/services/config.service';
 import { AttendeeDto } from '../infrastructures/dtos/attendee';
@@ -65,6 +66,7 @@ export class EventListener {
   	const admin = this.configService.get('EMAIL_ADMIN');
   	const domain = this.configService.get('DOMAIN');
   	const auth = new OAuth2Client(clientId, secret);
+  	const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
 
   	auth.setCredentials({
   		refresh_token: refreshToken
@@ -84,11 +86,16 @@ export class EventListener {
   		}
   	);
   	let subject = `Vé tham dự ${dto.program.name}`;
+  	const attachments = [{
+  			filename: dto.program.avatar.split('/').pop(),
+  			path: join(publicFolder, dto.program.avatar),
+  			cid: 'avatar'
+  		}];
 
   	let html = `
 		<div style="margin: auto; width: 50%; padding: 10px;">
 			<div style=" margin-bottom: 3rem;">
-				<img style="width: 90%; margin: auto;" src="${domain}/${dto.program.avatar}" />
+				<img style="width: 90%; margin: auto;" src="cid:avatar" />
 			</div>
 			<p style="font-size: 20px;">Bạn đã đăng ký tham dự chương trình <b>${dto.program.name}</b> thành công!</p>
 			<h1 style="text-align: center;">Thông tin đăng ký của bạn:</h1>
@@ -96,7 +103,7 @@ export class EventListener {
 				<li style ="line-height: 2rem;">Mã đăng ký: <b>${dto.id}</b> </li>
 				<li style ="line-height: 2rem;">Họ tên: ${dto.user.lastName} <b>${dto.user.firstName}</b> </li>
 				<li style ="line-height: 2rem;">Tên chương trình: <b>${dto.program.name}</b> </li>
-				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price}</b></li>
+				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b></li>
 				<li style ="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán' }</b></li>
 				<li style ="line-height: 2rem;">Hình thức thanh toán: <b>${dto.invoice.cardType? dto.invoice.cardType:'Chương trình miễn phí'}</b></li>
 				<li style ="line-height: 2rem;">Mã ngân hàng thanh toán: <b>${dto.invoice.bankCode ? dto.invoice.bankCode:'Chương trình miễn phí'}</b></li>
@@ -105,17 +112,25 @@ export class EventListener {
 			</ul>
 			<h2> Mã QRCode tham gia của bạn: </h2>
 			<div>
-				<img style="width: 90%; margin: auto;" src="${domain}/${dto.imageQR}"
+				<img style="width: 90%; margin: auto;" src="cid:qrcode"
 						 alt="Mã QR Code của ${dto.user.lastName} ${dto.user.firstName}" />
 			</div>
 		</div>
 		`;
+  	if (dto.invoice.isPaid) {
+  		attachments.push({
+  			filename: dto.imageQR.split('/').pop(),
+  			path: join(publicFolder, dto.imageQR),
+  			cid: 'qrcode'
+  		});
+  	}
+
   	if (!dto.invoice.isPaid) {
   		subject = `Đăng ký tham gia ${dto.program.name}`;
   		html = `
 		<div style="margin: auto; width: 50%; padding: 10px;">
 			<div style=" margin-bottom: 3rem;">
-				<img style="width: 90%; margin: auto;" src="${domain}/${dto.program.avatar}" />
+				<img style="width: 90%; margin: auto;" src="cid:avatar" />
 			</div>
 			<p style="font-size: 20px;">Bạn đã đăng ký tham dự chương trình <b>${dto.program.name}</b> thành công!</p>
 			<h1 style="text-align: center;">Thông tin đăng ký của bạn:</h1>
@@ -123,7 +138,7 @@ export class EventListener {
 				<li style ="line-height: 2rem;">Mã đăng ký: <b>${dto.id}</b> </li>
 				<li style ="line-height: 2rem;">Họ tên: ${dto.user.lastName} <b>${dto.user.firstName}</b> </li>
 				<li style ="line-height: 2rem;">Tên chương trình: <b>${dto.program.name}</b> </li>
-				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price}</b></li>
+				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b></li>
 				<li style ="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</b></li>
 			</ul>
 			<h2>Bạn chưa thanh toán cho đơn đăng ký này, vui lòng thanh toán trong vòng <b>12 tiếng </b></h2>
@@ -136,7 +151,8 @@ export class EventListener {
   		from: 'Ticket App',
   		to: dto.user.email,
   		subject,
-  		html
+  		html,
+  		attachments
   	};
   	await transport.sendMail(mailOption);
 

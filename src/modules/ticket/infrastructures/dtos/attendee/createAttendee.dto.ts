@@ -4,7 +4,8 @@ import { IsNumber } from 'class-validator';
 export class CreateAttendeeDto{
 
 	@ApiProperty({
-		example: 10
+		example: 10,
+		description: 'Mã chương trình'
 	})
 	@IsNumber()
 		programId: number;

@@ -25,6 +25,7 @@ interface IProgramProps {
 	allowCheckIn?: boolean;
 	items?: ProductDomain[];
 	attendees?: UserDomain[];
+	products?: ProductDomain[];
 }
 
 export class ProgramDomain extends AggregateRoot<IProgramProps> {
@@ -122,6 +123,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 
 	set attendees(attendees: UserDomain[]) {
 		this.props.attendees = attendees;
+	}
+
+	get products(): ProductDomain[]{
+		return this.props.products;
+	}
+
+	set products(products: ProductDomain[]) {
+		this.props.products = products;
 	}
 
 	get allowCheckIn(): boolean{

@@ -9,7 +9,7 @@ export class SearchAttendeeDto extends PageOptionsDto{
 
 	@ApiProperty({
 		required: false,
-		description:'Keyword search by program'
+		description:'Từ khóa cần tìm trong tên và mô tả sự kiện'
 	})
 	@IsOptional()
   @IsString()
@@ -17,7 +17,7 @@ export class SearchAttendeeDto extends PageOptionsDto{
 
 	@ApiProperty({
 		required: false,
-		description:'find by username'
+		description:'Tìm theo username'
 	})
 	@IsOptional()
   @IsString()
@@ -25,7 +25,7 @@ export class SearchAttendeeDto extends PageOptionsDto{
 
 	@ApiProperty({
 		required: false,
-		description:'find by name'
+		description:'Tìm theo tên chương trình'
 	})
 	@IsOptional()
   @IsString()

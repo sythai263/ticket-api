@@ -13,7 +13,7 @@ import {
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse, ApiResponse,
+	ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
@@ -44,6 +44,10 @@ export class AttendeeController {
 	) { }
 
 	@Post()
+	@ApiOperation({
+		description: 'Đăng ký tham dự hoặc check-in 1 chương trình, sự kiện',
+		summary:'Đăng ký tham dự hoặc check-in 1 chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -99,6 +103,14 @@ export class AttendeeController {
 	@ApiResponse({
 		type: AttendeeDto
 	})
+	@ApiParam({
+		name: 'id',
+		description:'Mã đăng ký tham gia'
+	})
+	@ApiOperation({
+		description: 'Lấy thông tin đăng ký của người dùng',
+		summary:'Lấy thông tin đăng ký của người dùng'
+	})
 	@ApiUnauthorizedResponse({
 		description: 'Unauthorized'
 	})
@@ -139,6 +151,14 @@ export class AttendeeController {
 	}
 
 	@Delete(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã đăng ký tham gia'
+	})
+	@ApiOperation({
+		description: 'Xóa đăng ký tham gia chương trình, sự kiện',
+		summary:'Xóa đăng ký tham gia chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -186,6 +206,14 @@ export class AttendeeController {
 	}
 
 	@Patch(':id/check-in')
+	@ApiParam({
+		name: 'id',
+		description:'Mã đăng ký tham gia'
+	})
+	@ApiOperation({
+		description: 'Admin check-in cho người tham gia',
+		summary:'Admin check-in cho người tham gia'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)

@@ -8,35 +8,39 @@ import { UserDto } from '../user';
 export class AttendeeDto{
 
 	@ApiProperty({
-		example: 123
+		example: 123,
+		description: 'Mã đăng ký tham gia'
 	})
 		id: number;
 
 	@ApiProperty({
-		type: ProgramDto
+		type: ProgramDto,
+		description:'Chương trình người dùng đăng ký tham gia'
 	})
 		program: ProgramDto;
 
 	@ApiProperty({
-		type: UserDto
+		type: UserDto,
+		description: 'Người dùng nào tham gia'
 	})
 		user: UserDto;
 
 	@ApiProperty({
-		type: InvoiceDto
+		type: InvoiceDto,
+		description: 'Hóa đơn cho đơn đăng ký'
 	})
 	@IsOptional()
 		invoice?: InvoiceDto;
 
 	@ApiProperty({
-		example: 'https://localhost/qrcode1'
-
+		example: 'https://localhost/qrcode1',
+		description: 'Mã QR chứa thông tin đăng ký'
 	})
 		imageQR: string;
 
 	@ApiProperty({
-		example: true
-
+		example: true,
+		description: 'Đã check-in chưa'
 	})
 		isCheckIn: boolean;
 

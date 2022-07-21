@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import * as moment from 'moment';
 import { LessThan } from 'typeorm';
 
+import { StatusInvoice } from '../../../common/constants/statusReceipt';
 import { AttendeeRepository, InvoiceRepository } from '../repositories';
 
 @Injectable()
@@ -19,7 +20,11 @@ export class TasksService {
 		const date = moment().add(-5, 'h').toDate();
 		const attendees = await this.repo.find({
 			where: {
-				createdAt : LessThan(date)
+				createdAt: LessThan(date),
+				invoice: {
+					status: StatusInvoice.PENDING
+				}
+
 			},
 			relations:['invoice']
 		});

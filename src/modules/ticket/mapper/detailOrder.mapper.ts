@@ -1,6 +1,6 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { DetailOrderDomain } from '../../../domain';
-import { DetailOrderEntity, DiscountEntity, ProductEntity } from '../../../entities';
+import { DetailOrderEntity, ProductEntity } from '../../../entities';
 import { CreateDetailOrderDto, DetailOrderDto } from '../infrastructures/dtos/detailOrder';
 import { DiscountMap } from './discount.mapper';
 import { ProductMap } from './product.mapper';
@@ -33,7 +33,6 @@ export class DetailOrderMap{
 		const entity = new DetailOrderEntity();
 		entity.product = new ProductEntity(dto.productId);
 		entity.amount = dto.amount;
-		entity.discount = new DiscountEntity(dto.discountId);
 		return entity;
 	}
 

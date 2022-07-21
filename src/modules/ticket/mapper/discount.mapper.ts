@@ -10,6 +10,7 @@ export class DiscountMap{
 
 		const dto = new DiscountDto();
 		dto.id = entity.id;
+		dto.code = entity.code;
 		dto.program = ProgramMap.entityToDto(entity.program);
 		dto.description = entity.description;
 		dto.discount = entity.discount;
@@ -21,6 +22,7 @@ export class DiscountMap{
 	static dtoToEntity(dto: DiscountDto): DiscountEntity {
 		const entity = new DiscountEntity();
 		entity.id = dto.id;
+		entity.code = dto.code;
 		entity.program = ProgramMap.dtoToEntity(dto.program);
 		entity.description = dto.description;
 		entity.discount = dto.discount;
@@ -31,6 +33,7 @@ export class DiscountMap{
 
 	static createDtoToEntity(dto: CreateDiscountDto): DiscountEntity {
 		const entity = new DiscountEntity();
+		entity.code = dto.code;
 		entity.program = new ProgramEntity(dto.programId);
 		entity.description = dto.description;
 		entity.discount = dto.discount;
@@ -49,6 +52,7 @@ export class DiscountMap{
 		const discountOrError = DiscountDomain.create(
 			{
 				discount: entity.discount,
+				code: entity.code,
 				description: entity.description,
 				expiredDate: entity.expiredDate,
 				startDate: entity.startDate,
@@ -63,6 +67,7 @@ export class DiscountMap{
 		const entity = new DiscountEntity();
 		entity.id = domain.id.toValue();
 		entity.program = ProgramMap.toEntity(domain.program);
+		entity.code = domain.code;
 		entity.description = domain.description;
 		entity.discount = domain.discount;
 		entity.startDate = domain.startDate;
@@ -74,6 +79,7 @@ export class DiscountMap{
 		const dto = new DiscountDto();
 		dto.id = domain.id.toValue();
 		dto.program = ProgramMap.toDto(domain.program);
+		dto.code = domain.code;
 		dto.description = domain.description;
 		dto.discount = domain.discount;
 		dto.startDate = domain.startDate;
@@ -107,6 +113,7 @@ export class DiscountMap{
 				description: dto.description,
 				expiredDate: dto.expiredDate,
 				startDate: dto.startDate,
+				code: dto.code,
 				program : new ProgramDomain({}, new UniqueEntityID(dto.programId))
 			}
 		);

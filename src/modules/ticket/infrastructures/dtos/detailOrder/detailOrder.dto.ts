@@ -12,21 +12,26 @@ export class DetailOrderDto{
 		id: number;
 
 	@ApiProperty({
-		type: PurchaseDto
+		type: PurchaseDto,
+		description: 'Thông tin đơn hàng'
 	})
 		purchase: PurchaseDto;
 
 	@ApiProperty({
-		type: ProductDto
+		type: ProductDto,
+		description: 'Thông tin sản phẩm'
 	})
 		product: ProductDto;
 
 	@ApiProperty({
-		type: DiscountDto
+		type: DiscountDto,
+		description: 'Thông tin mã giảm giá'
 	})
 		discount: DiscountDto;
 
-	@ApiProperty()
+	@ApiProperty({
+		description: 'Số lượng mua'
+	})
 		amount: number;
 
 }

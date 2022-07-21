@@ -141,6 +141,7 @@ CREATE TABLE attendee (
 		await queryRunner.query(`
 CREATE TABLE discount (
 	id int NOT NULL AUTO_INCREMENT,
+	code varchar(15) NOT NULL,
 	program_id int NULL,
 	start_date datetime NOT NULL,
 	expired_date datetime NOT NULL,
@@ -152,6 +153,7 @@ CREATE TABLE discount (
 	created_by int NOT NULL,
 	updated_by int NOT NULL,
 	deleted_by int NULL,
+	UNIQUE INDEX UQ_DISCOUNT (code),
 	CONSTRAINT FK_DISCOUNT_PROGRAM FOREIGN KEY (program_id) REFERENCES program(id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB

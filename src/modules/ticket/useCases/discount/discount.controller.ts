@@ -1,18 +1,9 @@
 import {
 	BadRequestException,
 	Body,
-	Controller,
-	Delete,
-	Get,
-	HttpCode,
+	Controller, Delete, Get, HttpCode,
 	HttpStatus,
-	InternalServerErrorException,
-	NotFoundException,
-	Param,
-	Patch,
-	Post,
-	Query,
-	Req,
+	InternalServerErrorException, NotFoundException, Param, Patch, Post, Query, Req,
 	UseGuards,
 	UsePipes,
 	ValidationPipe
@@ -36,43 +27,40 @@ import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
+import { CreateDiscountDto, DiscountDto, PaginationDiscountDto, SearchDiscountDto, UpdateDiscountDto } from '../../infrastructures/dtos/discount';
 import {
-	CreateProductDto,
-	PaginationProductDto,
-	ProductDto,
-	SearchProductDto,
-	UpdateProductDto
-} from '../../infrastructures/dtos/product';
-import { CreateProductUsecase } from './create/createProduct.usecase';
-import { DeleteProductUsecase } from './delete/deleteProduct.usecase';
-import { GetProductByIdUsecase } from './get/getProductById.usecase';
-import { GetProductsUsecase } from './get/getProducts.usecase';
-import { ProductErrors } from './product.error';
-import { UpdateProductUsecase } from './update/updateProduct.usecase';
+	ProgramDto
+} from '../../infrastructures/dtos/program/';
+import { ProgramErrors } from '../programs';
+import { CreateDiscountUsecase } from './create/createDiscount.usecase';
+import { DeleteDiscountUsecase } from './delete/deleteDiscount.usecase';
+import { DiscountErrors } from './discount.error';
+import { GetDiscountUsecase } from './get/getDiscount.usecase';
+import { GetDiscountByIdUsecase } from './get/getDiscountById.usecase';
+import { UpdateDiscountUsecase } from './update/updateDiscount.usecase';
 
-@Controller('api/products')
-@ApiTags('Product')
-export class ProductController {
+@Controller('api/discount')
+@ApiTags('Discount')
+export class DiscountController {
 	constructor(
-		public readonly createProduct: CreateProductUsecase,
-		public readonly getProducts: GetProductsUsecase,
-		public readonly getProductById: GetProductByIdUsecase,
-		public readonly updateProduct: UpdateProductUsecase,
-		public readonly deleteProduct: DeleteProductUsecase,
-
+		public readonly createDiscount: CreateDiscountUsecase,
+		public readonly getDiscount: GetDiscountUsecase,
+		public readonly getDiscountById: GetDiscountByIdUsecase,
+		public readonly updateDiscount: UpdateDiscountUsecase,
+		public readonly deleteDiscount: DeleteDiscountUsecase,
 	) { }
 
 	@Post()
-	@ApiOperation({
-		description: 'Thêm một sản phẩm mới',
-		summary:'Thêm một sản phẩm mới'
-	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Thêm mã giảm giá',
+		summary:'Thêm mã giảm giá'
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(RoleType.ADMIN)
+	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: ProductDto
+		type: ProgramDto
 	})
 	@ApiUnauthorizedResponse({
 		description: 'Unauthorized'
@@ -87,14 +75,17 @@ export class ProductController {
 		description: 'Internal Server Error'
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async execute(@Req() req: Request, @Body() dto: CreateProductDto): Promise<ProductDto> {
+	async execute(@Req() req: Request, @Body() dto: CreateDiscountDto): Promise<DiscountDto> {
 		const user = req.user as JwtPayload;
-		const result = await this.createProduct.execute(dto, user.id);
+		const result = await this.createDiscount.execute(dto, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
+			case DiscountErrors.Error:
 				throw new BadRequestException(err.errorValue());
+			case DiscountErrors.NotFound:
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -105,12 +96,12 @@ export class ProductController {
 
 	@Get()
 	@ApiOperation({
-		description: 'Lấy danh sách các sản phẩm ',
-		summary:'Lấy danh sách các sản phẩm '
+		description: 'Lấy danh sách các mã giảm giá',
+		summary:'Lấy danh sách các mã giảm giá'
 	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
-		type: PaginationProductDto,
+		type: PaginationDiscountDto,
 	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
@@ -121,13 +112,13 @@ export class ProductController {
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async search(
 		@Req() req: Request,
-		@Query() dto: SearchProductDto): Promise<PaginationProductDto> {
+		@Query() dto: SearchDiscountDto): Promise<PaginationDiscountDto> {
 
-		const result = await this.getProducts.execute(dto);
+		const result = await this.getDiscount.execute(dto);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
+			case DiscountErrors.Error:
 				throw new BadRequestException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
@@ -143,12 +134,12 @@ export class ProductController {
 		description:'Mã của sản phẩm'
 	})
 	@ApiOperation({
-		description: 'Lấy thồng tin về 1 sản phẩm',
-		summary:'Lấy thồng tin về 1 sản phẩm'
+		description: 'Lấy thồng tin về mã giảm giá qua id',
+		summary:'Lấy thồng tin về mã giảm giá qua id'
 	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
-		type: ProductDto
+		type: DiscountDto
 	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
@@ -159,40 +150,37 @@ export class ProductController {
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async getById(
 		@Req() req: Request,
-		@Param('id') id: number): Promise<ProductDto> {
+		@Param('id') id: number): Promise<DiscountDto> {
 
-		const result = await this.getProductById.execute(id);
+		const result = await this.getDiscountById.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
+			case DiscountErrors.Error:
 				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
 		return result.value.getValue();
-
 	}
 
 	@Patch(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã của sản phẩm'
+		description:'ID của mã giảm giá'
 	})
 	@ApiOperation({
-		description: 'Cập nhật thông tin 1 sản phẩm',
-		summary:'Cập nhật thông tin 1 sản phẩm'
+		description: 'Cập nhật thông tin 1 mã giảm giá',
+		summary:'Cập nhật thông tin 1 mã giảm giá'
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
 	@ApiResponse({
-		type: ProductDto
+		type: DiscountDto
 	})
 	@ApiUnauthorizedResponse({
 		description: 'Unauthorized'
@@ -210,17 +198,18 @@ export class ProductController {
 	async updateById(
 		@Req() req: Request,
 		@Param('id') id: number,
-		@Body() dto: UpdateProductDto
-	): Promise<ProductDto> {
+		@Body() dto: UpdateDiscountDto
+	): Promise<DiscountDto> {
 		dto.id = id;
 		const user = req.user as JwtPayload;
-		const result = await this.updateProduct.execute(dto, user.id);
+		const result = await this.updateDiscount.execute(dto, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
+			case DiscountErrors.Error:
 				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
+			case DiscountErrors.NotFound:
+			case ProgramErrors.NotFound:
 				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
@@ -234,11 +223,11 @@ export class ProductController {
 	@Delete(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã của sản phẩm'
+		description:'ID của mã giảm giá'
 	})
 	@ApiOperation({
-		description: 'Xóa thông tin của 1 sản phẩm',
-		summary:'Xóa thông tin của 1 sản phẩm'
+		description: 'Xóa thông tin của 1 mã giảm giá',
+		summary:'Xóa thông tin của 1 mã giảm giá'
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
@@ -265,13 +254,13 @@ export class ProductController {
 		@Param('id') id: number,
 	): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
-		const result = await this.deleteProduct.execute(id, user.id);
+		const result = await this.deleteDiscount.execute(id, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
+			case DiscountErrors.Error:
 				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
+			case DiscountErrors.NotFound:
 				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());

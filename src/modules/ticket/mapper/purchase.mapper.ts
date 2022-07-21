@@ -1,6 +1,6 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-import { PurchaseDomain, UserDomain } from '../../../domain';
-import { PurchaseEntity, UserEntity } from '../../../entities';
+import { PurchaseDomain } from '../../../domain';
+import { PurchaseEntity } from '../../../entities';
 import { CreatePurchaseDto, PurchaseDto } from '../infrastructures/dtos/purchase';
 import { InvoiceMap } from './invoice.mapper';
 import { UserMap } from './user.mapper';
@@ -28,7 +28,6 @@ export class PurchaseMap{
 
 	static createDtoToEntity(dto: CreatePurchaseDto): PurchaseEntity {
 		const entity = new PurchaseEntity();
-		entity.user = new UserEntity(dto.userId);
 		return entity;
 	}
 
@@ -80,19 +79,6 @@ export class PurchaseMap{
 	static entitiesToDomains(entities: PurchaseEntity[]): PurchaseDomain[] {
 		const domains = entities.map((entity) => this.entityToDomain(entity));
 		return domains;
-	}
-
-	static dtoToDomain(dto: CreatePurchaseDto): PurchaseDomain{
-		if (!dto) {
-			return null;
-		}
-
-		const discountOrError = PurchaseDomain.create(
-			{
-				user: new UserDomain({}, new UniqueEntityID(dto.userId))
-			}
-		);
-		return discountOrError.isSuccess ? discountOrError.getValue() : null;
 	}
 
 }

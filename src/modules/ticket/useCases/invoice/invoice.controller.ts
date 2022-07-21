@@ -7,6 +7,8 @@ import {
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth, ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiParam,
 	ApiResponse,
 	ApiTags
 } from '@nestjs/swagger';
@@ -25,6 +27,14 @@ export class InvoiceController {
 	) { }
 
 	@Get(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã hóa đơn'
+	})
+	@ApiOperation({
+		description: 'Lấy thông tin về 1 hóa đơn',
+		summary:'Lấy thông tin về 1 hóa đơn'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({

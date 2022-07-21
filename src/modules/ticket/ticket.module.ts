@@ -6,24 +6,48 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import {
 	AttendeeEntity,
+	DetailOrderEntity,
+	DiscountEntity,
 	InvoiceEntity,
 	ProductEntity,
 	ProgramEntity,
 	ProgramItemEntity,
+	PurchaseEntity,
+	ReviewProductEntity,
+	ReviewProgramEntity,
 	UserEntity
 } from '../../entities';
 import { EventListener } from './events/event.listener';
 import {
 	AttendeeRepository,
+	DetailOrderRepository,
+	DiscountRepository,
 	InvoiceRepository,
 	ProductRepository,
 	ProgramItemRepository,
 	ProgramRepository,
+	PurchaseRepository,
+	ReviewProductRepository,
+	ReviewProgramRepository,
 	UserRepository
 } from './repositories';
-import { AdminCheckInAttendeeUsecase, AttendeeController, CreateAttendeeUsecase, DeleteAttendeeUsecase, GetAttendeeUsecase } from './useCases/attendee';
-import { GetInvoiceUsecase, InvoiceController } from './useCases/invoice';
-import { PaymentController, PaymentReturnUsecase, PaymentUsecase } from './useCases/payment';
+import {
+	AdminCheckInAttendeeUsecase,
+	AttendeeController,
+	CreateAttendeeUsecase,
+	DeleteAttendeeUsecase,
+	GetAttendeeUsecase
+} from './useCases/attendee';
+import { CreateDiscountUsecase, DeleteDiscountUsecase, DiscountController, GetDiscountByIdUsecase, GetDiscountUsecase, UpdateDiscountUsecase } from './useCases/discount';
+import {
+	GetInvoiceUsecase,
+	InvoiceController
+} from './useCases/invoice';
+import {
+	PaymentController,
+	PaymentReturnUsecase,
+	PaymentUsecase
+} from './useCases/payment';
 import {
 	CreateProductUsecase,
 	DeleteProductUsecase,
@@ -32,7 +56,14 @@ import {
 	ProductController,
 	UpdateProductUsecase
 } from './useCases/products';
-import { CreateProgramItemUsecase, DeleteProgramItemByProgramIdUsecase, DeleteProgramItemUsecase, GetProgramItemUsecase, ProgramItemController, UpdateProgramItemUsecase } from './useCases/programItem';
+import {
+	CreateProgramItemUsecase,
+	DeleteProgramItemByProgramIdUsecase,
+	DeleteProgramItemUsecase,
+	GetProgramItemUsecase,
+	ProgramItemController,
+	UpdateProgramItemUsecase
+} from './useCases/programItem';
 import {
 	ChangeCheckInProgramUsecase,
 	CreateProgramUsecase,
@@ -42,6 +73,8 @@ import {
 	ProgramController,
 	UpdateProgramUsecase
 } from './useCases/programs';
+import { PurchaseController } from './useCases/purchase';
+import { CreateOrderUsecase } from './useCases/purchase/create/createOrder.usecase';
 import { UploadController } from './useCases/upload/upload.controller';
 import {
 	ChangePasswordUseCase,
@@ -60,9 +93,15 @@ import {
 			UserEntity,
 			ProgramEntity,
 			ProductEntity,
-			ProgramItemEntity,
 			InvoiceEntity,
 			AttendeeEntity,
+			PurchaseEntity,
+			ProgramItemEntity,
+			DiscountEntity,
+			PurchaseEntity,
+			DetailOrderEntity,
+			ReviewProductEntity,
+			ReviewProgramEntity
 		]),
 		EventEmitterModule.forRoot(),
 		ScheduleModule.forRoot()
@@ -76,7 +115,9 @@ import {
 		ProgramItemController,
 		AttendeeController,
 		InvoiceController,
-		PaymentController
+		PaymentController,
+		PurchaseController,
+		DiscountController,
 	],
 	providers: [
 		EventListener,
@@ -109,6 +150,12 @@ import {
 		GetInvoiceUsecase,
 		PaymentUsecase,
 		PaymentReturnUsecase,
+		CreateOrderUsecase,
+		CreateDiscountUsecase,
+		GetDiscountUsecase,
+		GetDiscountByIdUsecase,
+		UpdateDiscountUsecase,
+		DeleteDiscountUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,
@@ -132,7 +179,28 @@ import {
 		{
 			provide: 'AttendeeRepository',
 			useClass: AttendeeRepository,
+		},
+		{
+			provide: 'PurchaseRepository',
+			useClass: PurchaseRepository,
+		},
+		{
+			provide: 'DetailOrderRepository',
+			useClass: DetailOrderRepository,
+		},
+		{
+			provide: 'ReviewProductRepository',
+			useClass: ReviewProductRepository,
+		},
+		{
+			provide: 'ReviewProgramRepository',
+			useClass: ReviewProgramRepository,
+		},
+		{
+			provide: 'DiscountRepository',
+			useClass: DiscountRepository,
 		}
+
 	],
 })
 export class TicketModule {}

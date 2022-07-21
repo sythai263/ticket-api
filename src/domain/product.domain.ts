@@ -13,6 +13,7 @@ interface IProductProps {
 	description?: string;
 	remain?: number;
 	reviews?: ReviewProductDomain[];
+	buyAmount?: number;
 
 }
 
@@ -67,6 +68,14 @@ export class ProductDomain extends AggregateRoot<IProductProps> {
 			this.props.remain = this.props.total - purchased;
 		}else {this.props.remain = 0;}
 
+	}
+
+	get buyAmount(): number{
+		return this.props.buyAmount;
+	}
+
+	set buyAmount(buyAmount: number) {
+		this.props.buyAmount = buyAmount;
 	}
 
 	get starAvg(): number {

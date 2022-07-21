@@ -6,6 +6,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { IRepo } from '../../../core/infra/Repo';
 import { DiscountDomain } from '../../../domain';
 import { DiscountEntity } from '../../../entities';
+import { SearchDiscountDto } from '../infrastructures/dtos/discount';
 import { DiscountMap } from '../mapper/discount.mapper';
 
 @Injectable()
@@ -116,6 +117,32 @@ export class DiscountRepository implements IRepo<DiscountEntity, DiscountDomain>
 			await queryRunner.rollbackTransaction();
 			return false;
 		}
+	}
+
+	async search(search?: SearchDiscountDto): Promise<[DiscountDomain[], number]> {
+
+		const queryBuilder = this.repo.createQueryBuilder('discount')
+			.leftJoinAndSelect('discount.program', 'program')
+			.orderBy('discount.code', search.order)
+			.skip(search.skip)
+			.take(search.take);
+		if (search.keyword) {
+			queryBuilder.andWhere('discount.description like :name', { name: `%${search.keyword}%` });
+		}
+
+		if (search.code) {
+			queryBuilder.andWhere('discount.code like :code', { code: `%${search.code}%` });
+		}
+
+		queryBuilder.relation('product.reviewedProducts');
+		const [entities, count] = await queryBuilder.getManyAndCount();
+
+		if (entities) {
+			return [DiscountMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+
 	}
 
 }

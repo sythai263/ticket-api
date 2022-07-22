@@ -64,12 +64,17 @@ export class PaymentReturnOrderUsecase implements IUseCase<PaymentReturnDto, Pro
 				domain.invoice.cardType = dto.vnp_CardType;
 				domain.invoice.payDate = moment(dto.vnp_PayDate, 'YYYYMMDDHHmmss').toDate();
 				domain.invoice.paid();
+				domain.changeStatus();
 				const entity = InvoiceMap.toEntity(domain.invoice);
 				entity.updatedBy = VNPAY_SYSTEM;
+				const purchaseEnt = PurchaseMap.toEntity(domain);
+				purchaseEnt.updatedBy = VNPAY_SYSTEM;
 
 				await this.repo.save(entity);
+				await this.purchaseRepo.save(purchaseEnt);
 
 				const purchaseDto = PurchaseMap.toDto(domain);
+
 				this.event.emit('purchase.order', purchaseDto);
 
 				return right(Result.ok(InvoiceMap.toDto(domain.invoice)));

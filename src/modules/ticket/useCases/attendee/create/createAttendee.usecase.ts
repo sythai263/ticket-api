@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import * as moment from 'moment';
 import { join } from 'path';
 
 import { StatusInvoice } from '../../../../../common/constants/statusReceipt';
@@ -84,7 +85,7 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 		const invoiceDomain = new InvoiceDomain({
 			amount: program.price,
 			info: `Thanh toan phi dang ky tham gia su kien ${removeAccents(program.name)}`,
-			status: StatusInvoice.PENDING
+			status: StatusInvoice.PENDING,
 		});
 
 		const invoiceEntity = InvoiceMap.toCreateEntity(invoiceDomain);
@@ -99,6 +100,7 @@ export class CreateAttendeeUsecase implements IUseCase<CreateAttendeeDto, Promis
 		const result = await this.repo.save(entity);
 		if (program.isFree()) {
 			result.invoice.paid();
+			result.invoice.payDate = moment().add(7, 'h').toDate();
 			const invEntity = InvoiceMap.toEntity(result.invoice);
 			await this.invoiceRepo.save(invEntity);
 			await result.generateQRCode();

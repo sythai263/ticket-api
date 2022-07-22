@@ -1,3 +1,5 @@
+import { StatusBuy } from '../common/constants/statusBuy';
+import { StatusInvoice } from '../common/constants/statusReceipt';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
@@ -15,6 +17,7 @@ interface IPurchaseProps {
 	details?: DetailOrderDomain[];
 	invoice?: InvoiceDomain;
 	orderDate?: Date;
+	status?: StatusBuy;
 }
 
 export class PurchaseDomain extends AggregateRoot<IPurchaseProps>{
@@ -54,22 +57,90 @@ export class PurchaseDomain extends AggregateRoot<IPurchaseProps>{
 		this.props.details = details;
 	}
 
-	createDetails(buyProduct: ProductDomain[], discount: DiscountDomain,): DetailOrderDomain[]{
-		const details = buyProduct.map(product => {
-			const checkDiscount = discount.program.products.find(dis=> dis.id === product.id);
-			const detail = new DetailOrderDomain({
-				product,
-				amount: product.buyAmount,
+	get summary(): number {
+		const sum = this.details.reduce((prev, curr) => prev + curr.summary, 0);
+		return sum;
+	}
+
+	get status(): StatusBuy{
+		return this.props.status;
+	}
+
+	set status(status: StatusBuy) {
+		this.props.status = status;
+	}
+
+	changeStatus() {
+		switch (this.status) {
+		case StatusBuy.ORDERED:
+			this.status = StatusBuy.CONFIRM;
+			break;
+		case StatusBuy.CONFIRM:
+			this.status = StatusBuy.PREPARING;
+			break;
+		case StatusBuy.PREPARING:
+			this.status = StatusBuy.SHIPPING;
+			break;
+		case StatusBuy.SHIPPING:
+			this.status = StatusBuy.DELIVERED;
+			break;
+		default:
+			this.status = StatusBuy.DELIVERED;
+
+		}
+	}
+
+	changeStatusToReCeived() {
+		if (this.status === StatusBuy.DELIVERED) {
+			this.status = StatusBuy.RECEIVED;
+		}
+	}
+
+	get discountAmount(): number {
+		const sum = this.details.reduce((prev, curr) => prev + curr.discountAmount, 0);
+		return sum;
+	}
+
+	createDetails(buyProduct: ProductDomain[], discount: DiscountDomain,) {
+		if (discount) {
+			const details = buyProduct.map(product => {
+				const checkDiscount = discount.products.find(dis=> dis.id.toValue() === product.id.toValue());
+				const detail = new DetailOrderDomain({
+					product,
+					amount: product.buyAmount,
+					discount: null,
+					purchase: null,
+				});
+				if (checkDiscount) {
+					detail.discount = discount;
+				}
+
+				return detail;
 			});
-			if (checkDiscount) {
-				detail.discount = discount;
-			}
+			this.props.details = details;
+		} else {
+			const details = buyProduct.map(product => {
+				const detail = new DetailOrderDomain({
+					product,
+					amount: product.buyAmount,
+					discount: null,
+					purchase: null,
+				});
+				return detail;
+			});
+			this.props.details = details;
+		}
 
-			return detail;
+	}
+
+	createInvoice(){
+		const sum = this.details.reduce((prev, curr) => prev + curr.total, 0);
+		const invoice = new InvoiceDomain({
+			amount: sum,
+			info: 'Thanh toan don hang ',
+			status: StatusInvoice.PENDING
 		});
-
-		return details;
-
+		this.props.invoice = invoice;
 	}
 
 	public static create(

@@ -23,7 +23,7 @@ export class GetProductByIdUsecase implements IUseCase<number, Promise<Response>
 
 		const domain = await this.repo.findOne({
 			where: { id },
-			relations:['reviewedProducts', 'reviewedProducts.user']
+			relations:['reviewedProducts', 'reviewedProducts.user', 'detail']
 		});
 		if (!domain) {
 			return left(new ProductErrors.NotFound());

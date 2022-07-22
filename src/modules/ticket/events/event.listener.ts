@@ -8,6 +8,7 @@ import { join } from 'path';
 
 import { ConfigService } from '../../../shared/services/config.service';
 import { AttendeeDto } from '../infrastructures/dtos/attendee';
+import { PurchaseDto } from '../infrastructures/dtos/purchase';
 import { MailEvent } from './mail.event';
 
 @Injectable()
@@ -157,4 +158,131 @@ export class EventListener {
   	await transport.sendMail(mailOption);
 
   }
+
+	@OnEvent('purchase.order')
+	async handlePurchaseEvent(dto: PurchaseDto): Promise<void> {
+  	const clientId = this.configService.get('GOOGLE_CLIENT_ID');
+  	const secret = this.configService.get('GOOGLE_SECRET');
+  	const refreshToken = this.configService.get('GOOGLE_REFRESH_TOKEN');
+  	const admin = this.configService.get('EMAIL_ADMIN');
+  	const domain = this.configService.get('DOMAIN');
+  	const auth = new OAuth2Client(clientId, secret);
+  	const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
+
+  	auth.setCredentials({
+  		refresh_token: refreshToken
+  	});
+  	const accessTokenObject = await auth.getAccessToken();
+  	const accessToken = accessTokenObject?.token;
+  	const transport = nodemailer.createTransport(
+  		{
+  			service: 'gmail',
+  			auth: {
+  				accessToken,
+  				clientId,
+  				refreshToken,
+  				type: 'OAuth2',
+  				user: admin,
+  			}
+  		}
+  	);
+
+		const info = `
+			<div>
+				<h1 style="text-align: center;">Thông tin đơn hàng:</h1>
+				<ul style="list-style: circle;">
+					<li style="line-height: 2rem;">Mã đơn hàng: <b>${dto.id}</b> </li>
+					<li style="line-height: 2rem;">Họ tên: ${dto.user.lastName} <b>${dto.user.firstName}</b> </li>
+					<li style="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</b>
+					</li>
+				</ul>
+			</div>
+		`;
+
+		const tableHeader = `
+				<tr style="border: 1px solid; height: 3rem;">
+					<th style="text-align: center;">STT</th>
+					<th style="text-align: left;">Tên sản phẩm</th>
+					<th style="text-align: right;">Đơn giá (đ)</th>
+					<th style="text-align: right;">Số lượng</th>
+					<th style="text-align: right;">Giảm giá</th>
+					<th style="text-align: right;  padding-right: 10px;">Thành tiền (đ)</th>
+				</tr>
+		`;
+		const tableBody = dto.details.reduce((prev, curr, index) => {
+			const row = `
+			<tr style="border: 1px solid; height: 2rem;">
+					<td style="text-align: center;">${index + 1}</td>
+					<td>${curr.product.name}</td>
+					<td style="text-align: right;">${curr.product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+					<td style="text-align: right;">${curr.amount}</td>
+					<td style="text-align: right;">${curr.discountAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+					<td style="text-align: right;  padding-right: 10px;">${curr.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+				</tr>
+			`;
+			return prev + row;
+		}, '');
+
+		const tableFooter = `
+		<tr style="height: 3rem;">
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td style="text-align: right;"><b>Tổng: </b></td>
+					<td style="text-align: right; padding-right: 10px;">${dto.invoice.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+				</tr>
+		`;
+		const detailSum = `
+			<div>
+				<ul style="list-style: circle;">
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Tổng tiền (đ): <b>${dto.summary.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					</li>
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Giảm giá (đ): <b>${dto.discountAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					</li>
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Thành tiền (đ): <b>${dto.invoice.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					</li>
+				</ul>
+			</div>
+		`;
+
+		const table = `
+		<h2 style="text-align: center; margin-top: 2rem;">Chi tiết đơn hàng</h2>
+		<table style="border-collapse: collapse; width: 100%; border: 1px solid;">
+		${tableHeader}
+		${tableBody}
+		${tableFooter}
+		</table>
+		`;
+		let payment = `
+		<h2>Bạn chưa thanh toán cho đơn đăng ký này, vui lòng thanh toán trong vòng <b>12 tiếng </b></h2>
+			<div style="display: block; margin-left: auto; margin-right: auto; width: 200px;">
+				<a target="_blank"
+					 style="display: block; width: 100%; border: none; background-color: #325ca8; padding: 14px; font-size: 16px; text-align: center; text-decoration: none; color: #fff; border-radius: 10px; font-size: large; text-transform: uppercase;"
+					 href="${domain}/api/payment/order/${dto.id}">Thanh toán ngay</a>
+			</div>
+		`;
+		if (dto.invoice.isPaid) {
+			payment = '<h2>Đơn hàng đã được xác nhận và sẽ giao tới bạn sớm nhất !</h2>';
+		}
+
+  	const subject = `Xác nhận đơn hàng #${dto.id}`;
+		const html = `
+		<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: auto; width: 800px;">
+		${info}
+		${table}
+		${detailSum}
+		${payment}
+		</div>
+		`;
+
+  	const mailOption = {
+  		from: 'Ticket App',
+  		to: dto.user.email,
+  		subject,
+  		html,
+  	};
+  	await transport.sendMail(mailOption);
+
+	}
 }

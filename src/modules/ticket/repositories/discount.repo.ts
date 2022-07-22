@@ -7,6 +7,7 @@ import { IRepo } from '../../../core/infra/Repo';
 import { DiscountDomain } from '../../../domain';
 import { DiscountEntity } from '../../../entities';
 import { SearchDiscountDto } from '../infrastructures/dtos/discount';
+import { ProductMap } from '../mapper';
 import { DiscountMap } from '../mapper/discount.mapper';
 
 @Injectable()
@@ -139,6 +140,29 @@ export class DiscountRepository implements IRepo<DiscountEntity, DiscountDomain>
 
 		if (entities) {
 			return [DiscountMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+
+	}
+
+	async getProducts(code: string) {
+
+		const entity = await this.repo.findOne({
+			where: {
+				code
+			},
+			relations: [
+				'program',
+				'program.items',
+				'program.items.product',
+				'program.items.product.detail']
+		});
+		if (entity) {
+			const domain = DiscountMap.entityToDomain(entity);
+			const products = entity.program.items.map(item => ProductMap.entityToDomain(item.product));
+			domain.products = products;
+			return domain;
 		}
 
 		return null;

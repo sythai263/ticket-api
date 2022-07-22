@@ -136,6 +136,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		const queryBuilder = this.repo.createQueryBuilder('product')
 			.leftJoinAndSelect('product.reviewedProducts', 'reviews')
 			.leftJoinAndSelect('reviews.user', 'user')
+			.leftJoinAndSelect('product.detail', 'detail')
 			.orderBy('product.id', search.order)
 			.skip(search.skip)
 			.take(search.take);
@@ -153,6 +154,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		}
 
 		queryBuilder.relation('product.reviewedProducts');
+		queryBuilder.relation('product.detail');
 		const [entities, count] = await queryBuilder.getManyAndCount();
 
 		if (entities) {

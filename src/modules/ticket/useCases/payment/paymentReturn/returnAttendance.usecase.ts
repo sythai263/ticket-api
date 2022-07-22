@@ -25,7 +25,7 @@ type Response = Either<
   Result<InvoiceDto>
 >;
 @Injectable()
-export class PaymentReturnUsecase implements IUseCase<PaymentReturnDto, Promise<Response>> {
+export class PaymentReturnAttendanceUsecase implements IUseCase<PaymentReturnDto, Promise<Response>> {
 	constructor(
 		@Inject('InvoiceRepository') public readonly repo: InvoiceRepository,
 		@Inject('AttendeeRepository') public readonly attendeeRepo: AttendeeRepository,

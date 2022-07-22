@@ -8,6 +8,7 @@ import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { ProductDomain } from './product.domain';
+import { ProgramItemDomain } from './programItem.domain';
 import { UserDomain } from './user.domain';
 
 const urlQR = join(__dirname,'..', '..',STATIC_FOLDER, QR_FOLDER);
@@ -23,7 +24,7 @@ interface IProgramProps {
 	imageQR?: string;
 	description?: string;
 	allowCheckIn?: boolean;
-	items?: ProductDomain[];
+	items?: ProgramItemDomain[];
 	attendees?: UserDomain[];
 	products?: ProductDomain[];
 }
@@ -109,11 +110,11 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 
 	}
 
-	get items(): ProductDomain[]{
+	get items(): ProgramItemDomain[]{
 		return this.props.items;
 	}
 
-	set items(items: ProductDomain[]) {
+	set items(items: ProgramItemDomain[]) {
 		this.props.items = items;
 	}
 

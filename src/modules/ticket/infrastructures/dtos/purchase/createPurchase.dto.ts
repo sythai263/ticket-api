@@ -13,7 +13,7 @@ export class CreatePurchaseDto{
 		details: CreateDetailOrderDto[];
 
 	@ApiPropertyOptional({
-		example: 10
+		example: 'CODEGIAMGIA'
 	})
 	@IsString({
 		message: 'Mã giảm giá không hợp lệ'
@@ -21,7 +21,6 @@ export class CreatePurchaseDto{
 	@MaxLength(15, {
 		message:'Mã giảm giá không hợp lệ'
 	})
-
 		discountCode?: string;
 
 }

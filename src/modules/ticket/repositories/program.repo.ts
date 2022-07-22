@@ -168,8 +168,8 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 		});
 		if (entity) {
 			const domain = ProgramMap.entityToDomain(entity);
-			const items = entity.items.map(item => ProductMap.entityToDomain(item.product));
-			domain.items = items;
+			const products = entity.items.map(item => ProductMap.entityToDomain(item.product));
+			domain.products= products;
 			return domain;
 		}
 

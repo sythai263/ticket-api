@@ -1,3 +1,4 @@
+
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
@@ -50,12 +51,21 @@ export class DetailOrderDomain extends AggregateRoot<IDetailOrderProps>{
 	}
 
 	get total(): number{
-		let total = this.amount * this.product.price;
-		if (this.discount.discount) {
-			total = total * (100-this.discount.discount)/100;
+		return this.summary - this.discountAmount;
+	}
+
+	get discountAmount(): number{
+		let total = 0;
+		if (this.discount) {
+			total = this.product.price * this.amount * this.discount.discount/100;
 		}
 
 		return total;
+	}
+
+	get summary(): number{
+		return this.product.price *this.amount;
+
 	}
 
 	public static create(

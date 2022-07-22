@@ -2,7 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { DiscountDto } from '../discount';
 import { ProductDto } from '../product';
-import { PurchaseDto } from '../purchase';
 
 export class DetailOrderDto{
 
@@ -10,12 +9,6 @@ export class DetailOrderDto{
 		example: 123
 	})
 		id: number;
-
-	@ApiProperty({
-		type: PurchaseDto,
-		description: 'Thông tin đơn hàng'
-	})
-		purchase: PurchaseDto;
 
 	@ApiProperty({
 		type: ProductDto,
@@ -33,5 +26,20 @@ export class DetailOrderDto{
 		description: 'Số lượng mua'
 	})
 		amount: number;
+
+	@ApiProperty({
+		description: 'Tổng tiền'
+	})
+		summary: number;
+
+	@ApiProperty({
+		description: 'Số tiền được giảm'
+	})
+		discountAmount: number;
+
+	@ApiProperty({
+		description: 'Thành tiền'
+	})
+		total: number;
 
 }

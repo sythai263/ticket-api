@@ -4,6 +4,7 @@ import { ProductEntity } from '../../../entities';
 import { CreateProductDto } from '../infrastructures/dtos/product/createProduct.dto';
 import { ProductDto } from '../infrastructures/dtos/product/product.dto';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
+import { DetailOrderMap } from './detailOrder.mapper';
 import { ReviewProductMap } from './reviewProduct.mapper';
 
 export class ProductMap {
@@ -63,6 +64,14 @@ export class ProductMap {
 			const domain = programOrError.getValue();
 			if (entity.reviewedProducts) {
 				domain.reviews = ReviewProductMap.entitiesToDomains(entity.reviewedProducts);
+			}else{
+				domain.reviews = [];
+			}
+
+			if (entity.detail) {
+				domain.detail = DetailOrderMap.entitiesToDomains(entity.detail);
+			} else {
+				domain.detail = [];
 			}
 
 			return domain;
@@ -111,7 +120,14 @@ export class ProductMap {
 		dto.price = domain.price;
 		dto.avatar = domain.avatar;
 		dto.name = domain.name;
-		dto.starAvg = domain.starAvg;
+		if (domain.reviews) {
+			dto.starAvg = domain.starAvg;
+		}
+
+		if (domain.detail) {
+			dto.remain = domain.remain;
+		}
+
 		dto.description = domain.description;
 
 		return dto;
@@ -127,6 +143,7 @@ export class ProductMap {
 		dto.name = domain.name;
 		dto.starAvg = domain.starAvg;
 		dto.description = domain.description;
+		dto.remain = domain.remain;
 		if (domain.reviews) {
 			dto.reviews = ReviewProductMap.toDtos(domain.reviews);
 		}

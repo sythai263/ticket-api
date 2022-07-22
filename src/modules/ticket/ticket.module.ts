@@ -38,15 +38,24 @@ import {
 	DeleteAttendeeUsecase,
 	GetAttendeeUsecase
 } from './useCases/attendee';
-import { CreateDiscountUsecase, DeleteDiscountUsecase, DiscountController, GetDiscountByIdUsecase, GetDiscountUsecase, UpdateDiscountUsecase } from './useCases/discount';
+import {
+	CreateDiscountUsecase,
+	DeleteDiscountUsecase,
+	DiscountController,
+	GetDiscountByIdUsecase,
+	GetDiscountUsecase,
+	UpdateDiscountUsecase
+} from './useCases/discount';
 import {
 	GetInvoiceUsecase,
 	InvoiceController
 } from './useCases/invoice';
 import {
+	PaymentAttendanceUsecase,
 	PaymentController,
-	PaymentReturnUsecase,
-	PaymentUsecase
+	PaymentOrderUsecase,
+	PaymentReturnAttendanceUsecase,
+	PaymentReturnOrderUsecase
 } from './useCases/payment';
 import {
 	CreateProductUsecase,
@@ -73,8 +82,12 @@ import {
 	ProgramController,
 	UpdateProgramUsecase
 } from './useCases/programs';
-import { PurchaseController } from './useCases/purchase';
-import { CreateOrderUsecase } from './useCases/purchase/create/createOrder.usecase';
+import {
+	ChangeStatusOrderUsecase,
+	CreateOrderUsecase,
+	PurchaseController,
+	UserReceivedOrderUsecase
+} from './useCases/purchase';
 import { UploadController } from './useCases/upload/upload.controller';
 import {
 	ChangePasswordUseCase,
@@ -148,14 +161,18 @@ import {
 		DeleteAttendeeUsecase,
 		AdminCheckInAttendeeUsecase,
 		GetInvoiceUsecase,
-		PaymentUsecase,
-		PaymentReturnUsecase,
+		PaymentAttendanceUsecase,
+		PaymentOrderUsecase,
+		PaymentReturnAttendanceUsecase,
+		PaymentReturnOrderUsecase,
 		CreateOrderUsecase,
 		CreateDiscountUsecase,
 		GetDiscountUsecase,
 		GetDiscountByIdUsecase,
 		UpdateDiscountUsecase,
 		DeleteDiscountUsecase,
+		ChangeStatusOrderUsecase,
+		UserReceivedOrderUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,

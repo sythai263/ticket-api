@@ -83,7 +83,7 @@ export class ProgramMap {
 				place: entity.place,
 				allowCheckIn: entity.allowCheckIn,
 				imageQR: entity.imageQR,
-				attendees
+				attendees,
 			},
 			new UniqueEntityID(id),
 		);
@@ -138,7 +138,7 @@ export class ProgramMap {
 	static toProgramItemDto(domain: ProgramDomain): ProgramItemsDto{
 		if (domain) {
 			const program = this.toDto(domain);
-			const products = ProductMap.toDtos(domain.items);
+			const products = ProductMap.toDtos(domain.products);
 			return new ProgramItemsDto(program, products);
 		}
 

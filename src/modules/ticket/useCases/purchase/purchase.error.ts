@@ -9,10 +9,26 @@ export namespace PurchaseErrors {
 			} as UseCaseError);
 		}
 	}
+
+	export class NotFound extends Result<UseCaseError> {
+		constructor(id: number) {
+			super(false, {
+				message: 'Không tìm thấy đơn hàng này!',
+			} as UseCaseError);
+		}
+	}
 	export class Error extends Result<UseCaseError> {
 		constructor(err: string) {
 			super(false, {
 				message: err,
+			} as UseCaseError);
+		}
+	}
+
+	export class Forbidden extends Result<UseCaseError> {
+		constructor() {
+			super(false, {
+				message: 'Forbidden !',
 			} as UseCaseError);
 		}
 	}

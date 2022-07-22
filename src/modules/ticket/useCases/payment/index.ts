@@ -1,5 +1,7 @@
-export { PaymentUsecase } from './create/payment.usecase';
+export { PaymentAttendanceUsecase } from './create/payment.usecase';
+export { PaymentOrderUsecase } from './create/paymentOrder.usecase';
 export { PaymentController } from './payment.controller';
 export { PaymentErrors } from './payment.error';
-export { PaymentReturnUsecase } from './paymentReturn/returnURL.usecase';
+export { PaymentReturnAttendanceUsecase } from './paymentReturn/returnAttendance.usecase';
+export { PaymentReturnOrderUsecase } from './paymentReturn/returnOrder.usecase';
 

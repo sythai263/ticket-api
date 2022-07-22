@@ -6,7 +6,7 @@ import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ConfigService } from '../../../../../shared/services/config.service';
 import { PaymentDto } from '../../../infrastructures/dtos/payment/payment.dto';
-import { InvoiceRepository } from '../../../repositories';
+import { PurchaseRepository } from '../../../repositories';
 import { PaymentErrors } from '../payment.error';
 
 type Response = Either<
@@ -17,29 +17,29 @@ type Response = Either<
   Result<PaymentDto>
 >;
 @Injectable()
-export class PaymentAttendanceUsecase implements IUseCase<number, Promise<Response>> {
+export class PaymentOrderUsecase implements IUseCase<number, Promise<Response>> {
 	constructor(
-		@Inject('InvoiceRepository') public readonly repo: InvoiceRepository,
+		@Inject('PurchaseRepository') public readonly repo: PurchaseRepository,
 		private config: ConfigService
 
 	) { }
 
 	async execute(id: number): Promise<Response> {
-		const domain = await this.repo.findById(id);
+		const domain = await this.repo.getDetails(id);
 		if (!domain) {
 			return left(new PaymentErrors.NotFound());
 		}
 
-		if (domain.isPaid()) {
+		if (domain.invoice.isPaid()) {
 			return left(new PaymentErrors.Paid());
 		}
 
 		const tmnCode = this.config.get('vnp_TmnCode');
-		const returnUrl = this.config.get('DOMAIN') + '/api/payment/attendance-return';
+		const returnUrl = this.config.get('DOMAIN') + '/api/payment/order-return';
 		const date = moment().add(7, 'h').format('YYYYMMDDHHmmss');
-		const orderId = `${domain.id.toString()}-${moment().format('HHmmss')}`;
-		const amount = domain.amount * 100;
-		const { info } = domain;
+		const orderId = `${domain.id.toString()}-${domain.invoice.id.toString()}-${moment().format('HHmmss')}`;
+		const amount = domain.invoice.amount * 100;
+		const { info } = domain.invoice;
 
 		return right(Result.ok(new PaymentDto(tmnCode, orderId, info, amount.toString(), returnUrl,date)));
 

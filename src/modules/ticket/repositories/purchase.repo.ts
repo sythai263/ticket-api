@@ -6,7 +6,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { IRepo } from '../../../core/infra/Repo';
 import { PurchaseDomain } from '../../../domain';
 import { PurchaseEntity } from '../../../entities';
-import { PurchaseMap } from '../mapper';
+import { DetailOrderMap, PurchaseMap } from '../mapper';
 
 @Injectable()
 export class PurchaseRepository implements IRepo<PurchaseEntity, PurchaseDomain> {
@@ -116,6 +116,29 @@ export class PurchaseRepository implements IRepo<PurchaseEntity, PurchaseDomain>
 			await queryRunner.rollbackTransaction();
 			return false;
 		}
+	}
+
+	async getDetails(id: number) {
+		const entity = await this.repo.findOne({
+			where: {
+				id
+			},
+			relations: [
+				'user',
+				'invoice',
+				'details',
+				'details.product',
+				'details.discount'
+			]
+		});
+		if (entity) {
+			const domain = PurchaseMap.entityToDomain(entity);
+			const details = DetailOrderMap.entitiesToDomains(entity.details);
+			domain.details = details;
+			return domain;
+		}
+
+		return null;
 	}
 
 }

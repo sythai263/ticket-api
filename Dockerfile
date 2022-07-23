@@ -18,4 +18,4 @@ RUN npm run build
 
 # Start the server using the production build
 
-CMD [ "yarn", "start:prod" ]
+CMD [ "yarn", "start" ]

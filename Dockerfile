@@ -1,4 +1,4 @@
-FROM node:fermium AS dist
+FROM node:Gallium AS dist
 COPY package.json yarn.lock ./
 
 RUN yarn install
@@ -7,7 +7,7 @@ COPY . ./
 
 RUN yarn build
 
-FROM node:fermium AS node_modules
+FROM node:Gallium AS node_modules
 COPY package.json yarn.lock ./
 
 RUN yarn install --prod

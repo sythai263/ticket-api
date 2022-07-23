@@ -1,6 +1,5 @@
 export enum StatusProgram {
   PENDING = 'Pending',
-  ORDER = 'Order',
-  CHECKIN = 'Checkin',
+  CHECK_IN = 'Checkin',
   OFF = 'OFF',
 }

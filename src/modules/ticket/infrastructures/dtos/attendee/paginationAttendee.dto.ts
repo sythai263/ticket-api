@@ -6,11 +6,14 @@ import { AttendeeDto } from './attendee.dto';
 export class PaginationAttendeeDto{
 	@ApiProperty({
 		isArray: true,
-		type: AttendeeDto
+		type: AttendeeDto,
+		description: 'Danh sách tham gia'
 	})
 		data: AttendeeDto[];
 
-	@ApiPropertyOptional()
+	@ApiPropertyOptional({
+		description: 'Thông tin phân trang dữ liệu'
+	})
 		meta: PageMetaDto;
 
 	constructor(data: AttendeeDto[], meta?: PageMetaDto) {

@@ -21,12 +21,15 @@ export class GetProductByIdUsecase implements IUseCase<number, Promise<Response>
 
 	async execute(id: number): Promise<Response> {
 
-		const domain = await this.repo.findById(id);
+		const domain = await this.repo.findOne({
+			where: { id },
+			relations:['reviewedProducts', 'reviewedProducts.user', 'detail']
+		});
 		if (!domain) {
 			return left(new ProductErrors.NotFound());
 		}
 
-		return right(Result.ok(ProductMap.toDto(domain)));
+		return right(Result.ok(ProductMap.toDtoReview(domain)));
 	}
 
 }

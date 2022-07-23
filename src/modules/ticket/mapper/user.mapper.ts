@@ -1,7 +1,7 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { UserDomain } from '../../../domain/user.domain';
 import { UserEntity } from '../../../entities/user.entity';
-import { UserDto } from '../../user/user.dto';
+import { UserDto } from '../infrastructures/dtos/user';
 import { CreateUserDto } from '../infrastructures/dtos/user/createUser.dto';
 
 export class UserMap {
@@ -11,7 +11,6 @@ export class UserMap {
 		userDto.email = entity.email;
 		userDto.phone = entity.phone;
 		userDto.username = entity.username;
-		userDto.password = entity.password;
 		userDto.firstName = entity.firstName;
 		userDto.lastName = entity.lastName;
 		userDto.role = entity.role;

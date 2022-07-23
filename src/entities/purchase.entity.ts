@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
+import { StatusBuy } from '../common/constants/statusBuy';
 import { DetailOrderEntity } from './detailOrder.entity';
 import { InvoiceEntity } from './invoice.entity';
 import { UserEntity } from './user.entity';
@@ -31,7 +32,13 @@ export class PurchaseEntity extends AbstractEntity {
   })
   	orderDate: Date;
 
-  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+	@Column({
+		name: 'status',
+		enum: StatusBuy
+	})
+		status: StatusBuy;
+
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.purchase)
   	details: DetailOrderEntity[];
 
   constructor(

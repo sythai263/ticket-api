@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
-import { UserDto } from '../user/user.dto';
+import { UserLoginDto } from '../user/user.dto';
 import { GoogleAuthService } from './google-auth.service';
 
 @Controller('api/google')
@@ -17,7 +17,7 @@ export class GoogleAuthController {
 
   @Get('redirect')
   @ApiCreatedResponse({
-  	type: UserDto,
+  	type: UserLoginDto,
   	description: 'Created',
   })
   @UseGuards(AuthGuard('google'))

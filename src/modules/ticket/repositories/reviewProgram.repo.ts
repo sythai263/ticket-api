@@ -92,7 +92,7 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID

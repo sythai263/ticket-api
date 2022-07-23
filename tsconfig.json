@@ -7,6 +7,10 @@
     "outDir": "./build",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
+  "watchOptions": {
+    "excludeDirectories": ["public"]
   }
 }

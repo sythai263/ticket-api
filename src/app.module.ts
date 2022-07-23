@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import * as Joi from 'joi';
+import { join } from 'path';
 import { DataSource } from 'typeorm';
 
 import { GoogleAuthModule } from './modules/google-auth/google-auth.module';
@@ -11,13 +15,23 @@ import { SharedModule } from './shared/shared.module';
 
 @Module({
 	imports: [
-		TicketModule,
 		TypeOrmModule.forRootAsync({
 			imports: [SharedModule],
 			useFactory: (configService: ConfigService) => configService.typeOrmConfig,
 			inject: [ConfigService],
 		}),
+
+		ServeStaticModule.forRoot({
+			rootPath: join(__dirname, '..', 'public'),
+		}),
+		ConfigModule.forRoot({
+			validationSchema: Joi.object({
+				UPLOADED_FILES_DESTINATION: Joi.string(),
+				// ...
+			})
+		}),
 		GoogleAuthModule,
+		TicketModule,
 		JwtAuthModule,
 		LoginModule,
 	],

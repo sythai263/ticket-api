@@ -30,7 +30,12 @@ export class CreateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 			return left(new ProgramErrors.Error('Can\'t create program !'));
 		}
 
-		return right(Result.ok(ProgramMap.toDto(domain)));
+		await domain.generateQRCode();
+
+		const entityNew = ProgramMap.toEntity(domain);
+		const domainNew = await this.repo.save(entityNew);
+
+		return right(Result.ok(ProgramMap.toDto(domainNew)));
 	}
 
 }

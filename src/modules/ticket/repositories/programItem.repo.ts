@@ -92,7 +92,7 @@ export class ProgramItemRepository implements IRepo<ProgramItemEntity, ProgramIt
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID
@@ -105,11 +105,7 @@ export class ProgramItemRepository implements IRepo<ProgramItemEntity, ProgramIt
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
 		try {
-			await queryRunner.manager.softDelete(ProgramItemEntity, criteria);
-			await queryRunner.manager.update(ProgramItemEntity, criteria, {
-				deletedBy: userId,
-				updatedBy: userId
-			});
+			await queryRunner.manager.delete(ProgramItemEntity, criteria);
 			await queryRunner.commitTransaction();
 			return true;
 		} catch (error) {

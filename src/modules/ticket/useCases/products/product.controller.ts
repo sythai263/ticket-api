@@ -7,6 +7,7 @@ import {
 	HttpCode,
 	HttpStatus,
 	InternalServerErrorException,
+	NotFoundException,
 	Param,
 	Patch,
 	Post,
@@ -21,6 +22,8 @@ import {
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiParam,
 	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse
@@ -60,6 +63,10 @@ export class ProductController {
 	) { }
 
 	@Post()
+	@ApiOperation({
+		description: 'Thêm một sản phẩm mới',
+		summary:'Thêm một sản phẩm mới'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -97,6 +104,10 @@ export class ProductController {
 	}
 
 	@Get()
+	@ApiOperation({
+		description: 'Lấy danh sách các sản phẩm ',
+		summary:'Lấy danh sách các sản phẩm '
+	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: PaginationProductDto,
@@ -127,6 +138,14 @@ export class ProductController {
 	}
 
 	@Get(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của sản phẩm'
+	})
+	@ApiOperation({
+		description: 'Lấy thồng tin về 1 sản phẩm',
+		summary:'Lấy thồng tin về 1 sản phẩm'
+	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: ProductDto
@@ -148,6 +167,8 @@ export class ProductController {
 			switch (err.constructor) {
 			case ProductErrors.Error:
 				throw new BadRequestException(err.errorValue());
+			case ProductErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -158,6 +179,14 @@ export class ProductController {
 	}
 
 	@Patch(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của sản phẩm'
+	})
+	@ApiOperation({
+		description: 'Cập nhật thông tin 1 sản phẩm',
+		summary:'Cập nhật thông tin 1 sản phẩm'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -190,8 +219,9 @@ export class ProductController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProductErrors.Error:
-			case ProductErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProductErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -202,6 +232,14 @@ export class ProductController {
 	}
 
 	@Delete(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của sản phẩm'
+	})
+	@ApiOperation({
+		description: 'Xóa thông tin của 1 sản phẩm',
+		summary:'Xóa thông tin của 1 sản phẩm'
+	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)
@@ -232,13 +270,14 @@ export class ProductController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProductErrors.Error:
-			case ProductErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProductErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
-		return new SuccessNotification('Delete program successfully !', HttpStatus.CREATED);
+		return new SuccessNotification('Đã xóa sản phẩm', HttpStatus.CREATED);
 	}
 }

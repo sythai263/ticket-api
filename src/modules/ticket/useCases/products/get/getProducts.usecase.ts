@@ -25,7 +25,7 @@ export class GetProductsUsecase implements IUseCase<SearchProgramDto, Promise<Re
 
 		const result = await this.repo.search(dto);
 		if (!result) {
-			return left(new ProductErrors.Error('Can\'t create program !'));
+			return left(new ProductErrors.Error('Không có kết quả phù hợp'));
 		}
 
 		const meta = new PageMetaDto(dto, result[1]);

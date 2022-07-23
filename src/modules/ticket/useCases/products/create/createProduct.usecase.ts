@@ -26,7 +26,7 @@ export class CreateProductUsecase implements IUseCase<CreateProductDto, Promise<
 		entity.updatedBy = userId;
 		const domain = await this.repo.save(entity);
 
-		return right(Result.ok(ProductMap.toDto(domain)));
+		return right(Result.ok(ProductMap.createDomainToDto(domain)));
 	}
 
 }

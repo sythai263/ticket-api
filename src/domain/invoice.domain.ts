@@ -1,4 +1,5 @@
 import { CurrencyCode } from '../common/constants/currencyCode';
+import { StatusInvoice } from '../common/constants/statusReceipt';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
@@ -79,6 +80,18 @@ export class InvoiceDomain extends AggregateRoot<IInvoiceProps>{
 
 	set status(val: string) {
 	  this.props.status = val;
+	}
+
+	paid() {
+		this.props.status = StatusInvoice.PAID;
+	}
+
+	pending() {
+		this.props.status = StatusInvoice.PENDING;
+	}
+
+	isPaid() {
+		return this.props.status === StatusInvoice.PAID;
 	}
 
 	public static create(

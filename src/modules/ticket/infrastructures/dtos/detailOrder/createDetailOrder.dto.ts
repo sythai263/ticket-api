@@ -4,16 +4,16 @@ import { IsNumber } from 'class-validator';
 export class CreateDetailOrderDto{
 
 	@ApiProperty({
-		example: 10
+		example: 1,
+		description: 'Mã sản phẩm'
 	})
-	@IsNumber()
-		discountId: number;
-
-	@ApiProperty()
 	@IsNumber()
 		productId: number;
 
-	@ApiProperty()
+	@ApiProperty({
+		example: 10,
+		description: 'Số lượng mua sản phẩm'
+	})
 	@IsNumber()
 		amount: number;
 

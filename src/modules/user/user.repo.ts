@@ -3,13 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { UserEntity } from '../../entities/user.entity';
-import { UserDto } from './user.dto';
+import { UserLoginDto } from './user.dto';
 import { UserAuthMap } from './user.mapper';
 
 export interface IUserAuthRepo {
-  findByEmail(email: string): Promise<UserDto>;
-  findByUsername(username: string): Promise<UserDto>;
-  save(user: UserEntity): Promise<UserDto>;
+  findByEmail(email: string): Promise<UserLoginDto>;
+  findByUsername(username: string): Promise<UserLoginDto>;
+  save(user: UserEntity): Promise<UserLoginDto>;
 }
 
 @Injectable()
@@ -19,7 +19,7 @@ export class UserAuthRepository implements IUserAuthRepo {
     protected repo: Repository<UserEntity>,
 	) {}
 
-	async findByUsername(username: string): Promise<UserDto> {
+	async findByUsername(username: string): Promise<UserLoginDto> {
 		const entity = await this.repo.findOne({
 			where: {
 				username,
@@ -32,7 +32,7 @@ export class UserAuthRepository implements IUserAuthRepo {
 		return null;
 	}
 
-	async findByEmail(email: string): Promise<UserDto> {
+	async findByEmail(email: string): Promise<UserLoginDto> {
 		const entity = await this.repo.findOne({
 			where: {
 				email,
@@ -45,7 +45,7 @@ export class UserAuthRepository implements IUserAuthRepo {
 		return null;
 	}
 
-	async save(user: UserEntity): Promise<UserDto> {
+	async save(user: UserEntity): Promise<UserLoginDto> {
 		try {
 			const entity = await this.repo.save(user);
 

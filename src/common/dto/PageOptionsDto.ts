@@ -8,7 +8,7 @@ export class PageOptionsDto {
   @ApiPropertyOptional({
   	enum: Order,
   	default: Order.ASC,
-  	description: 'Order ID',
+  	description: 'Sắp xếp id theo',
   })
   @IsEnum(Order)
   @IsOptional()
@@ -17,7 +17,7 @@ export class PageOptionsDto {
   @ApiPropertyOptional({
   	minimum: 1,
   	default: 1,
-  	description: 'Number of pages',
+  	description: 'Trang thứ',
   })
   @Type(() => Number)
   @IsInt()
@@ -29,7 +29,7 @@ export class PageOptionsDto {
   	minimum: 1,
   	maximum: 500,
   	default: 10,
-  	description: 'Data per page',
+  	description: 'Số dữ liệu trên 1 trang',
   })
   @Type(() => Number)
   @IsInt()

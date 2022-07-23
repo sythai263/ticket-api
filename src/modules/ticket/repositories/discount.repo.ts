@@ -6,6 +6,8 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { IRepo } from '../../../core/infra/Repo';
 import { DiscountDomain } from '../../../domain';
 import { DiscountEntity } from '../../../entities';
+import { SearchDiscountDto } from '../infrastructures/dtos/discount';
+import { ProductMap } from '../mapper';
 import { DiscountMap } from '../mapper/discount.mapper';
 
 @Injectable()
@@ -92,7 +94,7 @@ export class DiscountRepository implements IRepo<DiscountEntity, DiscountDomain>
 		}
 	}
 
-	async delete(criteria: string
+	async softDelete(criteria: string
 		| number
 		| Date
 		| UniqueEntityID
@@ -116,6 +118,55 @@ export class DiscountRepository implements IRepo<DiscountEntity, DiscountDomain>
 			await queryRunner.rollbackTransaction();
 			return false;
 		}
+	}
+
+	async search(search?: SearchDiscountDto): Promise<[DiscountDomain[], number]> {
+
+		const queryBuilder = this.repo.createQueryBuilder('discount')
+			.leftJoinAndSelect('discount.program', 'program')
+			.orderBy('discount.code', search.order)
+			.skip(search.skip)
+			.take(search.take);
+		if (search.keyword) {
+			queryBuilder.andWhere('discount.description like :name', { name: `%${search.keyword}%` });
+		}
+
+		if (search.code) {
+			queryBuilder.andWhere('discount.code like :code', { code: `%${search.code}%` });
+		}
+
+		queryBuilder.relation('product.reviewedProducts');
+		const [entities, count] = await queryBuilder.getManyAndCount();
+
+		if (entities) {
+			return [DiscountMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+
+	}
+
+	async getProducts(code: string) {
+
+		const entity = await this.repo.findOne({
+			where: {
+				code
+			},
+			relations: [
+				'program',
+				'program.items',
+				'program.items.product',
+				'program.items.product.detail']
+		});
+		if (entity) {
+			const domain = DiscountMap.entityToDomain(entity);
+			const products = entity.program.items.map(item => ProductMap.entityToDomain(item.product));
+			domain.products = products;
+			return domain;
+		}
+
+		return null;
+
 	}
 
 }

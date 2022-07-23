@@ -1,7 +1,10 @@
+
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
+import { DetailOrderDomain } from './detailOrder.domain';
+import { ReviewProductDomain } from './reviewProduct.domain';
 
 interface IProductProps {
   name?: string;
@@ -10,6 +13,10 @@ interface IProductProps {
 	avatar?: string;
 	description?: string;
 	remain?: number;
+	reviews?: ReviewProductDomain[];
+	detail?: DetailOrderDomain[];
+	buyAmount?: number;
+
 }
 
 export class ProductDomain extends AggregateRoot<IProductProps> {
@@ -54,15 +61,43 @@ export class ProductDomain extends AggregateRoot<IProductProps> {
 		this.props.avatar = avatar;
 	}
 
-	get remain(): number {
-		return this.props.remain;
+	get detail(): DetailOrderDomain[]{
+		return this.props.detail;
 	}
 
-	set remain(purchased: number) {
-		if (this.props.total > purchased) {
-			this.props.remain = this.props.total - purchased;
-		}else {this.props.remain = 0;}
+	set detail(detail: DetailOrderDomain[]) {
+		this.props.detail = detail;
+	}
 
+	get remain(): number {
+		const sum = this.detail.reduce((prev, curr) => prev + curr.amount, 0);
+		return this.props.total - sum;
+	}
+
+	get buyAmount(): number{
+		return this.props.buyAmount;
+	}
+
+	set buyAmount(buyAmount: number) {
+		this.props.buyAmount = buyAmount;
+	}
+
+	get starAvg(): number {
+		if (this.props.reviews.length > 0) {
+			const sum = this.props.reviews.reduce((prev, curr) => prev + curr.star, 0);
+			return sum / this.props.reviews.length;
+		}
+
+		return 5;
+
+	}
+
+	get reviews(): ReviewProductDomain[]{
+		return this.props.reviews;
+	}
+
+	set reviews(reviews: ReviewProductDomain[]) {
+		this.props.reviews = reviews;
 	}
 
 	changeName(name: string) {

@@ -21,7 +21,7 @@ export class DeleteProgramUsecase implements IUseCase<number, Promise<Response>>
 			return left(new ProgramErrors.NotFound());
 		}
 
-		const isSuccess = await this.repo.delete({ id }, userId);
+		const isSuccess = await this.repo.softDelete({ id }, userId);
 		if (!isSuccess) {
 			return left(new ProgramErrors.Error('Can\'t delete this program !'));
 		}

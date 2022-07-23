@@ -3,12 +3,12 @@ import {
 	Body,
 	Controller, Delete, Get, HttpCode,
 	HttpStatus,
-	InternalServerErrorException, Param, Patch, Post, Query, Req,
+	InternalServerErrorException, NotFoundException, Param, Patch, Post, Query, Req,
 	UseGuards,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
@@ -18,15 +18,18 @@ import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { PaginationProgramDto } from '../../infrastructures/dtos/program';
-import { CreateProgramDto } from '../../infrastructures/dtos/program/createProgram.dto';
-import { ProgramDto } from '../../infrastructures/dtos/program/program.dto';
-import { SearchProgramDto } from '../../infrastructures/dtos/program/searchProgram.dto';
-import { UpdateProgramDto } from '../../infrastructures/dtos/program/updateProgram.dto';
+import {
+	CreateProgramDto,
+	ProgramDto,
+	SearchProgramDto,
+	UpdateProgramDto
+} from '../../infrastructures/dtos/program/';
 import { CreateProgramUsecase } from './create/createProgram.usecase';
 import { DeleteProgramUsecase } from './delete/deleteProgram.usecase';
 import { GetProgramByIdUsecase } from './get/getProgramById.usecase';
 import { GetProgramsUsecase } from './get/getPrograms.usecase';
 import { ProgramErrors } from './program.error';
+import { ChangeCheckInProgramUsecase } from './update/changeCheckInProgram.usecase';
 import { UpdateProgramUsecase } from './update/updateProgram.usecase';
 
 @Controller('api/programs')
@@ -37,11 +40,16 @@ export class ProgramController {
 		public readonly getProgram: GetProgramsUsecase,
 		public readonly getProgramById: GetProgramByIdUsecase,
 		public readonly updateProgram: UpdateProgramUsecase,
+		public readonly changeStatus: ChangeCheckInProgramUsecase,
 		public readonly deleteProgram: DeleteProgramUsecase,
 	) { }
 
 	@Post()
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Tạo một chương trình/ sự kiện mới',
+		summary:'Tạo một chương trình/ sự kiện mới'
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -79,6 +87,10 @@ export class ProgramController {
 
 	@Get()
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy danh sách các chương trình, sự kiện',
+		summary:'Lấy danh sách các chương trình, sự kiện'
+	})
 	@ApiResponse({
 		type: PaginationProgramDto
 	})
@@ -107,7 +119,15 @@ export class ProgramController {
 	}
 
 	@Get(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy thông tin về 1 sự kiện',
+		summary:'Lấy thông tin về 1 sự kiện'
+	})
 	@ApiResponse({
 		type: ProgramDto
 	})
@@ -118,13 +138,17 @@ export class ProgramController {
 		description: 'Internal Server Error'
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async getById(@Req() req: Request, @Param('id') id: number): Promise<ProgramDto> {
+	async getById(
+	@Req() req: Request,
+	@Param('id') id: number): Promise<ProgramDto> {
 		const result = await this.getProgramById.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -135,7 +159,15 @@ export class ProgramController {
 	}
 
 	@Patch(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Cập nhật thông tin của 1 chương trình, sự kiện',
+		summary:'Cập nhật thông tin của 1 chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -167,8 +199,60 @@ export class ProgramController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
-			case ProgramErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return result.value.getValue();
+
+	}
+
+	@Patch(':id/status')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
+	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Thay đổi trạng thái check-in của sự kiện',
+		summary:'Thay đổi trạng thái check-in của sự kiện'
+	})
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+	@ApiResponse({
+		type: ProgramDto
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized'
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden'
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request'
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async changeStatusCheckIn(
+		@Req() req: Request,
+		@Param('id') id: number,
+	): Promise<ProgramDto> {
+		const user = req.user as JwtPayload;
+		const result = await this.changeStatus.execute(id, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case ProgramErrors.Error:
+				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}
@@ -179,7 +263,15 @@ export class ProgramController {
 	}
 
 	@Delete(':id')
+	@ApiParam({
+		name: 'id',
+		description:'Mã của chương trình, sự kiện'
+	})
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Xóa chương trình, sự kiện',
+		summary:'Xóa chương trình, sự kiện'
+	})
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
@@ -209,8 +301,9 @@ export class ProgramController {
 			const err = result.value;
 			switch (err.constructor) {
 			case ProgramErrors.Error:
-			case ProgramErrors.NotFound:
 				throw new BadRequestException(err.errorValue());
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
 			default:
 				throw new InternalServerErrorException(err.errorValue());
 			}

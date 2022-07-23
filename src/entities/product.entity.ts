@@ -39,13 +39,13 @@ export class ProductEntity extends AbstractEntity {
   })
   	avatar: string;
 
-  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.product)
   	detail: DetailOrderEntity[];
 
-  @OneToMany(() => ProgramItemEntity, (item) => item.id)
+  @OneToMany(() => ProgramItemEntity, (item) => item.product)
   	items: ProgramItemEntity[];
 
-  @OneToMany(() => ReviewProductEntity, (reviewProduct) => reviewProduct.id)
+  @OneToMany(() => ReviewProductEntity, (reviewProduct) => reviewProduct.product)
   	reviewedProducts: ReviewProductEntity[];
 
   constructor(

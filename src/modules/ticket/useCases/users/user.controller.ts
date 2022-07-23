@@ -15,18 +15,18 @@ import {
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
-import { UserDto } from '../../../user/user.dto';
 import {
 	CreateUserDto,
 	ForgotPasswordDto,
 	PasswordDto,
-	UpdateUserDto
+	UpdateUserDto,
+	UserDto
 } from '../../infrastructures/dtos/user';
 import {
 	ChangePasswordUseCase,
@@ -52,6 +52,10 @@ export class UserController {
 
   @Get()
 	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Lấy thông tin của user đang đăng nhập',
+		summary:'Lấy thông tin của user đang đăng nhập'
+	})
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard)
 	@ApiResponse({ type: UserDto })
@@ -74,6 +78,10 @@ export class UserController {
 
 	@Delete()
 	@ApiBearerAuth()
+		@ApiOperation({
+			description: 'Xóa tài khoản (soft delete)',
+			summary:'Xóa tài khoản'
+		})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard)
 	@ApiResponse({ type: SuccessNotification })
@@ -91,11 +99,15 @@ export class UserController {
   		}
   	}
 
-  	return new SuccessNotification('Delete successfully !', HttpStatus.CREATED);
+  	return new SuccessNotification('Đã xóa tài khoản!', HttpStatus.CREATED);
   }
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		description: 'Đăng ký tài khoản',
+		summary:'Đăng ký tài khoản'
+	})
 	@ApiResponse({ type: UserDto })
   @UsePipes(new ValidationPipe({ transform: true }))
 	async createUser(@Req() req: Request, @Body() userDto: CreateUserDto): Promise<UserDto> {
@@ -116,6 +128,10 @@ export class UserController {
 
 	@Patch()
 	@UseGuards(JwtAuthGuard)
+	@ApiOperation({
+		description: 'Cập nhật thông tin của user đang đăng nhập',
+		summary:'Cập nhật thông tin của user đang đăng nhập'
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@ApiResponse({ type: UserDto })
 	@ApiBearerAuth()
@@ -138,6 +154,10 @@ export class UserController {
 
 	@Patch('password')
 	@HttpCode(HttpStatus.CREATED)
+	@ApiOperation({
+		description: 'Thay đổi mật khẩu',
+		summary:'Thay đổi mật khẩu'
+	})
 	@ApiResponse({ type: UserDto })
 	@ApiBearerAuth()
 	@UseGuards(JwtAuthGuard)
@@ -159,6 +179,10 @@ export class UserController {
 	}
 
 	@Post('password')
+	@ApiOperation({
+		description: 'Khôi phục mật khẩu',
+		summary:'Khôi phục mật khẩu'
+	})
 	@HttpCode(HttpStatus.CREATED)
 	@ApiResponse({ type: SuccessNotification })
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -174,6 +198,6 @@ export class UserController {
   		}
 		}
 
-		return new SuccessNotification('Password has been reset, please check email!', HttpStatus.CREATED);
+		return new SuccessNotification('Mật khẩu đã được thay đổi, kiểm tra email !', HttpStatus.CREATED);
 	}
 }

@@ -114,6 +114,8 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 
 	isUser = () => this.props.role === RoleType.USER;
 
+	isMe = (id: number) => this.id.toValue() === id;
+
 	checkPassword(password: string) {
 		return bcrypt.compareSync(password, this.props.password);
 	}

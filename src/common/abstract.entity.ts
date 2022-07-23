@@ -4,7 +4,7 @@ import {
 	CreateDateColumn,
 	DeleteDateColumn,
 	PrimaryGeneratedColumn,
-	UpdateDateColumn,
+	UpdateDateColumn
 } from 'typeorm';
 
 export abstract class AbstractEntity {
@@ -50,6 +50,10 @@ export abstract class AbstractEntity {
   	deletedBy?: number;
 
   constructor(id?: number) {
-  	this.id = id;
+  	if (id) {
+  		this.id = id;
+  	} else {
+  		id = undefined;
+  	}
   }
 }

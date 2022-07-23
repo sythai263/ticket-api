@@ -7,7 +7,7 @@ import { IRepo } from '../../../core/infra/Repo';
 import { ProgramDomain } from '../../../domain';
 import { ProgramEntity } from '../../../entities';
 import { SearchProgramDto } from '../infrastructures/dtos/program';
-import { ProgramMap } from '../mapper';
+import { ProductMap, ProgramMap } from '../mapper';
 
 @Injectable()
 export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
@@ -93,7 +93,7 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 		}
 	}
 
-	async delete(criteria: string |
+	async softDelete(criteria: string |
 		number |
 		Date |
 		UniqueEntityID |
@@ -150,6 +150,27 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 
 		if (entities) {
 			return [ProgramMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+
+	}
+
+	async getProducts(programId: number) {
+
+		const entity = await this.repo.findOne({
+			where: {
+				id: programId
+			},
+			relations: [
+				'items', 'items.product'
+			]
+		});
+		if (entity) {
+			const domain = ProgramMap.entityToDomain(entity);
+			const products = entity.items.map(item => ProductMap.entityToDomain(item.product));
+			domain.products= products;
+			return domain;
 		}
 
 		return null;

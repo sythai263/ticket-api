@@ -12,6 +12,12 @@ export class DiscountEntity extends AbstractEntity {
   @ManyToOne(() => ProgramEntity, (program) => program.discounts)
   	program: ProgramEntity;
 
+	@Column({
+  	name: 'code',
+  	type: 'varchar',
+	})
+		code: string;
+
   @Column({
   	name: 'start_date',
   	type: 'datetime',
@@ -35,7 +41,7 @@ export class DiscountEntity extends AbstractEntity {
   })
   	description: string;
 
-  @OneToMany(() => DetailOrderEntity, (detail) => detail.id)
+  @OneToMany(() => DetailOrderEntity, (detail) => detail.discount)
   	detail: DetailOrderEntity[];
 
   constructor(

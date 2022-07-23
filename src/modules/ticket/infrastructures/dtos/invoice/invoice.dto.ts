@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNumber, IsString, Min } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsString, Min } from 'class-validator';
 
 import { CurrencyCode } from '../../../../../common/constants/currencyCode';
 
@@ -55,5 +55,11 @@ export class InvoiceDto{
 	})
 	@IsString()
 		info?: string;
+
+	@ApiProperty({
+		example: true
+	})
+	@IsBoolean()
+		isPaid?: boolean;
 
 }

@@ -9,3 +9,4 @@ export class MailEvent{
 		this.password = password;
 	}
 }
+

@@ -4,6 +4,8 @@ import { ProductEntity } from '../../../entities';
 import { CreateProductDto } from '../infrastructures/dtos/product/createProduct.dto';
 import { ProductDto } from '../infrastructures/dtos/product/product.dto';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
+import { DetailOrderMap } from './detailOrder.mapper';
+import { ReviewProductMap } from './reviewProduct.mapper';
 
 export class ProductMap {
 	static entityToDto(entity: ProductEntity): ProductDto {
@@ -54,11 +56,48 @@ export class ProductMap {
 				avatar: entity.avatar,
 				description: entity.description,
 				name: entity.name,
-				price: entity.price
+				price: entity.price,
 			},
 			new UniqueEntityID(id),
 		);
-		return programOrError.isSuccess ? programOrError.getValue() : null;
+		if (programOrError.isSuccess) {
+			const domain = programOrError.getValue();
+			if (entity.reviewedProducts) {
+				domain.reviews = ReviewProductMap.entitiesToDomains(entity.reviewedProducts);
+			}else{
+				domain.reviews = [];
+			}
+
+			if (entity.detail) {
+				domain.detail = DetailOrderMap.entitiesToDomains(entity.detail);
+			} else {
+				domain.detail = [];
+			}
+
+			return domain;
+		}
+
+		return null;
+	}
+
+	static createEntityToDomain(entity: ProductEntity): ProductDomain {
+		if (!entity) {
+			return null;
+		}
+
+		const { id } = entity;
+		const programOrError = ProductDomain.create(
+			{
+				total: entity.total,
+				avatar: entity.avatar,
+				description: entity.description,
+				name: entity.name,
+				price: entity.price,
+			},
+			new UniqueEntityID(id),
+		);
+
+		return programOrError.isSuccess? programOrError.getValue(): null;
 	}
 
 	static toEntity(domain: ProductDomain): ProductEntity {
@@ -74,6 +113,45 @@ export class ProductMap {
 	}
 
 	static toDto(domain: ProductDomain): ProductDto {
+		const dto = new ProductDto();
+		dto.id = domain.id.toValue();
+		dto.total = domain.total;
+		dto.avatar = domain.avatar;
+		dto.price = domain.price;
+		dto.avatar = domain.avatar;
+		dto.name = domain.name;
+		if (domain.reviews) {
+			dto.starAvg = domain.starAvg;
+		}
+
+		if (domain.detail) {
+			dto.remain = domain.remain;
+		}
+
+		dto.description = domain.description;
+
+		return dto;
+	}
+
+	static toDtoReview(domain: ProductDomain): ProductDto {
+		const dto = new ProductDto();
+		dto.id = domain.id.toValue();
+		dto.total = domain.total;
+		dto.avatar = domain.avatar;
+		dto.price = domain.price;
+		dto.avatar = domain.avatar;
+		dto.name = domain.name;
+		dto.starAvg = domain.starAvg;
+		dto.description = domain.description;
+		dto.remain = domain.remain;
+		if (domain.reviews) {
+			dto.reviews = ReviewProductMap.toDtos(domain.reviews);
+		}
+
+		return dto;
+	}
+
+	static createDomainToDto(domain: ProductDomain): ProductDto {
 		const dto = new ProductDto();
 		dto.id = domain.id.toValue();
 		dto.total = domain.total;

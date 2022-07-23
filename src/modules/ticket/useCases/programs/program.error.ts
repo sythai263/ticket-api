@@ -5,7 +5,7 @@ export namespace ProgramErrors {
 	export class NotFound extends Result<UseCaseError> {
 		constructor() {
 			super(false, {
-				message: 'The program is not found',
+				message: 'Không tìm thấy chương trình này!',
 			} as UseCaseError);
 		}
 	}

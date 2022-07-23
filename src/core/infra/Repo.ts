@@ -10,7 +10,7 @@ export interface IRepo<T, X> {
   findOneBy(where: FindOptionsWhere<T> | FindOptionsWhere<T>[]): Promise<X>;
   save(t: T): Promise<X>;
   saveMany(t: T[]): Promise<X[]>;
-  delete(
+  softDelete(
     criteria:
       | string
       | number

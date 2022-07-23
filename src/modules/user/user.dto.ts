@@ -4,7 +4,7 @@ import { IsDateString, IsEmail, IsFQDN, IsNotEmpty, IsOptional } from 'class-val
 import { Gender } from '../../common/constants/gender';
 import { RoleType } from '../../common/constants/roleType';
 
-export class UserDto {
+export class UserLoginDto {
   @ApiProperty({ example: 1526 })
   @IsOptional()
   	id?: number;

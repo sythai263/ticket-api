@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { ConfigService } from '../../shared/services/config.service';
-import { UserDto } from '../user/user.dto';
+import { UserLoginDto } from '../user/user.dto';
 import { JwtPayload } from './jwtAuth.strategy';
 @Injectable()
 export class JwtAuthService {
@@ -11,7 +11,7 @@ export class JwtAuthService {
     protected configService: ConfigService,
 	) {}
 
-	signJwt(user: UserDto): string {
+	signJwt(user: UserLoginDto): string {
 		const payload = {
 			username: user.username,
 			role: user.role,

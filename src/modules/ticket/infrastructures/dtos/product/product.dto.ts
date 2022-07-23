@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ReviewProductDto } from '../reviewProduct';
+
 export class ProductDto{
 
 	@ApiProperty({
@@ -36,5 +38,16 @@ export class ProductDto{
 		example: 'Mô tả sản phẩm'
 	})
 		description: string;
+
+	@ApiProperty({
+		example: 4.5
+	})
+		starAvg: number;
+
+	@ApiProperty({
+		type: ReviewProductDto,
+		isArray: true,
+	})
+		reviews: ReviewProductDto[];
 
 }

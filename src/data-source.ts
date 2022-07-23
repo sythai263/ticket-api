@@ -15,6 +15,7 @@ export const AppDataSource = new DataSource({
 	username: process.env.DB_USERNAME /* ||'ticket' */,
 	password: process.env.DB_PASSWORD /* ||'ticket123' */,
 	database: process.env.DB_DATABASE /* ||'ticket' */,
+	timezone: process.env.TZ,
 	synchronize: true,
 	logging: false,
 	entities: ['src/**/*.entity.{ts,js}'],

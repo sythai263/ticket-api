@@ -14,6 +14,7 @@ export class AttendeeMap{
 		dto.id = entity.id;
 		dto.program = ProgramMap.entityToDto(entity.program);
 		dto.user = UserMap.entityToDto(entity.user);
+		dto.isCheckIn = entity.isCheckIn;
 		if (entity.invoice) {
 			dto.invoice = InvoiceMap.entityToDto(entity.invoice);
 		}
@@ -51,7 +52,9 @@ export class AttendeeMap{
 			{
 				user: UserMap.entityToDomain(entity.user),
 				program: ProgramMap.entityToDomain(entity.program),
-				invoice: InvoiceMap.entityToDomain(entity.invoice)
+				invoice: InvoiceMap.entityToDomain(entity.invoice),
+				imageQR: entity.imageQR,
+				isCheckIn: entity.isCheckIn
 			},
 			new UniqueEntityID(id),
 		);
@@ -64,6 +67,16 @@ export class AttendeeMap{
 		entity.program = ProgramMap.toEntity(domain.program);
 		entity.user = UserMap.toEntity(domain.user);
 		entity.invoice = InvoiceMap.toEntity(domain.invoice);
+		entity.imageQR = domain.imageQR;
+		entity.isCheckIn = domain.isCheckIn;
+		return entity;
+	}
+
+	static toCreateEntity(domain: AttendeeDomain): AttendeeEntity {
+		const entity = new AttendeeEntity();
+		entity.program = ProgramMap.toEntity(domain.program);
+		entity.user = UserMap.toEntity(domain.user);
+		entity.invoice = InvoiceMap.toEntity(domain.invoice);
 		return entity;
 	}
 
@@ -73,7 +86,8 @@ export class AttendeeMap{
 		dto.program = ProgramMap.toDto(domain.program);
 		dto.user = UserMap.toDto(domain.user);
 		dto.invoice = InvoiceMap.toDto(domain.invoice);
-
+		dto.imageQR = domain.imageQR;
+		dto.isCheckIn = domain.isCheckIn;
 		return dto;
 	}
 

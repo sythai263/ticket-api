@@ -7,7 +7,7 @@ import { AppError } from '../../core/logic/AppError';
 import { Either, left, Result, right } from '../../core/logic/Result';
 import { ConfigService } from '../../shared/services/config.service';
 import { JwtAuthService } from '../jwtAuth/jwtAuth.service';
-import { UserDto } from '../user/user.dto';
+import { UserLoginDto } from '../user/user.dto';
 import { GetUserErrors } from '../user/user.error';
 import { IUserAuthRepo } from '../user/user.repo';
 import { LoginDto } from './login.dto';
@@ -16,7 +16,7 @@ type Response = Either<
   | AppError.UnexpectedError
   | GetUserErrors.UserNotFound
   | GetUserErrors.PasswordWrong,
-  Result<UserDto>
+  Result<UserLoginDto>
 >;
 @Injectable()
 export class LoginService implements IUseCase<LoginDto, Promise<Response>> {

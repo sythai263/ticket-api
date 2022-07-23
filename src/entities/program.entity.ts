@@ -47,6 +47,13 @@ export class ProgramEntity extends AbstractEntity {
   })
   	description: string;
 
+	@Column({
+  	nullable: true,
+  	name: 'place',
+  	length: 500,
+	})
+  	place: string;
+
   @Column({
   	nullable: true,
   	name: 'avatar',
@@ -54,16 +61,30 @@ export class ProgramEntity extends AbstractEntity {
   })
   	avatar: string;
 
-  @OneToMany(() => AttendeeEntity, (attendee) => attendee.id)
+	@Column({
+		name: 'image_qr',
+		length: 255,
+		nullable: true
+	})
+		imageQR: string;
+
+	@Column({
+  	nullable: false,
+		name: 'allow_check_in',
+		default: false
+	})
+  	allowCheckIn: boolean;
+
+  @OneToMany(() => AttendeeEntity, (attendee) => attendee.program)
   	attendees: AttendeeEntity[];
 
-  @OneToMany(() => DiscountEntity, (discount) => discount.id)
+  @OneToMany(() => DiscountEntity, (discount) => discount.program)
   	discounts: DiscountEntity[];
 
-  @OneToMany(() => ProgramItemEntity, (item) => item.id)
+  @OneToMany(() => ProgramItemEntity, (item) => item.program)
   	items: ProgramItemEntity[];
 
-  @OneToMany(() => ReviewProgramEntity, (reviewProgram) => reviewProgram.id)
+  @OneToMany(() => ReviewProgramEntity, (reviewProgram) => reviewProgram.program)
   	reviewedPrograms: ReviewProgramEntity[];
 
   constructor(

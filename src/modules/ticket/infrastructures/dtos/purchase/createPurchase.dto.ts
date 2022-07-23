@@ -1,19 +1,26 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsArray, IsString, MaxLength } from 'class-validator';
 
 import { CreateDetailOrderDto } from '../detailOrder';
 
 export class CreatePurchaseDto{
 
 	@ApiProperty({
-		example: 10
+		isArray: true,
+		type: CreateDetailOrderDto,
 	})
-	@IsNumber()
-		userId: number;
-
-	@ApiProperty({
-		isArray: true
-	})
+	@IsArray()
 		details: CreateDetailOrderDto[];
+
+	@ApiPropertyOptional({
+		example: 'CODEGIAMGIA'
+	})
+	@IsString({
+		message: 'Mã giảm giá không hợp lệ'
+	})
+	@MaxLength(15, {
+		message:'Mã giảm giá không hợp lệ'
+	})
+		discountCode?: string;
 
 }

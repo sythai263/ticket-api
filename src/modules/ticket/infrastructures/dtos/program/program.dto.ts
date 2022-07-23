@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString } from 'class-validator';
+import { IsDateString, IsString } from 'class-validator';
 
 export class ProgramDto{
 
@@ -38,7 +38,7 @@ export class ProgramDto{
 	@ApiProperty({
 		example: 99000
 	})
-		price: number;
+		price?: number = 0;
 
 	@ApiProperty({
 		example: 'http://localhost/avatar'
@@ -46,8 +46,24 @@ export class ProgramDto{
 		avatar: string;
 
 	@ApiProperty({
+		example: 'Địa điểm tổ chức'
+	})
+	@IsString()
+		place?: string;
+
+	@ApiProperty({
 		example: 'Mô tả sự kiện'
 	})
 		description: string;
+
+	@ApiProperty({
+		example:'image/qrcode.png'
+	})
+		imageQR: string;
+
+	@ApiProperty({
+		example: true
+	})
+		allowCheckIn: boolean;
 
 }

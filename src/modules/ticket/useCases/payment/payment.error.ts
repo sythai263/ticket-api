@@ -32,4 +32,12 @@ export namespace PaymentErrors {
 			} as UseCaseError);
 		}
 	}
+
+	export class NotEnoughMoney extends Result<UseCaseError> {
+		constructor() {
+			super(false, {
+				message: 'Số tiền không hợp lệ !',
+			} as UseCaseError);
+		}
+	}
 }

@@ -37,7 +37,7 @@ export class PaymentOrderUsecase implements IUseCase<number, Promise<Response>> 
 		const tmnCode = this.config.get('vnp_TmnCode');
 		const returnUrl = this.config.get('DOMAIN') + '/api/payment/order-return';
 		const date = moment().add(7, 'h').format('YYYYMMDDHHmmss');
-		const orderId = `${domain.id.toString()}-${domain.invoice.id.toString()}-${moment().format('HHmmss')}`;
+		const orderId = `${domain.invoice.id.toString()}-${domain.id.toString()}-${moment().format('HHmmss')}`;
 		const amount = domain.invoice.amount * 100;
 		const { info } = domain.invoice;
 

@@ -3,6 +3,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createHmac } from 'crypto';
+import * as moment from 'moment';
 import { stringify } from 'qs';
 
 import { VNPAY_SYSTEM } from '../../../../../common/constants/system';
@@ -12,23 +13,23 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ConfigService } from '../../../../../shared/services/config.service';
 import { InvoiceDto } from '../../../infrastructures/dtos/invoice';
 import { PaymentReturnDto } from '../../../infrastructures/dtos/payment';
-import { InvoiceMap, PurchaseMap } from '../../../mapper';
-import { InvoiceRepository, PurchaseRepository } from '../../../repositories';
-import { PurchaseErrors } from '../../purchase/purchase.error';
+import { InvoiceMap } from '../../../mapper';
+import { AttendeeRepository, InvoiceRepository } from '../../../repositories';
 import { PaymentErrors } from '../payment.error';
 
 type Response = Either<
 	AppError.UnexpectedError |
 	PaymentErrors.NotFound |
-	PaymentErrors.Forbidden|
+	PaymentErrors.Forbidden |
+	PaymentErrors.NotEnoughMoney|
 	PaymentErrors.Error,
   Result<InvoiceDto>
 >;
 @Injectable()
-export class PaymentReturnOrderUsecase implements IUseCase<PaymentReturnDto, Promise<Response>> {
+export class IpnVNPayUsecase implements IUseCase<PaymentReturnDto, Promise<Response>> {
 	constructor(
 		@Inject('InvoiceRepository') public readonly repo: InvoiceRepository,
-		@Inject('PurchaseRepository') public readonly purchaseRepo: PurchaseRepository,
+		@Inject('AttendeeRepository') public readonly attendeeRepo: AttendeeRepository,
 		private config: ConfigService,
 		private event: EventEmitter2,
 
@@ -44,29 +45,35 @@ export class PaymentReturnOrderUsecase implements IUseCase<PaymentReturnDto, Pro
 		const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
 
 		if(checksum === signed){
-			const id = Number(dto.vnp_TxnRef.split('-')[1]);
-			const domain = await this.purchaseRepo.getDetails(id);
+			const id = Number(dto.vnp_TxnRef.split('-')[0]);
 
-			if (dto.vnp_ResponseCode === '00') {
-				if (!domain.changeStatusToConfirm()) {
-					return left(new PurchaseErrors.Error('Đơn hàng đã được xác nhận !'));
-				}
-
-				const purchaseEnt = PurchaseMap.toEntity(domain);
-				purchaseEnt.updatedBy = VNPAY_SYSTEM;
-
-				await this.purchaseRepo.save(purchaseEnt);
-
-				const purchaseDto = PurchaseMap.toDto(domain);
-				this.event.emit('purchase.order', purchaseDto);
-
-				return right(Result.ok(InvoiceMap.toDto(domain.invoice)));
+			const domain = await this.repo.findById(id);
+			if (!domain) {
+				return left(new PaymentErrors.NotFound());
 			}
 
-			return left(new PaymentErrors.Error('Lỗi trong quá trình thanh toán !'));
+			if (dto.vnp_ResponseCode === '00') {
+				if (domain.amount !== Number(dto.vnp_Amount) / 100 ){
+					return left(new PaymentErrors.NotEnoughMoney());
+				}
+
+				domain.bankCode = dto.vnp_BankCode;
+				domain.amount = Number(dto.vnp_Amount) / 100;
+				domain.bankTransNo = dto.vnp_BankTranNo;
+				domain.cardType = dto.vnp_CardType;
+				domain.payDate = moment(dto.vnp_PayDate, 'YYYYMMDDHHmmss').toDate();
+				domain.paid();
+				const entity = InvoiceMap.toEntity(domain);
+				entity.updatedBy = VNPAY_SYSTEM;
+
+				await this.repo.save(entity);
+
+				return right(Result.ok(InvoiceMap.toDto(domain)));
+			}
 		}
 
 		return left(new PaymentErrors.Error('Sai chữ ký !!!'));
+
 	}
 
 }

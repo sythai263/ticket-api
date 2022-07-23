@@ -1,5 +1,6 @@
 export { PaymentAttendanceUsecase } from './create/payment.usecase';
 export { PaymentOrderUsecase } from './create/paymentOrder.usecase';
+export { IpnVNPayUsecase } from './ipnURL/ipnURL.usecase';
 export { PaymentController } from './payment.controller';
 export { PaymentErrors } from './payment.error';
 export { PaymentReturnAttendanceUsecase } from './paymentReturn/returnAttendance.usecase';

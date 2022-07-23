@@ -3,7 +3,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createHmac } from 'crypto';
-import * as moment from 'moment';
 import { stringify } from 'qs';
 
 import { VNPAY_SYSTEM } from '../../../../../common/constants/system';
@@ -11,9 +10,9 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ConfigService } from '../../../../../shared/services/config.service';
-import { InvoiceDto } from '../../../infrastructures/dtos/invoice';
+import { AttendeeDto } from '../../../infrastructures/dtos/attendee';
 import { PaymentReturnDto } from '../../../infrastructures/dtos/payment';
-import { AttendeeMap, InvoiceMap } from '../../../mapper';
+import { AttendeeMap } from '../../../mapper';
 import { AttendeeRepository, InvoiceRepository } from '../../../repositories';
 import { PaymentErrors } from '../payment.error';
 
@@ -22,7 +21,7 @@ type Response = Either<
 	PaymentErrors.NotFound |
 	PaymentErrors.Forbidden|
 	PaymentErrors.Error,
-  Result<InvoiceDto>
+  Result<AttendeeDto>
 >;
 @Injectable()
 export class PaymentReturnAttendanceUsecase implements IUseCase<PaymentReturnDto, Promise<Response>> {
@@ -46,11 +45,6 @@ export class PaymentReturnAttendanceUsecase implements IUseCase<PaymentReturnDto
 		if(checksum === signed){
 			const id = Number(dto.vnp_TxnRef.split('-')[0]);
 
-			const domain = await this.repo.findById(id);
-			if (!domain) {
-				return left(new PaymentErrors.NotFound());
-			}
-
 			if (dto.vnp_ResponseCode === '00') {
 				const attDomain = await this.attendeeRepo.findOne({
 					where: {
@@ -61,26 +55,14 @@ export class PaymentReturnAttendanceUsecase implements IUseCase<PaymentReturnDto
 					relations:['user', 'program', 'invoice']
 				});
 				await attDomain.generateQRCode();
-				domain.bankCode = dto.vnp_BankCode;
-				domain.amount = Number(dto.vnp_Amount) / 100;
-				domain.bankTransNo = dto.vnp_BankTranNo;
-				domain.cardType = dto.vnp_CardType;
-				domain.payDate = moment(dto.vnp_PayDate, 'YYYYMMDDHHmmss').toDate();
-				domain.paid();
-				const entity = InvoiceMap.toEntity(domain);
 				const attendee = AttendeeMap.toEntity(attDomain);
 				attendee.updatedBy = VNPAY_SYSTEM;
-				entity.updatedBy = VNPAY_SYSTEM;
 
-				await Promise.all([
-					this.attendeeRepo.save(attendee),
-					this.repo.save(entity)
-				]);
-				attDomain.invoice = domain;
+				await this.attendeeRepo.save(attendee);
 				const attDto = AttendeeMap.toDto(attDomain);
 				this.event.emit('program.register', attDto);
 
-				return right(Result.ok(InvoiceMap.toDto(domain)));
+				return right(Result.ok(attDto));
 			}
 
 			return left(new PaymentErrors.Error('Lỗi trong quá trình thanh toán !'));

@@ -70,30 +70,41 @@ export class PurchaseDomain extends AggregateRoot<IPurchaseProps>{
 		this.props.status = status;
 	}
 
-	changeStatus() {
+	changeStatus(): boolean {
 		switch (this.status) {
 		case StatusBuy.ORDERED:
 			this.status = StatusBuy.CONFIRM;
-			break;
+			return true;
 		case StatusBuy.CONFIRM:
 			this.status = StatusBuy.PREPARING;
-			break;
+			return true;
 		case StatusBuy.PREPARING:
 			this.status = StatusBuy.SHIPPING;
-			break;
+			return true;
 		case StatusBuy.SHIPPING:
 			this.status = StatusBuy.DELIVERED;
-			break;
+			return true;
 		default:
-			this.status = StatusBuy.DELIVERED;
-
+			return false;
 		}
 	}
 
-	changeStatusToReCeived() {
+	changeStatusToConfirm(): boolean {
+		if(this.status === StatusBuy.ORDERED){
+			this.status = StatusBuy.CONFIRM;
+			return true;
+		}
+
+		return false;
+	}
+
+	changeStatusToReCeived(): boolean {
 		if (this.status === StatusBuy.DELIVERED) {
 			this.status = StatusBuy.RECEIVED;
+			return true;
 		}
+
+		return false;
 	}
 
 	get discountAmount(): number {

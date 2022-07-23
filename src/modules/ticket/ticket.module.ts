@@ -51,6 +51,7 @@ import {
 	InvoiceController
 } from './useCases/invoice';
 import {
+	IpnVNPayUsecase,
 	PaymentAttendanceUsecase,
 	PaymentController,
 	PaymentOrderUsecase,
@@ -168,6 +169,7 @@ import {
 		CreateOrderUsecase,
 		CreateDiscountUsecase,
 		GetDiscountUsecase,
+		IpnVNPayUsecase,
 		GetDiscountByIdUsecase,
 		UpdateDiscountUsecase,
 		DeleteDiscountUsecase,

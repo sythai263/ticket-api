@@ -16,10 +16,12 @@ import { stringify } from 'qs';
 
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { ConfigService } from '../../../../shared/services/config.service';
+import { AttendeeDto } from '../../infrastructures/dtos/attendee';
 import { InvoiceDto } from '../../infrastructures/dtos/invoice';
 import { PaymentReturnDto } from '../../infrastructures/dtos/payment';
 import { PaymentAttendanceUsecase } from './create/payment.usecase';
 import { PaymentOrderUsecase } from './create/paymentOrder.usecase';
+import { IpnVNPayUsecase } from './ipnURL/ipnURL.usecase';
 import { PaymentErrors } from './payment.error';
 import { PaymentReturnAttendanceUsecase } from './paymentReturn/returnAttendance.usecase';
 import { PaymentReturnOrderUsecase } from './paymentReturn/returnOrder.usecase';
@@ -31,6 +33,7 @@ export class PaymentController {
 		public readonly paymentReturn: PaymentReturnAttendanceUsecase,
 		public readonly paymentOrder: PaymentOrderUsecase,
 		public readonly paymentReturnOrder: PaymentReturnOrderUsecase,
+		public readonly ipn: IpnVNPayUsecase,
 		private config: ConfigService,
 	) { }
 
@@ -104,7 +107,7 @@ export class PaymentController {
 	})
 	@HttpCode(HttpStatus.CREATED)
 	@ApiResponse({
-		type: InvoiceDto
+		type: AttendeeDto
 	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
@@ -120,7 +123,7 @@ export class PaymentController {
 	async returnPayment(
 		@Req() req: Request,
 		@Res() res: Response,
-		@Query() dto: PaymentReturnDto): Promise<InvoiceDto> {
+		@Query() dto: PaymentReturnDto): Promise<AttendeeDto> {
 		const result = await this.paymentReturn.execute(dto);
 		if (result.isLeft()) {
 			const err = result.value;
@@ -246,6 +249,40 @@ export class PaymentController {
 		}
 
 		res.json(result.value.getValue());
+	}
+
+	@Get('vnpay-ipn')
+	@ApiOperation({
+		description: 'Nhận kết quả từ hệ thống thanh toán VNPay',
+		summary:'Nhận kết quả từ hệ thống thanh toán VNPay'
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async ipnURL(
+		@Req() req: Request,
+		@Res() res: Response,
+		@Query() dto: PaymentReturnDto): Promise<InvoiceDto> {
+		const result = await this.ipn.execute(dto);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+			case PaymentErrors.NotFound:
+				res.status(HttpStatus.OK).json({ RspCode: '01', Message: err.errorValue() });
+				return;
+			case PaymentErrors.Error:
+				res.status(HttpStatus.OK).json({ RspCode: '97', Message: err.errorValue() });
+				return;
+			case PaymentErrors.Paid:
+				res.status(HttpStatus.OK).json({ RspCode: '99', Message: err.errorValue() });
+				return;
+			case PaymentErrors.NotEnoughMoney:
+				res.status(HttpStatus.OK).json({ RspCode: '04', Message: err.errorValue() });
+				return;
+			default:
+				throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		res.status(HttpStatus.OK).json({ RspCode: '00', Message: 'Giao dịch thành công' });
 	}
 
 }

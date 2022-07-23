@@ -1,4 +1,4 @@
-FROM node:Gallium AS dist
+FROM node:gallium AS dist
 COPY package.json yarn.lock ./
 
 RUN yarn install
@@ -7,12 +7,12 @@ COPY . ./
 
 RUN yarn build
 
-FROM node:Gallium AS node_modules
+FROM node:gallium AS node_modules
 COPY package.json yarn.lock ./
 
 RUN yarn install --prod
 
-FROM node:Gallium
+FROM node:gallium
 
 ARG PORT=3000
 

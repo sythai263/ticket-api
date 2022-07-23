@@ -446,6 +446,54 @@ VALUES
 		NULL
 	);
 		`);
+		await queryRunner.query(`
+INSERT INTO
+	discount (
+		code,
+		program_id,
+		start_date,
+		expired_date,
+		discount,
+		description,
+		created_by,
+		updated_by
+	)
+VALUES
+	(
+		'VETAY',
+		1,
+		'2022-07-18 00:00:00',
+		'2022-08-30 23:59:59',
+		20,
+		'Giảm tới 20% cho các sản phẩm trong sự kiện Vẽ tay',
+		1,
+		1
+	),
+	(
+		'DELOTTO',
+		1,
+		'2022-07-31 00:00:00',
+		'2022-08-30 23:59:59',
+		15,
+		'Giảm tới 15% cho các sản phẩm trong sự kiện Vẽ tay',
+		1,
+		1
+	);
+		`);
+		await queryRunner.query(`
+INSERT INTO
+	program_item (
+		program_id,
+		product_id,
+		created_by,
+		updated_by
+	)
+VALUES
+	(1, 1, 1, 1),
+	(1, 2, 1, 1),
+	(2, 3, 1, 1),
+	(2, 2, 1, 1);
+		`);
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {

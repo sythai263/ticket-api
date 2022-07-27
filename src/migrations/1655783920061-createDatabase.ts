@@ -2,10 +2,10 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class createDatabase1655783920061 implements MigrationInterface {
-	name = 'createDatabase1655783920061';
+  name = 'createDatabase1655783920061';
 
-	public async up(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
 CREATE TABLE user (
 	id int NOT NULL AUTO_INCREMENT,
 	username varchar(255) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE user (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE product (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
@@ -53,7 +53,7 @@ CREATE TABLE product (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE program (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(255) NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE program (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE invoice (
 	id int NOT NULL AUTO_INCREMENT,
 	amount int NOT NULL,
@@ -98,7 +98,7 @@ CREATE TABLE invoice (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE program_item (
 	id int NOT NULL AUTO_INCREMENT,
 	program_id int NULL,
@@ -116,7 +116,7 @@ CREATE TABLE program_item (
 ) ENGINE = InnoDB
 `);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
 	user_id int NULL,
@@ -138,7 +138,7 @@ CREATE TABLE attendee (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE discount (
 	id int NOT NULL AUTO_INCREMENT,
 	code varchar(15) NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE discount (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE review_product (
 	id int NOT NULL AUTO_INCREMENT,
 	star int NOT NULL,
@@ -178,7 +178,7 @@ CREATE TABLE review_product (
 	CONSTRAINT FK_REVIEW_PRODUCT_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id)
 ) ENGINE = InnoDB
 			`);
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE review_program (
 	id int NOT NULL AUTO_INCREMENT,
 	program_id int NULL,
@@ -198,7 +198,7 @@ CREATE TABLE review_program (
 ) ENGINE = InnoDB
 		`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE purchase (
 	id int NOT NULL AUTO_INCREMENT,
 	order_date timestamp NOT NULL,
@@ -218,7 +218,7 @@ CREATE TABLE purchase (
 ) ENGINE = InnoDB
 			`);
 
-		await queryRunner.query(`
+    await queryRunner.query(`
 CREATE TABLE detail_order (
 	id int NOT NULL AUTO_INCREMENT,
 	product_id int NULL,
@@ -237,8 +237,8 @@ CREATE TABLE detail_order (
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
 				`);
-		await queryRunner.query(
-			`
+    await queryRunner.query(
+      `
 INSERT INTO
 	user (
 		id,
@@ -267,7 +267,7 @@ VALUES
 		'sythai263@gmail.com',
 		'2000-03-26',
 		'Male',
-		'/assets/avatars/sythai.jpg',
+		'assets/upload/avatars/sythai.jpg',
 		'Admin',
 		1,
 		-1,
@@ -283,7 +283,7 @@ VALUES
 		'duynd@gmail.com',
 		'2000-03-26',
 		'Male',
-		'assets/avatars/duy.jpg',
+		'assets/upload/avatars/duy.jpg',
 		'user',
 		1,
 		-1,
@@ -299,7 +299,7 @@ VALUES
 		'trang@gmail.com',
 		'2000-03-21',
 		'Female',
-		'assets/avatars/trang.jpg',
+		'assets/upload/avatars/trang.jpg',
 		'user',
 		1,
 		-1,
@@ -315,17 +315,17 @@ VALUES
 		'hungtran@gmail.com',
 		'2000-03-21',
 		'Male',
-		'assets/avatars/hung.jpg',
+		'assets/upload/avatars/hung.jpg',
 		'user',
 		0,
 		-1,
 		-1
 	);
 `,
-		);
-		// Password: admin123
-		await queryRunner.query(
-			`
+    );
+    // Password: admin123
+    await queryRunner.query(
+      `
 			INSERT INTO
 	product (
 		id,
@@ -348,7 +348,7 @@ VALUES
 		100,
 		15000,
 		'Mua ngay móc khóa Đa phương tiện, giảm 10% khi đặt trước !',
-		'assets/avatars/moc-khoa.jpg',
+		'assets/upload/images/moc-khoa.jpg',
 		'2022-07-15 09:07:45',
 		'2022-07-15 09:07:45',
 		NULL,
@@ -362,7 +362,7 @@ VALUES
 		100,
 		38000,
 		'Mua ngay dây đeo Đa phương tiện, giảm 10% khi đặt trước !',
-		'assets/avatars/day-deo-the.jpg',
+		'assets/upload/images/day-deo-the.jpg',
 		'2022-07-15 09:11:32',
 		'2022-07-15 09:11:32',
 		NULL,
@@ -376,7 +376,7 @@ VALUES
 		100,
 		30000,
 		'Mua ngay bao đựng thẻ Đa phương tiện, giảm 10% khi đặt trước !',
-		'assets/avatars/bao-dung-the.jpg',
+		'assets/upload/images/bao-dung-the.jpg',
 		'2022-07-15 09:15:23',
 		'2022-07-15 09:15:23',
 		NULL,
@@ -384,8 +384,9 @@ VALUES
 		1,
 		NULL
 	);
-			`);
-		await queryRunner.query(`
+			`,
+    );
+    await queryRunner.query(`
 		INSERT INTO
 	program (
 		id,
@@ -446,7 +447,7 @@ VALUES
 		NULL
 	);
 		`);
-		await queryRunner.query(`
+    await queryRunner.query(`
 INSERT INTO
 	discount (
 		code,
@@ -480,7 +481,7 @@ VALUES
 		1
 	);
 		`);
-		await queryRunner.query(`
+    await queryRunner.query(`
 INSERT INTO
 	program_item (
 		program_id,
@@ -494,19 +495,19 @@ VALUES
 	(2, 3, 1, 1),
 	(2, 2, 1, 1);
 		`);
-	}
+  }
 
-	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query('DROP TABLE detail_order');
-		await queryRunner.query('DROP TABLE purchase');
-		await queryRunner.query('DROP TABLE review_program');
-		await queryRunner.query('DROP TABLE review_product');
-		await queryRunner.query('DROP TABLE discount');
-		await queryRunner.query('DROP TABLE attendee');
-		await queryRunner.query('DROP TABLE program_item');
-		await queryRunner.query('DROP TABLE invoice');
-		await queryRunner.query('DROP TABLE program');
-		await queryRunner.query('DROP TABLE product');
-		await queryRunner.query('DROP TABLE user');
-	}
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query('DROP TABLE detail_order');
+    await queryRunner.query('DROP TABLE purchase');
+    await queryRunner.query('DROP TABLE review_program');
+    await queryRunner.query('DROP TABLE review_product');
+    await queryRunner.query('DROP TABLE discount');
+    await queryRunner.query('DROP TABLE attendee');
+    await queryRunner.query('DROP TABLE program_item');
+    await queryRunner.query('DROP TABLE invoice');
+    await queryRunner.query('DROP TABLE program');
+    await queryRunner.query('DROP TABLE product');
+    await queryRunner.query('DROP TABLE user');
+  }
 }

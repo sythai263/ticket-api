@@ -4,8 +4,8 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import {
-	ExpressAdapter,
-	NestExpressApplication
+  ExpressAdapter,
+  NestExpressApplication,
 } from '@nestjs/platform-express';
 import * as Sentry from '@sentry/node';
 import Axios from 'axios';
@@ -15,8 +15,8 @@ import * as session from 'express-session';
 import helmet from 'helmet';
 import * as morgan from 'morgan';
 import {
-	initializeTransactionalContext,
-	patchTypeORMRepositoryWithBaseRepository
+  initializeTransactionalContext,
+  patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 
 import { AppModule } from './app.module';
@@ -28,81 +28,79 @@ import { SharedModule } from './shared/shared.module';
 import { setupSwagger } from './viveo-swagger';
 
 async function bootstrap() {
-	initializeTransactionalContext();
-	patchTypeORMRepositoryWithBaseRepository();
-	const app = await NestFactory.create<NestExpressApplication>(
-		AppModule,
-		new ExpressAdapter(),
-		{
-			cors: {
-				origin: true,
-				credentials: true,
-			},
-		},
-	);
-	Axios.defaults.timeout = 1000;
+  initializeTransactionalContext();
+  patchTypeORMRepositoryWithBaseRepository();
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    new ExpressAdapter(),
+  );
+  Axios.defaults.timeout = 1000;
 
-	const configService = app.select(SharedModule).get(ConfigService);
+  const configService = app.select(SharedModule).get(ConfigService);
 
-	app.use(
-		session({
-			secret: configService.get('JWT_SECRET'),
-			resave: false,
-			saveUninitialized: false,
-		}),
-	);
+  app.use(
+    session({
+      secret: configService.get('JWT_SECRET'),
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
 
-	app.enable('trust proxy'); // Only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
-	app.use(helmet());
+  app.enable('trust proxy'); // Only if you're behind a reverse proxy (Heroku, Bluemix, AWS ELB, Nginx, etc)
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+    }),
+  );
+  app.enableCors();
 
-	app.use(compression());
-	app.use(morgan('combined'));
-	app.use(cookieParser());
-	const reflector = app.get(Reflector);
+  app.use(compression());
+  app.use(morgan('combined'));
+  app.use(cookieParser());
+  const reflector = app.get(Reflector);
 
-	app.useGlobalFilters(
-		new BadRequestExceptionFilter(reflector),
-		new QueryFailedFilter(reflector),
-		new AllExceptionsFilter(reflector),
-	);
+  app.useGlobalFilters(
+    new BadRequestExceptionFilter(reflector),
+    new QueryFailedFilter(reflector),
+    new AllExceptionsFilter(reflector),
+  );
 
-	app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(reflector));
 
-	app.useGlobalPipes(
-		new ValidationPipe({
-			whitelist: true,
-			transform: true,
-			dismissDefaultMessages: false,
-			validationError: {
-				target: true,
-			},
-		}),
-	);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      dismissDefaultMessages: false,
+      validationError: {
+        target: true,
+      },
+    }),
+  );
 
-	Sentry.init({
-		dsn: configService.get('SENTRY_DNS'),
-	});
+  Sentry.init({
+    dsn: configService.get('SENTRY_DNS'),
+  });
 
-	app.connectMicroservice({
-		transport: Transport.TCP,
-		options: {
-			port: configService.getNumber('TRANSPORT_PORT'),
-			retryAttempts: 5,
-			retryDelay: 3000,
-		},
-	});
-	await app.startAllMicroservices();
+  app.connectMicroservice({
+    transport: Transport.TCP,
+    options: {
+      port: configService.getNumber('TRANSPORT_PORT'),
+      retryAttempts: 5,
+      retryDelay: 3000,
+    },
+  });
+  await app.startAllMicroservices();
 
-	if (['development', 'staging'].includes(configService.nodeEnv)) {
-		setupSwagger(app);
-	}
+  if (['development', 'staging'].includes(configService.nodeEnv)) {
+    setupSwagger(app);
+  }
 
-	const port = configService.getNumber('PORT');
-	await app.listen(port);
+  const port = configService.getNumber('PORT');
+  await app.listen(port);
 
-	// eslint-disable-next-line no-restricted-syntax
-	console.info(`server running on port ${port}`);
-
+  // eslint-disable-next-line no-restricted-syntax
+  console.info(`server running on port ${port}`);
 }
 
 void bootstrap();

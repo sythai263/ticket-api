@@ -14,22 +14,24 @@ type Response = Either<
 >;
 
 @Injectable()
-export class GetUserUseCase implements IUseCase<UserLoginDto, Promise<Response>> {
-	constructor(@Inject('IUserAuthRepo') public readonly repo: IUserAuthRepo) {}
+export class GetUserUseCase
+  implements IUseCase<UserLoginDto, Promise<Response>>
+{
+  constructor(@Inject('IUserAuthRepo') public readonly repo: IUserAuthRepo) {}
 
-	async execute(userDto: UserLoginDto): Promise<Response> {
-		try {
-			const foundUser = await this.repo.findByEmail(userDto.email);
-			if (foundUser) {
-				return right(Result.ok(foundUser));
-			}
+  async execute(userDto: UserLoginDto): Promise<Response> {
+    try {
+      const foundUser = await this.repo.findByEmail(userDto.email);
+      if (foundUser) {
+        return right(Result.ok(foundUser));
+      }
 
-			const entity = await UserAuthMap.dtoToEntity(userDto);
-			entity.verify = true;
-			const user = await this.repo.save(entity);
-			return right(Result.ok(user));
-		} catch (err) {
-			return left(new AppError.UnexpectedError(err));
-		}
-	}
+      const entity = await UserAuthMap.dtoToEntity(userDto);
+      entity.verify = true;
+      const user = await this.repo.save(entity);
+      return right(Result.ok(user));
+    } catch (err) {
+      return left(new AppError.UnexpectedError(err));
+    }
+  }
 }

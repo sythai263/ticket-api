@@ -20,28 +20,28 @@ type Response = Either<
 >;
 @Injectable()
 export class LoginService implements IUseCase<LoginDto, Promise<Response>> {
-  constructor(
+	constructor(
     private configService: ConfigService,
     private jwtService: JwtAuthService,
     @Inject('IUserAuthRepo') public readonly repo: IUserAuthRepo,
-  ) {}
+	) {}
 
-  async execute(request?: LoginDto, actor?: number): Promise<Response> {
-    const user = await this.repo.findByUsername(request.username);
-    if (user) {
-      const isVerify = bcrypt.compareSync(request.password, user.password);
-      if (isVerify) {
-        const expiredIn = this.configService.getNumber('JWT_EXPIRES_IN');
-        user.token = this.jwtService.signJwt(user);
-        user.expiredIn = moment().add(expiredIn, 'd').toDate();
-        user.password = undefined;
-        user.email = undefined;
-        return right(Result.ok(user));
-      }
+	async execute(request?: LoginDto, actor?: number): Promise<Response> {
+		const user = await this.repo.findByUsername(request.username);
+		if (user) {
+			const isVerify = bcrypt.compareSync(request.password, user.password);
+			if (isVerify) {
+				const expiredIn = this.configService.getNumber('JWT_EXPIRES_IN');
+				user.token = this.jwtService.signJwt(user);
+				user.expiredIn = moment().add(expiredIn, 'd').toDate();
+				user.password = undefined;
+				user.email = undefined;
+				return right(Result.ok(user));
+			}
 
-      return left(new GetUserErrors.PasswordWrong());
-    }
+			return left(new GetUserErrors.PasswordWrong());
+		}
 
-    return left(new GetUserErrors.UserNotFound());
-  }
+		return left(new GetUserErrors.UserNotFound());
+	}
 }

@@ -19,7 +19,7 @@
   "rules": {
     "new-cap": "off",
     "no-void": "off",
-    "max-params": ["warn", 8],
+    "max-params": "off",
     "no-useless-escape": "off",
     "indent": ["error", "tab"],
     "no-useless-constructor": "off",

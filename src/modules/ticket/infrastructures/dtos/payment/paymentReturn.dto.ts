@@ -1,4 +1,4 @@
-/* eslint-disable max-params */
+
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/naming-convention */
 

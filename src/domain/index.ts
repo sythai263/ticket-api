@@ -1,6 +1,7 @@
 export { AttendeeDomain } from './attendee.domain';
 export { DetailOrderDomain } from './detailOrder.domain';
 export { DiscountDomain } from './discount.domain';
+export { ImageDomain } from './image.domain';
 export { InvoiceDomain } from './invoice.domain';
 export { ProductDomain } from './product.domain';
 export { ProgramDomain } from './program.domain';

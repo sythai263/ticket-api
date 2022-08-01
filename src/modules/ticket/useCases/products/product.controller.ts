@@ -22,6 +22,8 @@ import {
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiOperation,
@@ -292,10 +294,17 @@ export class ProductController {
   	description: 'Thay đổi avatar',
   	summary: 'Thay đổi avatar',
   })
-	@ApiParam({
-		name: 'avatar',
-		type: 'file',
-		description:'Hình ảnh cần thay đổi'
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				avatar: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
 	})
 	@ApiParam({
 		name: 'id',

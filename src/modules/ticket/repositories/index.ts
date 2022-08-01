@@ -1,6 +1,7 @@
 export { AttendeeRepository } from './attendee.repo';
 export { DetailOrderRepository } from './detailOrder.repo';
 export { DiscountRepository } from './discount.repo';
+export { ImageRepository } from './image.repo';
 export { InvoiceRepository } from './invoice.repo';
 export { ProductRepository } from './product.repo';
 export { ProgramRepository } from './program.repo';

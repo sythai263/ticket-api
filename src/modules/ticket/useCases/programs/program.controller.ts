@@ -10,7 +10,7 @@ import {
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiConsumes, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { RoleType } from '../../../../common/constants/roleType';
@@ -323,10 +323,17 @@ export class ProgramController {
   	description: 'Thay đổi avatar',
   	summary: 'Thay đổi avatar',
   })
-	@ApiParam({
-		name: 'avatar',
-		type: 'file',
-		description:'Hình ảnh cần thay đổi'
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				avatar: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
 	})
 	@ApiParam({
 		name: 'id',

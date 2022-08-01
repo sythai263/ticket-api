@@ -1,5 +1,6 @@
 import {
 	Controller,
+	Inject,
 	Param,
 	Post,
 	Req,
@@ -10,6 +11,8 @@ import {
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
 	ApiOperation, ApiParam, ApiResponse, ApiTags,
@@ -21,12 +24,16 @@ import { join } from 'path';
 import { ModeImage } from '../../../../common/constants/modeImage';
 import { RoleType } from '../../../../common/constants/roleType';
 import { Roles } from '../../../../decorators/Roles.decorator';
+import { ImageEntity } from '../../../../entities';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { ConfigService } from '../../../../shared/services/config.service';
 import { saveImage } from '../../../../utils/saveImage';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
-import { UploadDto } from '../../infrastructures/dtos/upload';
+import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
+import { ImageDto } from '../../infrastructures/dtos/image';
+import { ImageMap } from '../../mapper';
+import { ImageRepository } from '../../repositories';
 
 const imageURL = join(
 	__dirname,
@@ -44,7 +51,11 @@ const imageURL = join(
 @Controller('api/upload/:mode')
 @ApiTags('Upload file')
 export class UploadController {
-	constructor(private configService: ConfigService) {}
+	constructor(
+		private configService: ConfigService,
+		@Inject('ImageRepository') public readonly repo: ImageRepository,
+
+	) {}
 
   @Post('image')
   @ApiBearerAuth()
@@ -56,6 +67,18 @@ export class UploadController {
 		name: 'mode',
 		enum: ModeImage
 	})
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'string',
+					format: 'binary',
+				},
+			},
+		},
+	})
   @UseInterceptors(
   	FilesInterceptor({
   		fieldName: 'file',
@@ -63,7 +86,7 @@ export class UploadController {
   	}),
   )
 	@ApiResponse({
-		type: UploadDto
+		type: ImageDto
 	})
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
@@ -83,9 +106,19 @@ export class UploadController {
     @Req() req: Request,
 		@UploadedFile() file: Express.Multer.File,
 		@Param('mode') mode: ModeImage,
-	): Promise<UploadDto> {
+	): Promise<ImageDto> {
+		const user = req.user as JwtPayload;
 		const url = await saveImage(file, mode);
-		return new UploadDto(url);
+		if (mode === ModeImage.PRODUCT) {
+			const image = new ImageEntity(url);
+			image.createdBy = user.id;
+			image.updatedBy = user.id;
+			const domain = await this.repo.save(image);
+			const dto = ImageMap.toDto(domain);
+			return dto;
+		}
+
+		return new ImageDto(url);
 	}
 
 }

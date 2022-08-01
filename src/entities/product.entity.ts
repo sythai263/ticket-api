@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 import { AbstractEntity } from '../common/abstract.entity';
 import { DetailOrderEntity } from './detailOrder.entity';
+import { ImageEntity } from './images.entity';
 import { ProgramItemEntity } from './programItem.entity';
 import { ReviewProductEntity } from './reviewProduct.entity';
 
@@ -44,6 +45,9 @@ export class ProductEntity extends AbstractEntity {
 
   @OneToMany(() => ProgramItemEntity, (item) => item.product)
   	items: ProgramItemEntity[];
+
+	@OneToMany(() => ImageEntity, (image) => image.product)
+  	images: ImageEntity[];
 
   @OneToMany(() => ReviewProductEntity, (reviewProduct) => reviewProduct.product)
   	reviewedProducts: ReviewProductEntity[];

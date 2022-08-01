@@ -8,6 +8,7 @@ import {
 	AttendeeEntity,
 	DetailOrderEntity,
 	DiscountEntity,
+	ImageEntity,
 	InvoiceEntity,
 	ProductEntity,
 	ProgramEntity,
@@ -22,6 +23,7 @@ import {
 	AttendeeRepository,
 	DetailOrderRepository,
 	DiscountRepository,
+	ImageRepository,
 	InvoiceRepository,
 	ProductRepository,
 	ProgramItemRepository,
@@ -111,6 +113,7 @@ import {
 			ProgramEntity,
 			ProductEntity,
 			InvoiceEntity,
+			ImageEntity,
 			AttendeeEntity,
 			PurchaseEntity,
 			ProgramItemEntity,
@@ -224,6 +227,10 @@ import {
 		{
 			provide: 'DiscountRepository',
 			useClass: DiscountRepository,
+		},
+		{
+			provide: 'ImageRepository',
+			useClass: ImageRepository,
 		}
 
 	],

@@ -6,6 +6,7 @@ import { CreateProductDto } from '../infrastructures/dtos/product/createProduct.
 import { ProductDto } from '../infrastructures/dtos/product/product.dto';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
 import { DetailOrderMap } from './detailOrder.mapper';
+import { ImageMap } from './images.mapper';
 import { ReviewProductMap } from './reviewProduct.mapper';
 
 export class ProductMap {
@@ -78,6 +79,12 @@ export class ProductMap {
 				domain.detail = [];
 			}
 
+			if (entity.images) {
+				domain.images = ImageMap.entitiesToDomains(entity.images);
+			} else {
+				domain.images = [];
+			}
+
 			return domain;
 		}
 
@@ -135,6 +142,7 @@ export class ProductMap {
 		}
 
 		dto.description = domain.description;
+		dto.images = ImageMap.toDtos(domain.images);
 
 		return dto;
 	}
@@ -151,6 +159,7 @@ export class ProductMap {
 		dto.name = domain.name;
 		dto.starAvg = domain.starAvg;
 		dto.description = domain.description;
+		dto.images = ImageMap.toDtos(domain.images);
 		dto.remain = domain.remain;
 		if (domain.reviews) {
 			dto.reviews = ReviewProductMap.toDtos(domain.reviews);

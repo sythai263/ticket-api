@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ImageDto } from '../image';
 import { ReviewProductDto } from '../reviewProduct';
 
 export class ProductDto{
@@ -49,5 +50,11 @@ export class ProductDto{
 		isArray: true,
 	})
 		reviews: ReviewProductDto[];
+
+	@ApiProperty({
+		type: ImageDto,
+		isArray: true,
+	})
+		images: ImageDto[];
 
 }

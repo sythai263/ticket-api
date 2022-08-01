@@ -117,6 +117,23 @@ CREATE TABLE program_item (
 `);
 
 		await queryRunner.query(`
+CREATE TABLE image (
+	id int NOT NULL AUTO_INCREMENT,
+	product_id int NULL,
+	alt varchar(500) NULL,
+	url varchar(255),
+	created_at timestamp NOT NULL DEFAULT NOW(),
+	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+	deleted_at timestamp NULL,
+	created_by int NOT NULL,
+	updated_by int NOT NULL,
+	deleted_by int,
+	PRIMARY KEY (id),
+	CONSTRAINT FK_IMAGE_PRODUCT FOREIGN KEY (product_id) REFERENCES product(id)
+) ENGINE = InnoDB
+`);
+
+		await queryRunner.query(`
 CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
 	user_id int NULL,
@@ -383,7 +400,64 @@ VALUES
 		1,
 		1,
 		NULL
+	),
+	(
+		4,
+		'Combo dây đeo và bao đựng thẻ',
+		100,
+		59000,
+		'Mua ngay Combo dây đeo và bao đựng thẻ, giảm 10% khi đặt trước !',
+		'assets/upload/products/combo-day-bao.jpg',
+		'2022-07-15 09:15:23',
+		'2022-07-15 09:15:23',
+		NULL,
+		1,
+		1,
+		NULL
+	),
+	(
+		5,
+		'Sổ tay Đa phương tiện',
+		60,
+		81000,
+		'Mua ngay bao đựng thẻ Đa phương tiện, giảm 10% khi đặt trước !',
+		'assets/upload/products/so-tay-2.jpg',
+		'2022-07-15 09:15:23',
+		'2022-07-15 09:15:23',
+		NULL,
+		1,
+		1,
+		NULL
+	),
+	(
+		6,
+		'Sổ tay',
+		60,
+		59000,
+		'Mua ngay Sổ tay',
+		'assets/upload/products/so-tay.jpg',
+		'2022-07-15 09:15:23',
+		'2022-07-15 09:15:23',
+		NULL,
+		1,
+		1,
+		NULL
+	),
+	(
+		7,
+		'Móc khóa',
+		200,
+		19000,
+		'Mua ngay móc khóa',
+		'assets/upload/products/moc-khoa-2.jpg',
+		'2022-07-15 09:15:23',
+		'2022-07-15 09:15:23',
+		NULL,
+		1,
+		1,
+		NULL
 	);
+
 			`,
 		);
 		await queryRunner.query(`
@@ -495,6 +569,67 @@ VALUES
 	(2, 3, 1, 1),
 	(2, 2, 1, 1);
 		`);
+
+		await queryRunner.query(`
+		INSERT INTO
+	image (
+		url,
+		alt,
+		product_id,
+		created_by,
+		updated_by
+	)
+VALUES
+	(
+		'assets/upload/products/moc-khoa.jpg',
+		'Móc khóa đa phương tiện',
+		1,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/day-deo-the.jpg',
+		'Dây đeo Đa phương tiện',
+		2,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/bao-dung-the.jpg',
+		'Bao đựng thẻ Đa phương tiện',
+		3,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/combo-day-bao.jpg',
+		'Combo dây đeo và bao đựng thẻ',
+		4,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/so-tay-2.jpg',
+		'Sổ tay Đa phương tiện',
+		5,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/so-tay.jpg',
+		'Sổ tay',
+		6,
+		1,
+		1
+	),
+	(
+		'assets/upload/products/moc-khoa-2.jpg',
+		'Móc khóa',
+		7,
+		1,
+		1
+	);
+		`);
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
@@ -504,6 +639,7 @@ VALUES
 		await queryRunner.query('DROP TABLE review_product');
 		await queryRunner.query('DROP TABLE discount');
 		await queryRunner.query('DROP TABLE attendee');
+		await queryRunner.query('DROP TABLE image');
 		await queryRunner.query('DROP TABLE program_item');
 		await queryRunner.query('DROP TABLE invoice');
 		await queryRunner.query('DROP TABLE program');

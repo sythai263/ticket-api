@@ -4,6 +4,7 @@ import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { DetailOrderDomain } from './detailOrder.domain';
+import { ImageDomain } from './image.domain';
 import { ReviewProductDomain } from './reviewProduct.domain';
 
 interface IProductProps {
@@ -15,6 +16,7 @@ interface IProductProps {
 	remain?: number;
 	reviews?: ReviewProductDomain[];
 	detail?: DetailOrderDomain[];
+	images?: ImageDomain[];
 	buyAmount?: number;
 
 }
@@ -72,6 +74,14 @@ export class ProductDomain extends AggregateRoot<IProductProps> {
 	get remain(): number {
 		const sum = this.detail.reduce((prev, curr) => prev + curr.amount, 0);
 		return this.props.total - sum;
+	}
+
+	get images(): ImageDomain[]{
+		return this.props.images;
+	}
+
+	set images(images: ImageDomain[]){
+		this.props.images= images;
 	}
 
 	get buyAmount(): number{

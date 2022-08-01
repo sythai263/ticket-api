@@ -33,4 +33,11 @@ export class CreateProductDto{
 	@IsString()
 		description: string;
 
+	@ApiProperty({
+		example: [1, 2, 3, 4],
+		isArray: true,
+	})
+	@IsString()
+		images: number[];
+
 }

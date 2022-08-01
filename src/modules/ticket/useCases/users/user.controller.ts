@@ -11,14 +11,17 @@ import {
 	Patch,
 	Post,
 	Req,
+	UploadedFile,
 	UseGuards,
+	UseInterceptors,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { SuccessNotification } from '../../../../core/infra/Success';
+import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import {
@@ -36,6 +39,7 @@ import {
 	GetUserUseCase,
 	UpdateUserUseCase
 } from './';
+import { ChangeAvatarUserUseCase } from './update/changeAvatar.usecase';
 import { GetUserErrors } from './user.error';
 
 @Controller('api/user')
@@ -48,6 +52,7 @@ export class UserController {
 		public readonly create: CreateUserUsecase,
 		public readonly deleteUser: DeleteUserUsecase,
 		public readonly forgotPassword: ForgotPasswordUseCase,
+		public readonly changeAvatar: ChangeAvatarUserUseCase,
 	) { }
 
   @Get()
@@ -199,5 +204,57 @@ export class UserController {
 		}
 
 		return new SuccessNotification('Mật khẩu đã được thay đổi, kiểm tra email !', HttpStatus.CREATED);
+	}
+
+	@Post('avatar')
+  @ApiBearerAuth()
+  @ApiOperation({
+  	description: 'Upload avatar',
+  	summary: 'Upload avatar',
+  })
+	@ApiParam({
+		name: 'avatar',
+		type: 'file',
+		description:'Hình ảnh cần thay đổi'
+	})
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+  	FilesInterceptor({
+  		fieldName: 'avatar',
+  		path:'./'
+  	}),
+  )
+	@ApiResponse({
+		type: UserDto
+	})
+  @ApiUnauthorizedResponse({
+  	description: 'Unauthorized',
+  })
+  @ApiForbiddenResponse({
+  	description: 'Forbidden',
+  })
+  @ApiBadRequestResponse({
+  	description: 'Bad Request',
+  })
+  @ApiInternalServerErrorResponse({
+  	description: 'Internal Server Error',
+  })
+	async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+	): Promise<UserDto> {
+		const user = req.user as JwtPayload;
+  	const result = await this.changeAvatar.execute(file, user.id);
+  	if (result.isLeft()) {
+  		const err = result.value;
+  		switch (err.constructor) {
+			case GetUserErrors.UserNotFound:
+				throw new NotFoundException(err.errorValue());
+  		default:
+  			throw new InternalServerErrorException(err.errorValue());
+  		}
+		}
+
+		return result.value.getValue();
 	}
 }

@@ -59,6 +59,7 @@ import {
 	PaymentReturnOrderUsecase
 } from './useCases/payment';
 import {
+	ChangeAvatarProductUseCase,
 	CreateProductUsecase,
 	DeleteProductUsecase,
 	GetProductByIdUsecase,
@@ -75,6 +76,7 @@ import {
 	UpdateProgramItemUsecase
 } from './useCases/programItem';
 import {
+	ChangeAvatarProgramUseCase,
 	ChangeCheckInProgramUsecase,
 	CreateProgramUsecase,
 	DeleteProgramUsecase,
@@ -91,6 +93,7 @@ import {
 } from './useCases/purchase';
 import { UploadController } from './useCases/upload/upload.controller';
 import {
+	ChangeAvatarUserUseCase,
 	ChangePasswordUseCase,
 	CreateUserUsecase,
 	DeleteUserUsecase,
@@ -138,6 +141,7 @@ import {
 		GetUserUseCase,
 		UpdateUserUseCase,
 		ChangePasswordUseCase,
+		ChangeAvatarUserUseCase,
 		CreateUserUsecase,
 		DeleteUserUsecase,
 		ForgotPasswordUseCase,
@@ -145,6 +149,8 @@ import {
 		GetProgramsUsecase,
 		GetProgramByIdUsecase,
 		UpdateProgramUsecase,
+		ChangeAvatarProductUseCase,
+		ChangeAvatarProgramUseCase,
 		DeleteProgramUsecase,
 		CreateProductUsecase,
 		GetProductsUsecase,

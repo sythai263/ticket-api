@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as moment from 'moment';
 import { DataSource, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
@@ -122,6 +123,7 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 	async search(search?: SearchProgramDto): Promise<[ProgramDomain[], number]> {
 
 		const queryBuilder = this.repo.createQueryBuilder('program')
+			.where('program.startDate >= :now', { now: moment().add(7, 'h').toDate() })
 			.orderBy('program.id', search.order)
 			.skip(search.skip)
 			.take(search.take);

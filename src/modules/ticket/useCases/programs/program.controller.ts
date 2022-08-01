@@ -4,7 +4,9 @@ import {
 	Controller, Delete, Get, HttpCode,
 	HttpStatus,
 	InternalServerErrorException, NotFoundException, Param, Patch, Post, Query, Req,
+	UploadedFile,
 	UseGuards,
+	UseInterceptors,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
@@ -15,6 +17,7 @@ import { RoleType } from '../../../../common/constants/roleType';
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
+import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { PaginationProgramDto } from '../../infrastructures/dtos/program';
@@ -29,6 +32,7 @@ import { DeleteProgramUsecase } from './delete/deleteProgram.usecase';
 import { GetProgramByIdUsecase } from './get/getProgramById.usecase';
 import { GetProgramsUsecase } from './get/getPrograms.usecase';
 import { ProgramErrors } from './program.error';
+import { ChangeAvatarProgramUseCase } from './update/changeAvatar.usecase';
 import { ChangeCheckInProgramUsecase } from './update/changeCheckInProgram.usecase';
 import { UpdateProgramUsecase } from './update/updateProgram.usecase';
 
@@ -42,6 +46,7 @@ export class ProgramController {
 		public readonly updateProgram: UpdateProgramUsecase,
 		public readonly changeStatus: ChangeCheckInProgramUsecase,
 		public readonly deleteProgram: DeleteProgramUsecase,
+		public readonly changeAvatar: ChangeAvatarProgramUseCase,
 	) { }
 
 	@Post()
@@ -310,5 +315,62 @@ export class ProgramController {
 		}
 
 		return new SuccessNotification('Delete program successfully !', HttpStatus.CREATED);
+	}
+
+	@Post(':id/avatar')
+  @ApiBearerAuth()
+  @ApiOperation({
+  	description: 'Thay đổi avatar',
+  	summary: 'Thay đổi avatar',
+  })
+	@ApiParam({
+		name: 'avatar',
+		type: 'file',
+		description:'Hình ảnh cần thay đổi'
+	})
+	@ApiParam({
+		name: 'id',
+		description:'id sản phẩm cần đổi avatar'
+	})
+  @UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+  @UseInterceptors(
+  	FilesInterceptor({
+  		fieldName: 'avatar',
+  		path:'./'
+  	}),
+  )
+	@ApiResponse({
+		type: ProgramDto
+	})
+  @ApiUnauthorizedResponse({
+  	description: 'Unauthorized',
+  })
+  @ApiForbiddenResponse({
+  	description: 'Forbidden',
+  })
+  @ApiBadRequestResponse({
+  	description: 'Bad Request',
+  })
+  @ApiInternalServerErrorResponse({
+  	description: 'Internal Server Error',
+  })
+	async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+	): Promise<ProgramDto> {
+		const user = req.user as JwtPayload;
+  	const result = await this.changeAvatar.execute(file, user.id);
+  	if (result.isLeft()) {
+  		const err = result.value;
+  		switch (err.constructor) {
+			case ProgramErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+  		default:
+  			throw new InternalServerErrorException(err.errorValue());
+  		}
+		}
+
+		return result.value.getValue();
 	}
 }

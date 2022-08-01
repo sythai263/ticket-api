@@ -26,7 +26,7 @@ export class ProgramMap {
 		dto.description = entity.description;
 		dto.place = entity.place;
 		dto.allowCheckIn = entity.allowCheckIn;
-		dto.imageQR = entity.imageQR;
+		dto.imageQR = url + entity.imageQR;
 		return dto;
 	}
 
@@ -125,7 +125,7 @@ export class ProgramMap {
 		dto.remain = domain.remain;
 		dto.description = domain.description;
 		dto.place = domain.place;
-		dto.imageQR = domain.imageQR;
+		dto.imageQR =url + domain.imageQR;
 		dto.allowCheckIn = domain.allowCheckIn;
 
 		return dto;

@@ -13,7 +13,9 @@ import {
 	Post,
 	Query,
 	Req,
+	UploadedFile,
 	UseGuards,
+	UseInterceptors,
 	UsePipes,
 	ValidationPipe
 } from '@nestjs/common';
@@ -34,6 +36,7 @@ import { RoleType } from '../../../../common/constants/roleType';
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
+import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import {
@@ -48,6 +51,7 @@ import { DeleteProductUsecase } from './delete/deleteProduct.usecase';
 import { GetProductByIdUsecase } from './get/getProductById.usecase';
 import { GetProductsUsecase } from './get/getProducts.usecase';
 import { ProductErrors } from './product.error';
+import { ChangeAvatarProductUseCase } from './update/changeAvatar.usecase';
 import { UpdateProductUsecase } from './update/updateProduct.usecase';
 
 @Controller('api/products')
@@ -59,6 +63,7 @@ export class ProductController {
 		public readonly getProductById: GetProductByIdUsecase,
 		public readonly updateProduct: UpdateProductUsecase,
 		public readonly deleteProduct: DeleteProductUsecase,
+		public readonly changeAvatar: ChangeAvatarProductUseCase,
 
 	) { }
 
@@ -279,5 +284,62 @@ export class ProductController {
 		}
 
 		return new SuccessNotification('Đã xóa sản phẩm', HttpStatus.CREATED);
+	}
+
+	@Post(':id/avatar')
+  @ApiBearerAuth()
+  @ApiOperation({
+  	description: 'Thay đổi avatar',
+  	summary: 'Thay đổi avatar',
+  })
+	@ApiParam({
+		name: 'avatar',
+		type: 'file',
+		description:'Hình ảnh cần thay đổi'
+	})
+	@ApiParam({
+		name: 'id',
+		description:'id sản phẩm cần đổi avatar'
+	})
+  @UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+  @UseInterceptors(
+  	FilesInterceptor({
+  		fieldName: 'avatar',
+  		path:'./'
+  	}),
+  )
+	@ApiResponse({
+		type: ProductDto
+	})
+  @ApiUnauthorizedResponse({
+  	description: 'Unauthorized',
+  })
+  @ApiForbiddenResponse({
+  	description: 'Forbidden',
+  })
+  @ApiBadRequestResponse({
+  	description: 'Bad Request',
+  })
+  @ApiInternalServerErrorResponse({
+  	description: 'Internal Server Error',
+  })
+	async uploadAvatar(
+    @Req() req: Request,
+    @UploadedFile() file: Express.Multer.File,
+	): Promise<ProductDto> {
+		const user = req.user as JwtPayload;
+  	const result = await this.changeAvatar.execute(file, user.id);
+  	if (result.isLeft()) {
+  		const err = result.value;
+  		switch (err.constructor) {
+			case ProductErrors.NotFound:
+				throw new NotFoundException(err.errorValue());
+  		default:
+  			throw new InternalServerErrorException(err.errorValue());
+  		}
+		}
+
+		return result.value.getValue();
 	}
 }

@@ -1,5 +1,6 @@
 import {
 	Controller,
+	Param,
 	Post,
 	Req,
 	UploadedFile,
@@ -11,19 +12,21 @@ import {
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiOperation,
-	ApiTags,
+	ApiOperation, ApiParam, ApiResponse, ApiTags,
 	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request } from 'express';
-import * as fs from 'fs';
-import * as Jimp from 'jimp';
 import { join } from 'path';
 
+import { ModeImage } from '../../../../common/constants/modeImage';
+import { RoleType } from '../../../../common/constants/roleType';
+import { Roles } from '../../../../decorators/Roles.decorator';
+import { RolesGuard } from '../../../../guards/roles.guard';
 import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { ConfigService } from '../../../../shared/services/config.service';
-import { generateFilename } from '../../../../utils/normalize';
+import { saveImage } from '../../../../utils/saveImage';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
+import { UploadDto } from '../../infrastructures/dtos/upload';
 
 const imageURL = join(
 	__dirname,
@@ -38,7 +41,7 @@ const imageURL = join(
 	'images',
 );
 
-@Controller('api/upload')
+@Controller('api/upload/:mode')
 @ApiTags('Upload file')
 export class UploadController {
 	constructor(private configService: ConfigService) {}
@@ -49,13 +52,21 @@ export class UploadController {
   	description: 'Upload hình ảnh',
   	summary: 'Upload hình ảnh',
   })
-  @UseGuards(JwtAuthGuard)
+	@ApiParam({
+		name: 'mode',
+		enum: ModeImage
+	})
   @UseInterceptors(
   	FilesInterceptor({
   		fieldName: 'file',
-  		path: 'images',
+  		path: './',
   	}),
   )
+	@ApiResponse({
+		type: UploadDto
+	})
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
   @ApiUnauthorizedResponse({
   	description: 'Unauthorized',
   })
@@ -70,72 +81,11 @@ export class UploadController {
   })
 	async uploadImage(
     @Req() req: Request,
-    @UploadedFile() file: Express.Multer.File,
-	) {
-		const image = await Jimp.read(join(imageURL, file.filename));
-		const filename = generateFilename(file.originalname);
-		if (file.size > 200 * 1024) {
-			const width = image.getHeight() / 2;
-			const height = image.getWidth() / 2;
-			const ext = file.originalname.split('.').pop();
-			if (ext.toLowerCase() === 'jpg' || ext.toLowerCase() === 'jpeg') {
-				image.resize(width, height).quality(80);
-			} else if (ext.toLowerCase() === 'png') {
-				image.resize(width, height);
-			}
-		}
-
-		const urlImage = this.configService.get('UPLOAD_FOLDER');
-		await image.writeAsync(join(urlImage, 'images', filename));
-		fs.unlinkSync(join(imageURL, file.filename));
-		return { image: `assets/upload/images/${filename}` };
+		@UploadedFile() file: Express.Multer.File,
+		@Param('mode') mode: ModeImage,
+	): Promise<UploadDto> {
+		const url = await saveImage(file, mode);
+		return new UploadDto(url);
 	}
 
-  @Post('avatar')
-  @ApiBearerAuth()
-  @ApiOperation({
-  	description: 'Upload avatar',
-  	summary: 'Upload avatar',
-  })
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-  	FilesInterceptor({
-  		fieldName: 'avatar',
-  		path: 'images',
-  	}),
-  )
-  @ApiUnauthorizedResponse({
-  	description: 'Unauthorized',
-  })
-  @ApiForbiddenResponse({
-  	description: 'Forbidden',
-  })
-  @ApiBadRequestResponse({
-  	description: 'Bad Request',
-  })
-  @ApiInternalServerErrorResponse({
-  	description: 'Internal Server Error',
-  })
-  async uploadAvatar(
-    @Req() req: Request,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-  	const image = await Jimp.read(join(imageURL, file.filename));
-  	const filename = generateFilename(file.originalname);
-  	if (file.size > 200 * 1024) {
-  		const width = image.getHeight() / 2;
-  		const height = image.getWidth() / 2;
-  		const ext = file.originalname.split('.').pop();
-  		if (ext.toLowerCase() === 'jpg' || ext.toLowerCase() === 'jpeg') {
-  			image.resize(width, height).quality(80);
-  		} else if (ext.toLowerCase() === 'png') {
-  			image.resize(width, height);
-  		}
-  	}
-
-  	const urlImage = this.configService.get('UPLOAD_FOLDER');
-  	await image.writeAsync(join(urlImage, 'avatars', filename));
-  	fs.unlinkSync(join(imageURL, file.filename));
-  	return { image: `assets/upload/avatars/${filename}` };
-  }
 }

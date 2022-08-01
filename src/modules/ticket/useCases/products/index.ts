@@ -5,5 +5,6 @@ export { GetProductByIdUsecase } from './get/getProductById.usecase';
 export { GetProductsUsecase } from './get/getProducts.usecase';
 export { ProductController } from './product.controller';
 export { ProductErrors } from './product.error';
+export { ChangeAvatarProductUseCase } from './update/changeAvatar.usecase';
 export { UpdateProductUsecase } from './update/updateProduct.usecase';
 

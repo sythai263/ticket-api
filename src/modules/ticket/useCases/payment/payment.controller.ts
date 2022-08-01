@@ -8,8 +8,7 @@ import {
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse, ApiInternalServerErrorResponse,
-	ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse,
-	ApiTags
+	ApiNotFoundResponse, ApiOperation, ApiParam, ApiTags
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { stringify } from 'qs';
@@ -47,9 +46,6 @@ export class PaymentController {
 		description: 'Mã hóa đơn'
 	})
 	@HttpCode(HttpStatus.CREATED)
-	@ApiResponse({
-		type: InvoiceDto
-	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
 	})
@@ -106,9 +102,6 @@ export class PaymentController {
 		summary:'Nhận kết quả từ hệ thống thanh toán VNPay'
 	})
 	@HttpCode(HttpStatus.CREATED)
-	@ApiResponse({
-		type: AttendeeDto
-	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
 	})
@@ -125,6 +118,7 @@ export class PaymentController {
 		@Res() res: Response,
 		@Query() dto: PaymentReturnDto): Promise<AttendeeDto> {
 		const result = await this.paymentReturn.execute(dto);
+		const urlReturn = this.config.get('URL_RETURN_PAY_SUCCESS');
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
@@ -141,7 +135,7 @@ export class PaymentController {
 			}
 		}
 
-		res.json(result.value.getValue());
+		res.redirect(urlReturn);
 	}
 
 	@Get('order/:id')
@@ -154,9 +148,6 @@ export class PaymentController {
 		description: 'Mã đơn hàng'
 	})
 	@HttpCode(HttpStatus.CREATED)
-	@ApiResponse({
-		type: InvoiceDto
-	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
 	})
@@ -213,9 +204,6 @@ export class PaymentController {
 		summary:'Nhận kết quả từ hệ thống thanh toán VNPay'
 	})
 	@HttpCode(HttpStatus.CREATED)
-	@ApiResponse({
-		type: InvoiceDto
-	})
 	@ApiBadRequestResponse({
 		description: 'Bad Request'
 	})
@@ -232,6 +220,7 @@ export class PaymentController {
 		@Res() res: Response,
 		@Query() dto: PaymentReturnDto): Promise<InvoiceDto> {
 		const result = await this.paymentReturnOrder.execute(dto);
+		const urlReturn = this.config.get('URL_RETURN_PAY_SUCCESS');
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
@@ -248,7 +237,7 @@ export class PaymentController {
 			}
 		}
 
-		res.json(result.value.getValue());
+		res.redirect(urlReturn);
 	}
 
 	@Get('vnpay-ipn')

@@ -284,7 +284,7 @@ VALUES
 		'sythai263@gmail.com',
 		'2000-03-26',
 		'Male',
-		'assets/upload/avatars/sythai.jpg',
+		'assets/upload/avatars/sy-thai.jpg',
 		'Admin',
 		1,
 		-1,

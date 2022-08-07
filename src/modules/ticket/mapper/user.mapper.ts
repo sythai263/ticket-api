@@ -14,6 +14,7 @@ export class UserMap {
 		userDto.email = entity.email;
 		userDto.phone = entity.phone;
 		userDto.username = entity.username;
+		userDto.gender = entity.gender;
 		userDto.firstName = entity.firstName;
 		userDto.lastName = entity.lastName;
 		userDto.role = entity.role;
@@ -35,6 +36,7 @@ export class UserMap {
 		entity.lastName = dto.lastName;
 		entity.role = dto.role;
 		entity.birthday = dto.birthday;
+		entity.gender = dto.gender;
 		return entity;
 	}
 
@@ -55,6 +57,7 @@ export class UserMap {
 				avatar: entity.avatar,
 				birthday: entity.birthday,
 				password: entity.password,
+				gender: entity.gender
 			},
 			new UniqueEntityID(id),
 		);
@@ -73,6 +76,7 @@ export class UserMap {
 		entity.lastName = domain.lastName;
 		entity.role = domain.role;
 		entity.birthday = domain.birthday;
+		entity.gender = domain.gender;
 		return entity;
 	}
 
@@ -89,6 +93,7 @@ export class UserMap {
 		userDto.lastName = domain.lastName;
 		userDto.role = domain.role;
 		userDto.birthday = domain.birthday;
+		userDto.gender = domain.gender;
 		return userDto;
 	}
 
@@ -111,6 +116,7 @@ export class UserMap {
 			avatar: dto.avatar,
 			birthday: dto.birthday,
 			password: dto.password,
+			gender: dto.gender
 		});
 		return userOrError.isSuccess ? userOrError.getValue() : null;
 	}

@@ -7,8 +7,8 @@ import { ProductRepository, ProgramItemRepository, ProgramRepository } from '../
 import { ProgramItemErrors } from '../programItem.error';
 
 type Response = Either<
-  AppError.UnexpectedError | ProgramItemErrors.Error| ProgramItemErrors.NotFound,
-  Result<boolean>
+	AppError.UnexpectedError | ProgramItemErrors.Error | ProgramItemErrors.NotFound,
+	Result<boolean>
 >;
 
 @Injectable()
@@ -16,8 +16,8 @@ export class DeleteProgramItemUsecase implements IUseCase<number, Promise<Respon
 	constructor(
 		@Inject('ProgramItemRepository') public readonly repo: ProgramItemRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('ProductRepository') public readonly productRepo: ProductRepository
-	) { }
+		@Inject('ProductRepository') public readonly productRepo: ProductRepository,
+	) {}
 
 	async execute(id: number, userId: number): Promise<Response> {
 		const domains = await this.repo.findById(id);
@@ -27,11 +27,9 @@ export class DeleteProgramItemUsecase implements IUseCase<number, Promise<Respon
 
 		const isSuccess = await this.repo.softDelete(id, userId);
 		if (!isSuccess) {
-			return left(new ProgramItemErrors.Error('Can\'t delete this product!'));
+			return left(new ProgramItemErrors.Error('Không thể xóa sản phẩm này khỏi chương trình!'));
 		}
 
 		return right(Result.ok(isSuccess));
-
 	}
-
 }

@@ -65,16 +65,16 @@ export class PaymentController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PaymentErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case PaymentErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case PaymentErrors.Paid:
-				res.statusCode = HttpStatus.OK;
-				res.json({ info: err.errorValue() });
-				return;
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PaymentErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case PaymentErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case PaymentErrors.Paid:
+					res.statusCode = HttpStatus.OK;
+					res.json({ info: err.errorValue() });
+					return;
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		} else {
 			const { createHmac } = await import('node:crypto');
@@ -122,16 +122,16 @@ export class PaymentController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PaymentErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case PaymentErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case PaymentErrors.Paid:
-				res.statusCode = HttpStatus.OK;
-				res.json(err.errorValue());
-				return;
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PaymentErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case PaymentErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case PaymentErrors.Paid:
+					res.statusCode = HttpStatus.OK;
+					res.json(err.errorValue());
+					return;
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -167,16 +167,16 @@ export class PaymentController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PaymentErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case PaymentErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case PaymentErrors.Paid:
-				res.statusCode = HttpStatus.OK;
-				res.json({ info: err.errorValue() });
-				return;
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PaymentErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case PaymentErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case PaymentErrors.Paid:
+					res.statusCode = HttpStatus.OK;
+					res.json({ info: err.errorValue() });
+					return;
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		} else {
 			const { createHmac } = await import('node:crypto');
@@ -224,16 +224,16 @@ export class PaymentController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PaymentErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case PaymentErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case PaymentErrors.Paid:
-				res.statusCode = HttpStatus.OK;
-				res.json(err.errorValue());
-				return;
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PaymentErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case PaymentErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case PaymentErrors.Paid:
+					res.statusCode = HttpStatus.OK;
+					res.json(err.errorValue());
+					return;
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -254,20 +254,20 @@ export class PaymentController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PaymentErrors.NotFound:
-				res.status(HttpStatus.OK).json({ RspCode: '01', Message: err.errorValue() });
-				return;
-			case PaymentErrors.Error:
-				res.status(HttpStatus.OK).json({ RspCode: '97', Message: err.errorValue() });
-				return;
-			case PaymentErrors.Paid:
-				res.status(HttpStatus.OK).json({ RspCode: '99', Message: err.errorValue() });
-				return;
-			case PaymentErrors.NotEnoughMoney:
-				res.status(HttpStatus.OK).json({ RspCode: '04', Message: err.errorValue() });
-				return;
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PaymentErrors.NotFound:
+					res.status(HttpStatus.OK).json({ RspCode: '01', Message: err.errorValue() });
+					return;
+				case PaymentErrors.Error:
+					res.status(HttpStatus.OK).json({ RspCode: '97', Message: err.errorValue() });
+					return;
+				case PaymentErrors.Paid:
+					res.status(HttpStatus.OK).json({ RspCode: '99', Message: err.errorValue() });
+					return;
+				case PaymentErrors.NotEnoughMoney:
+					res.status(HttpStatus.OK).json({ RspCode: '04', Message: err.errorValue() });
+					return;
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 

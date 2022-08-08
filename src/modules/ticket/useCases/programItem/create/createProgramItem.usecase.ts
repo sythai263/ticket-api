@@ -12,12 +12,12 @@ import { ProgramErrors } from '../../programs';
 import { ProgramItemErrors } from '../programItem.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	ProgramItemErrors.NotFound |
-	ProgramItemErrors.Error |
-	ProductErrors.NotFound |
-	ProgramErrors.NotFound,
-  Result<ProgramItemDto[]>
+	| AppError.UnexpectedError
+	| ProgramItemErrors.NotFound
+	| ProgramItemErrors.Error
+	| ProductErrors.NotFound
+	| ProgramErrors.NotFound,
+	Result<ProgramItemDto[]>
 >;
 
 @Injectable()
@@ -25,11 +25,10 @@ export class CreateProgramItemUsecase implements IUseCase<CreateProgramItemDto, 
 	constructor(
 		@Inject('ProgramItemRepository') public readonly repo: ProgramItemRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('ProductRepository') public readonly productRepo: ProductRepository
-	) { }
+		@Inject('ProductRepository') public readonly productRepo: ProductRepository,
+	) {}
 
 	async execute(dto: CreateProgramItemDto, userId: number): Promise<Response> {
-
 		const programDomain = await this.programRepo.findById(dto.programId);
 		if (!programDomain) {
 			return left(new ProgramErrors.NotFound());
@@ -42,20 +41,23 @@ export class CreateProgramItemUsecase implements IUseCase<CreateProgramItemDto, 
 
 		const productItems = await this.repo.findBy({
 			program: {
-				id: dto.programId
-			}
+				id: dto.programId,
+			},
 		});
-		const newItems = productDomains.map(product => new ProgramItemDomain({
-			product,
-			program: programDomain
-		}));
+		const newItems = productDomains.map(
+			(product) =>
+				new ProgramItemDomain({
+					product,
+					program: programDomain,
+				}),
+		);
 
 		let filterItems = new Array<ProgramItemDomain>();
 		if (productItems.length === 0) {
 			filterItems = newItems;
 		} else {
-			filterItems = newItems.filter(item => {
-				const itemCheck = productItems.filter(product => !item.checkDuplicate(product));
+			filterItems = newItems.filter((item) => {
+				const itemCheck = productItems.filter((product) => !item.checkDuplicate(product));
 				if (!itemCheck) {
 					return true;
 				}
@@ -64,20 +66,18 @@ export class CreateProgramItemUsecase implements IUseCase<CreateProgramItemDto, 
 			});
 
 			if (filterItems.length === 0) {
-				return left(new ProgramItemErrors.Error('Duplicate program and products !'));
+				return left(new ProgramItemErrors.Error('Sản phẩm này đã có trong chương trình!'));
 			}
 		}
 
-		const entities = filterItems.map(item => {
+		const entities = filterItems.map((item) => {
 			const entity = ProgramItemMap.toEntity(item);
 			entity.createdBy = userId;
 			entity.updatedBy = userId;
 			return entity;
-
 		});
 
 		const domains = await this.repo.saveMany(entities);
 		return right(Result.ok(ProgramItemMap.toDtos(domains)));
 	}
-
 }

@@ -8,8 +8,8 @@ import { ConfigService } from '../../shared/services/config.service';
 
 export interface JwtPayload {
 	id: number;
-  username: string;
-  role: RoleType;
+	username: string;
+	role: RoleType;
 }
 
 @Injectable()
@@ -19,7 +19,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
 			try {
 				return ExtractJwt.fromAuthHeaderAsBearerToken()(req);
 			} catch (error) {
-				throw new UnauthorizedException('Forbidden');
+				throw new UnauthorizedException('Không đủ quyền truy cập!');
 			}
 		}
 
@@ -32,7 +32,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
 
 	validate(payload: JwtPayload): JwtPayload {
 		if (!payload) {
-			throw new UnauthorizedException('Forbidden');
+			throw new UnauthorizedException('Không đủ quyền truy cập!');
 		}
 
 		return payload;

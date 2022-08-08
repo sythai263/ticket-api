@@ -6,10 +6,7 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ProgramRepository } from '../../../repositories';
 import { ProgramErrors } from '../program.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.Error| ProgramErrors.NotFound,
-  Result<boolean>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.Error | ProgramErrors.NotFound, Result<boolean>>;
 
 @Injectable()
 export class DeleteProgramUsecase implements IUseCase<number, Promise<Response>> {
@@ -23,11 +20,9 @@ export class DeleteProgramUsecase implements IUseCase<number, Promise<Response>>
 
 		const isSuccess = await this.repo.softDelete({ id }, userId);
 		if (!isSuccess) {
-			return left(new ProgramErrors.Error('Can\'t delete this program !'));
+			return left(new ProgramErrors.Error('Không thể xóa chương trình!'));
 		}
 
 		return right(Result.ok(isSuccess));
-
 	}
-
 }

@@ -9,10 +9,7 @@ import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
-type Response = Either<
-  AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<UserLoginDto>
->;
+type Response = Either<AppError.UnexpectedError | GetUserErrors.UserNotFound, Result<UserLoginDto>>;
 
 @Injectable()
 export class ChangePasswordUseCase implements IUseCase<PasswordDto, Promise<Response>> {
@@ -24,27 +21,21 @@ export class ChangePasswordUseCase implements IUseCase<PasswordDto, Promise<Resp
 			return left(new GetUserErrors.UserNotFound());
 		}
 
-		const check = user.changePassword(
-			passwordDto.oldPassword,
-			passwordDto.password,
-			passwordDto.rePassword
-		);
+		const check = user.changePassword(passwordDto.oldPassword, passwordDto.password, passwordDto.rePassword);
 		switch (check) {
-		case 0:
-			const entity = UserMap.toEntity(user);
-			entity.updatedBy = user.id.toValue();
-			user = await this.repo.save(entity);
-			const dto = UserMap.toDto(user);
+			case 0:
+				const entity = UserMap.toEntity(user);
+				entity.updatedBy = user.id.toValue();
+				user = await this.repo.save(entity);
+				const dto = UserMap.toDto(user);
 
-			return right(Result.ok(dto));
-		case 1:
-			return left(new GetUserErrors.ErrorPassword('Wrong password!'));
-		case 2:
-			return left(new GetUserErrors.ErrorPassword('Invalid password !'));
-		default:
-			return left(new GetUserErrors.ErrorPassword('Password is not empty'));
+				return right(Result.ok(dto));
+			case 1:
+				return left(new GetUserErrors.ErrorPassword('Sai mật khẩu !'));
+			case 2:
+				return left(new GetUserErrors.ErrorPassword('Mật khẩu không hợp lệ !'));
+			default:
+				return left(new GetUserErrors.ErrorPassword('Mật khẩu không để trống !'));
 		}
-
 	}
-
 }

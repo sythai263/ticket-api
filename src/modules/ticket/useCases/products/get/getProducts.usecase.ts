@@ -11,18 +11,15 @@ import { ProductRepository } from '../../../repositories';
 import { ProductErrors } from '../product.error';
 
 type Response = Either<
-  AppError.UnexpectedError | ProductErrors.NotFound | ProductErrors.Error,
-  Result<PaginationProductDto>
+	AppError.UnexpectedError | ProductErrors.NotFound | ProductErrors.Error,
+	Result<PaginationProductDto>
 >;
 
 @Injectable()
 export class GetProductsUsecase implements IUseCase<SearchProgramDto, Promise<Response>> {
-	constructor(
-		@Inject('ProductRepository') public readonly repo: ProductRepository
-	) { }
+	constructor(@Inject('ProductRepository') public readonly repo: ProductRepository) {}
 
 	async execute(dto: SearchProgramDto): Promise<Response> {
-
 		const result = await this.repo.search(dto);
 		if (!result) {
 			return left(new ProductErrors.Error('Không có kết quả phù hợp'));
@@ -32,7 +29,5 @@ export class GetProductsUsecase implements IUseCase<SearchProgramDto, Promise<Re
 		const data = ProductMap.toDtos(result[0]);
 		const response = new PaginationProductDto(data, meta);
 		return right(Result.ok(response));
-
 	}
-
 }

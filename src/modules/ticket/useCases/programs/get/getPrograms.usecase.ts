@@ -11,21 +11,18 @@ import { ProgramRepository } from '../../../repositories/program.repo';
 import { ProgramErrors } from '../program.error';
 
 type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error,
-  Result<PaginationProgramDto>
+	AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error,
+	Result<PaginationProgramDto>
 >;
 
 @Injectable()
 export class GetProgramsUsecase implements IUseCase<SearchProgramDto, Promise<Response>> {
-	constructor(
-		@Inject('ProgramRepository') public readonly repo: ProgramRepository
-	) { }
+	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(dto: SearchProgramDto): Promise<Response> {
-
 		const result = await this.repo.search(dto);
 		if (!result) {
-			return left(new ProgramErrors.Error('Can\'t create program !'));
+			return left(new ProgramErrors.Error('Không tìm thấy chương trình này!'));
 		}
 
 		const data = ProgramMap.toDtos(result[0]);
@@ -33,7 +30,5 @@ export class GetProgramsUsecase implements IUseCase<SearchProgramDto, Promise<Re
 		const response = new PaginationProgramDto(data, meta);
 
 		return right(Result.ok(response));
-
 	}
-
 }

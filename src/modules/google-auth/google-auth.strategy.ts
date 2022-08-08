@@ -58,11 +58,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
 			// eslint-disable-next-line default-case
 			switch (error.constructor) {
-			case GetUserErrors.UserNotFound:
-				done('not found', null);
-				break;
-			case AppError.UnexpectedError:
-				done('exception', null);
+				case GetUserErrors.UserNotFound:
+					done('not found', null);
+					break;
+				case AppError.UnexpectedError:
+					done('exception', null);
 			}
 		} else {
 			userDto = result.value.getValue();

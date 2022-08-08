@@ -11,10 +11,7 @@ import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
-type Response = Either<
-  AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<UserLoginDto>
->;
+type Response = Either<AppError.UnexpectedError | GetUserErrors.UserNotFound, Result<UserLoginDto>>;
 
 @Injectable()
 export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Response>> {
@@ -23,12 +20,12 @@ export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Respon
 	async execute(userDto: CreateUserDto): Promise<Response> {
 		let user = await this.repo.findByUsername(userDto.username);
 		if (user) {
-			return left(new GetUserErrors.ErrorUser('Existing user in system!'));
+			return left(new GetUserErrors.ErrorUser('Tài khoản này đã tồn tại!'));
 		}
 
 		user = UserMap.dtoToDomain(userDto);
-		if(!user.confirmPassword(userDto.rePassword)){
-			return left(new GetUserErrors.ErrorPassword('Re-confirm password invalid'));
+		if (!user.confirmPassword(userDto.rePassword)) {
+			return left(new GetUserErrors.ErrorPassword('Xác nhận mật khẩu không khớp !'));
 		}
 
 		user.role = RoleType.USER;
@@ -41,7 +38,5 @@ export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Respon
 		}
 
 		return right(Result.ok(UserMap.toDto(user)));
-
 	}
-
 }

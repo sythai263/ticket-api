@@ -86,14 +86,14 @@ export class ProgramItemController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.NotFound:
-			case ProgramErrors.NotFound:
-			case ProgramItemErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case ProgramItemErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.NotFound:
+				case ProgramErrors.NotFound:
+				case ProgramItemErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case ProgramItemErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -128,10 +128,10 @@ export class ProgramItemController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -179,13 +179,13 @@ export class ProgramItemController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-			case ProgramItemErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+				case ProgramItemErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case ProductErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -231,11 +231,11 @@ export class ProgramItemController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-			case ProductErrors.NotFound:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+				case ProductErrors.NotFound:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -280,11 +280,11 @@ export class ProgramItemController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProgramItemErrors.Error:
-			case ProgramItemErrors.NotFound:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProgramItemErrors.Error:
+				case ProgramItemErrors.NotFound:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 

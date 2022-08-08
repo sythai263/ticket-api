@@ -8,19 +8,13 @@ import { ProgramMap } from '../../../mapper/program.mapper';
 import { ProgramRepository } from '../../../repositories/program.repo';
 import { ProgramErrors } from '../program.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error,
-  Result<ProgramDto>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error, Result<ProgramDto>>;
 
 @Injectable()
 export class GetProgramByIdUsecase implements IUseCase<number, Promise<Response>> {
-	constructor(
-		@Inject('ProgramRepository') public readonly repo: ProgramRepository
-	) { }
+	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(id: number): Promise<Response> {
-
 		const domain = await this.repo.findById(id);
 		if (!domain) {
 			return left(new ProgramErrors.NotFound());
@@ -28,5 +22,4 @@ export class GetProgramByIdUsecase implements IUseCase<number, Promise<Response>
 
 		return right(Result.ok(ProgramMap.toDto(domain)));
 	}
-
 }

@@ -9,25 +9,19 @@ import { ProgramMap } from '../../../mapper/program.mapper';
 import { ProgramRepository } from '../../../repositories/program.repo';
 import { ProgramErrors } from '../program.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error,
-  Result<ProgramDto>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error, Result<ProgramDto>>;
 
 @Injectable()
 export class CreateProgramUsecase implements IUseCase<CreateProgramDto, Promise<Response>> {
-	constructor(
-		@Inject('ProgramRepository') public readonly repo: ProgramRepository
-	) { }
+	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(dto: CreateProgramDto, userId: number): Promise<Response> {
-
 		const entity = ProgramMap.createDtoToEntity(dto);
 		entity.createdBy = userId;
 		entity.updatedBy = userId;
 		const domain = await this.repo.save(entity);
 		if (!domain) {
-			return left(new ProgramErrors.Error('Can\'t create program !'));
+			return left(new ProgramErrors.Error('Không thể tạo chương trình!'));
 		}
 
 		await domain.generateQRCode();
@@ -37,5 +31,4 @@ export class CreateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 
 		return right(Result.ok(ProgramMap.toDto(domainNew)));
 	}
-
 }

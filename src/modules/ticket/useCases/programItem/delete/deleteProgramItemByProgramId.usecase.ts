@@ -6,38 +6,33 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ProductRepository, ProgramItemRepository, ProgramRepository } from '../../../repositories';
 import { ProgramErrors } from '../../programs';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.Error| ProgramErrors.NotFound,
-  Result<boolean>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.Error | ProgramErrors.NotFound, Result<boolean>>;
 
 @Injectable()
 export class DeleteProgramItemByProgramIdUsecase implements IUseCase<number, Promise<Response>> {
 	constructor(
 		@Inject('ProgramItemRepository') public readonly repo: ProgramItemRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('ProductRepository') public readonly productRepo: ProductRepository
-	) { }
+		@Inject('ProductRepository') public readonly productRepo: ProductRepository,
+	) {}
 
 	async execute(programId: number, userId: number): Promise<Response> {
 		const domains = await this.repo.findBy({
 			program: {
-				id: programId
-			}
+				id: programId,
+			},
 		});
 		if (!domains) {
 			return left(new ProgramErrors.NotFound());
 		}
 
-		const ids = domains.map(domain => domain.id.toValue());
+		const ids = domains.map((domain) => domain.id.toValue());
 
 		const isSuccess = await this.repo.softDelete(ids, userId);
 		if (!isSuccess) {
-			return left(new ProgramErrors.Error('Can\'t delete this product!'));
+			return left(new ProgramErrors.Error('Không thể xóa các sản phẩm này!'));
 		}
 
 		return right(Result.ok(isSuccess));
-
 	}
-
 }

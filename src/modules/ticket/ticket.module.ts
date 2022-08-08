@@ -16,7 +16,7 @@ import {
 	PurchaseEntity,
 	ReviewProductEntity,
 	ReviewProgramEntity,
-	UserEntity
+	UserEntity,
 } from '../../entities';
 import { EventListener } from './events/event.listener';
 import {
@@ -31,14 +31,14 @@ import {
 	PurchaseRepository,
 	ReviewProductRepository,
 	ReviewProgramRepository,
-	UserRepository
+	UserRepository,
 } from './repositories';
 import {
 	AdminCheckInAttendeeUsecase,
 	AttendeeController,
 	CreateAttendeeUsecase,
 	DeleteAttendeeUsecase,
-	GetAttendeeUsecase
+	GetAttendeeUsecase,
 } from './useCases/attendee';
 import {
 	CreateDiscountUsecase,
@@ -46,19 +46,16 @@ import {
 	DiscountController,
 	GetDiscountByIdUsecase,
 	GetDiscountUsecase,
-	UpdateDiscountUsecase
+	UpdateDiscountUsecase,
 } from './useCases/discount';
-import {
-	GetInvoiceUsecase,
-	InvoiceController
-} from './useCases/invoice';
+import { GetInvoiceUsecase, InvoiceController } from './useCases/invoice';
 import {
 	IpnVNPayUsecase,
 	PaymentAttendanceUsecase,
 	PaymentController,
 	PaymentOrderUsecase,
 	PaymentReturnAttendanceUsecase,
-	PaymentReturnOrderUsecase
+	PaymentReturnOrderUsecase,
 } from './useCases/payment';
 import {
 	ChangeAvatarProductUseCase,
@@ -67,7 +64,7 @@ import {
 	GetProductByIdUsecase,
 	GetProductsUsecase,
 	ProductController,
-	UpdateProductUsecase
+	UpdateProductUsecase,
 } from './useCases/products';
 import {
 	CreateProgramItemUsecase,
@@ -75,7 +72,7 @@ import {
 	DeleteProgramItemUsecase,
 	GetProgramItemUsecase,
 	ProgramItemController,
-	UpdateProgramItemUsecase
+	UpdateProgramItemUsecase,
 } from './useCases/programItem';
 import {
 	ChangeAvatarProgramUseCase,
@@ -85,13 +82,13 @@ import {
 	GetProgramByIdUsecase,
 	GetProgramsUsecase,
 	ProgramController,
-	UpdateProgramUsecase
+	UpdateProgramUsecase,
 } from './useCases/programs';
 import {
 	ChangeStatusOrderUsecase,
 	CreateOrderUsecase,
 	PurchaseController,
-	UserReceivedOrderUsecase
+	UserReceivedOrderUsecase,
 } from './useCases/purchase';
 import { UploadController } from './useCases/upload/upload.controller';
 import {
@@ -102,7 +99,7 @@ import {
 	ForgotPasswordUseCase,
 	GetUserUseCase,
 	UpdateUserUseCase,
-	UserController
+	UserController,
 } from './useCases/users';
 
 @Module({
@@ -121,11 +118,10 @@ import {
 			PurchaseEntity,
 			DetailOrderEntity,
 			ReviewProductEntity,
-			ReviewProgramEntity
+			ReviewProgramEntity,
 		]),
 		EventEmitterModule.forRoot(),
-		ScheduleModule.forRoot()
-
+		ScheduleModule.forRoot(),
 	],
 	controllers: [
 		UploadController,
@@ -231,8 +227,7 @@ import {
 		{
 			provide: 'ImageRepository',
 			useClass: ImageRepository,
-		}
-
+		},
 	],
 })
 export class TicketModule {}

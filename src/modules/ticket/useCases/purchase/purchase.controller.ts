@@ -1,12 +1,18 @@
 import {
 	BadRequestException,
 	Body,
-	Controller, ForbiddenException, HttpCode,
+	Controller,
+	ForbiddenException,
+	HttpCode,
 	HttpStatus,
-	InternalServerErrorException, Param, Patch, Post, Req,
+	InternalServerErrorException,
+	Param,
+	Patch,
+	Post,
+	Req,
 	UseGuards,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiForbiddenResponse, ApiInternalServerErrorResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -25,35 +31,31 @@ import { UserReceivedOrderUsecase } from './update/userChangeStatus.usecase';
 @Controller('api/purchase')
 @ApiTags('Purchase')
 export class PurchaseController {
-	constructor(
-		public readonly createPurchase: CreateOrderUsecase,
-		public readonly admin: ChangeStatusOrderUsecase,
-		public readonly user: UserReceivedOrderUsecase,
-	) { }
+	constructor(public readonly createPurchase: CreateOrderUsecase, public readonly admin: ChangeStatusOrderUsecase, public readonly user: UserReceivedOrderUsecase) {}
 
 	@Post()
 	@ApiBearerAuth()
 	@ApiOperation({
 		description: 'Tạo đơn mua hàng',
-		summary:'Tạo đơn mua hàng'
+		summary: 'Tạo đơn mua hàng',
 	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: PurchaseDto
+		type: PurchaseDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async execute(@Req() req: Request, @Body() dto: CreatePurchaseDto): Promise<PurchaseDto> {
@@ -62,10 +64,10 @@ export class PurchaseController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PurchaseErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PurchaseErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -76,25 +78,25 @@ export class PurchaseController {
 	@ApiBearerAuth()
 	@ApiOperation({
 		description: 'Thay đổi trạng thái đơn hàng',
-		summary:'Thay đổi trạng thái đơn hàng'
+		summary: 'Thay đổi trạng thái đơn hàng',
 	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
 	@ApiResponse({
-		type: PurchaseDto
+		type: PurchaseDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async adminChangeStatus(@Req() req: Request, @Param('id') id: number): Promise<PurchaseDto> {
@@ -103,10 +105,10 @@ export class PurchaseController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PurchaseErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PurchaseErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -117,25 +119,25 @@ export class PurchaseController {
 	@ApiBearerAuth()
 	@ApiOperation({
 		description: 'Thay đổi trạng thái đơn hàng',
-		summary:'Thay đổi trạng thái đơn hàng'
+		summary: 'Thay đổi trạng thái đơn hàng',
 	})
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: PurchaseDto
+		type: PurchaseDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async userChangeStatus(@Req() req: Request, @Param('id') id: number): Promise<PurchaseDto> {
@@ -144,14 +146,14 @@ export class PurchaseController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case PurchaseErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case PurchaseErrors.NotFound:
-				throw new BadRequestException(err.errorValue());
-			case PurchaseErrors.Forbidden:
-				throw new ForbiddenException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case PurchaseErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case PurchaseErrors.NotFound:
+					throw new BadRequestException(err.errorValue());
+				case PurchaseErrors.Forbidden:
+					throw new ForbiddenException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 

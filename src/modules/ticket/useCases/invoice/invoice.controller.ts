@@ -1,16 +1,24 @@
 import {
 	BadRequestException,
-	Controller, Get, HttpCode,
-	HttpStatus, InternalServerErrorException, NotFoundException, Param, Req, UsePipes,
-	ValidationPipe
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	InternalServerErrorException,
+	NotFoundException,
+	Param,
+	Req,
+	UsePipes,
+	ValidationPipe,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
-	ApiBearerAuth, ApiInternalServerErrorResponse,
+	ApiBearerAuth,
+	ApiInternalServerErrorResponse,
 	ApiOperation,
 	ApiParam,
 	ApiResponse,
-	ApiTags
+	ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -21,50 +29,43 @@ import { InvoiceErrors } from './invoice.error';
 @Controller('api/invoice')
 @ApiTags('Invoice')
 export class InvoiceController {
-	constructor(
-		public readonly getInvoice: GetInvoiceUsecase,
-
-	) { }
+	constructor(public readonly getInvoice: GetInvoiceUsecase) {}
 
 	@Get(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã hóa đơn'
+		description: 'Mã hóa đơn',
 	})
 	@ApiOperation({
 		description: 'Lấy thông tin về 1 hóa đơn',
-		summary:'Lấy thông tin về 1 hóa đơn'
+		summary: 'Lấy thông tin về 1 hóa đơn',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
-		type: InvoiceDto
+		type: InvoiceDto,
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async execute(
-		@Req() req: Request,
-		@Param('id') id: number
-	): Promise<InvoiceDto> {
+	async execute(@Req() req: Request, @Param('id') id: number): Promise<InvoiceDto> {
 		const result = await this.getInvoice.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case InvoiceErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case InvoiceErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case InvoiceErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case InvoiceErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
 		return result.value.getValue();
 	}
-
 }

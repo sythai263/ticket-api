@@ -33,12 +33,12 @@ export class LoginController {
 		if (result.isLeft()) {
 			const error = result.value;
 			switch (error.constructor) {
-			case GetUserErrors.UserNotFound:
-				throw new NotFoundException(error.errorValue());
-			case GetUserErrors.PasswordWrong:
-				throw new BadRequestException(error.errorValue());
-			default:
-				throw new InternalServerErrorException(error.errorValue());
+				case GetUserErrors.UserNotFound:
+					throw new NotFoundException(error.errorValue());
+				case GetUserErrors.PasswordWrong:
+					throw new BadRequestException(error.errorValue());
+				default:
+					throw new InternalServerErrorException(error.errorValue());
 			}
 		}
 

@@ -72,20 +72,20 @@ export class PurchaseDomain extends AggregateRoot<IPurchaseProps>{
 
 	changeStatus(): boolean {
 		switch (this.status) {
-		case StatusBuy.ORDERED:
-			this.status = StatusBuy.CONFIRM;
-			return true;
-		case StatusBuy.CONFIRM:
-			this.status = StatusBuy.PREPARING;
-			return true;
-		case StatusBuy.PREPARING:
-			this.status = StatusBuy.SHIPPING;
-			return true;
-		case StatusBuy.SHIPPING:
-			this.status = StatusBuy.DELIVERED;
-			return true;
-		default:
-			return false;
+			case StatusBuy.ORDERED:
+				this.status = StatusBuy.CONFIRM;
+				return true;
+			case StatusBuy.CONFIRM:
+				this.status = StatusBuy.PREPARING;
+				return true;
+			case StatusBuy.PREPARING:
+				this.status = StatusBuy.SHIPPING;
+				return true;
+			case StatusBuy.SHIPPING:
+				this.status = StatusBuy.DELIVERED;
+				return true;
+			default:
+				return false;
 		}
 	}
 

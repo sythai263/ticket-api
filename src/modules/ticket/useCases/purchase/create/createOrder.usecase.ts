@@ -8,17 +8,25 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { PurchaseDomain } from '../../../../../domain';
 import { CreatePurchaseDto, PurchaseDto } from '../../../infrastructures/dtos/purchase';
 import { DetailOrderMap, InvoiceMap, PurchaseMap } from '../../../mapper';
-import { DetailOrderRepository, DiscountRepository, InvoiceRepository, ProductRepository, ProgramItemRepository, PurchaseRepository, UserRepository } from '../../../repositories';
+import {
+	DetailOrderRepository,
+	DiscountRepository,
+	InvoiceRepository,
+	ProductRepository,
+	ProgramItemRepository,
+	PurchaseRepository,
+	UserRepository,
+} from '../../../repositories';
 import { DiscountErrors } from '../../discount/discount.error';
 import { PurchaseErrors } from '../purchase.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	DiscountErrors.NotFound |
-	DiscountErrors.Error|
-	PurchaseErrors.Error |
-	PurchaseErrors.NotFoundProducts,
-  Result<PurchaseDto>
+	| AppError.UnexpectedError
+	| DiscountErrors.NotFound
+	| DiscountErrors.Error
+	| PurchaseErrors.Error
+	| PurchaseErrors.NotFoundProducts,
+	Result<PurchaseDto>
 >;
 
 @Injectable()
@@ -32,28 +40,26 @@ export class CreateOrderUsecase implements IUseCase<CreatePurchaseDto, Promise<R
 		@Inject('DetailOrderRepository') public readonly detailRepo: DetailOrderRepository,
 		@Inject('UserRepository') public readonly userRepo: UserRepository,
 		private event: EventEmitter2,
-
-	) { }
+	) {}
 
 	async execute(dto: CreatePurchaseDto, userId: number): Promise<Response> {
-
 		const ids = dto.details.map((detail) => detail.productId);
 		const products = await this.productRepo.find({
 			where: {
-				id: In(ids)
-			}
+				id: In(ids),
+			},
 		});
 		const user = await this.userRepo.findById(userId);
 
 		const idsSearch = products.map((product) => product.id.toValue());
 
-		const diff = ids.filter(id => !idsSearch.includes(id));
+		const diff = ids.filter((id) => !idsSearch.includes(id));
 		if (diff.length > 0) {
 			return left(new PurchaseErrors.NotFoundProducts(diff));
 		}
 
 		for (const product of products) {
-			const quantity = dto.details.find(detail => detail.productId === product.id.toValue());
+			const quantity = dto.details.find((detail) => detail.productId === product.id.toValue());
 			product.buyAmount = quantity.amount;
 		}
 
@@ -70,7 +76,7 @@ export class CreateOrderUsecase implements IUseCase<CreatePurchaseDto, Promise<R
 			details: null,
 			invoice: null,
 			orderDate: null,
-			user
+			user,
 		});
 		purchase.createDetails(products, discount);
 		purchase.createInvoice();
@@ -99,7 +105,9 @@ export class CreateOrderUsecase implements IUseCase<CreatePurchaseDto, Promise<R
 		const details = await this.detailRepo.saveMany(detailEntities);
 		purchaseSave.details = details;
 
-		invoice.info = `Thanh toan don mua hang ${purchaseSave.id.toValue()} tri gia ${invoice.amount.toLocaleString('vi-VN')} VND`;
+		invoice.info = `Thanh toan don mua hang ${purchaseSave.id.toValue()} tri gia ${invoice.amount.toLocaleString(
+			'vi-VN',
+		)} VND`;
 		await this.invoiceRepo.save(InvoiceMap.toEntity(invoice));
 
 		const buy = await this.repo.getDetails(purchaseSave.id.toValue());

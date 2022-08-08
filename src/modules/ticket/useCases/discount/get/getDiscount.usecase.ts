@@ -10,17 +10,13 @@ import { DiscountRepository } from '../../../repositories';
 import { DiscountErrors } from '../discount.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	DiscountErrors.NotFound |
-	DiscountErrors.Error ,
-  Result<PaginationDiscountDto>
+	AppError.UnexpectedError | DiscountErrors.NotFound | DiscountErrors.Error,
+	Result<PaginationDiscountDto>
 >;
 
 @Injectable()
 export class GetDiscountUsecase implements IUseCase<SearchDiscountDto, Promise<Response>> {
-	constructor(
-		@Inject('DiscountRepository') public readonly repo: DiscountRepository,
-	) { }
+	constructor(@Inject('DiscountRepository') public readonly repo: DiscountRepository) {}
 
 	async execute(dto: SearchDiscountDto, userId?: number): Promise<Response> {
 		const result = await this.repo.search(dto);
@@ -33,5 +29,4 @@ export class GetDiscountUsecase implements IUseCase<SearchDiscountDto, Promise<R
 		const response = new PaginationDiscountDto(data, meta);
 		return right(Result.ok(response));
 	}
-
 }

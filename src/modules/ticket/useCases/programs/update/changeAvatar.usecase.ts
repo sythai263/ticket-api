@@ -10,10 +10,7 @@ import { ProgramMap } from '../../../mapper';
 import { ProgramRepository } from '../../../repositories';
 import { ProgramErrors } from '../program.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.NotFound,
-  Result<ProgramDto>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.NotFound, Result<ProgramDto>>;
 
 @Injectable()
 export class ChangeAvatarProgramUseCase implements IUseCase<Express.Multer.File, Promise<Response>> {
@@ -32,5 +29,4 @@ export class ChangeAvatarProgramUseCase implements IUseCase<Express.Multer.File,
 		await this.repo.save(entity);
 		return right(Result.ok(ProgramMap.toDto(program)));
 	}
-
 }

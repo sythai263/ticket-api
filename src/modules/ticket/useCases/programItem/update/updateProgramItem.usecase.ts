@@ -11,12 +11,12 @@ import { ProgramErrors } from '../../programs';
 import { ProgramItemErrors } from '../programItem.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	ProgramItemErrors.NotFound |
-	ProgramItemErrors.Error |
-	ProductErrors.NotFound |
-	ProgramErrors.NotFound,
-  Result<ProgramItemDto>
+	| AppError.UnexpectedError
+	| ProgramItemErrors.NotFound
+	| ProgramItemErrors.Error
+	| ProductErrors.NotFound
+	| ProgramErrors.NotFound,
+	Result<ProgramItemDto>
 >;
 
 @Injectable()
@@ -24,11 +24,10 @@ export class UpdateProgramItemUsecase implements IUseCase<UpdateProgramItemDto, 
 	constructor(
 		@Inject('ProgramItemRepository') public readonly repo: ProgramItemRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('ProductRepository') public readonly productRepo: ProductRepository
-	) { }
+		@Inject('ProductRepository') public readonly productRepo: ProductRepository,
+	) {}
 
 	async execute(dto: UpdateProgramItemDto, userId: number): Promise<Response> {
-
 		const programDomain = await this.programRepo.findById(dto.programId);
 		if (!programDomain) {
 			return left(new ProgramErrors.NotFound());
@@ -47,15 +46,15 @@ export class UpdateProgramItemUsecase implements IUseCase<UpdateProgramItemDto, 
 		const check = await this.repo.find({
 			where: {
 				program: {
-					id: dto.programId
+					id: dto.programId,
 				},
 				product: {
-					id: dto.productId
-				}
-			}
+					id: dto.productId,
+				},
+			},
 		});
 		if (check) {
-			return left(new ProgramItemErrors.Error('Duplicate product in this program!'));
+			return left(new ProgramItemErrors.Error('Sản phẩm này đã có trong chương trình!'));
 		}
 
 		item.product = productDomain;
@@ -68,5 +67,4 @@ export class UpdateProgramItemUsecase implements IUseCase<UpdateProgramItemDto, 
 		const domain = await this.repo.save(entity);
 		return right(Result.ok(ProgramItemMap.toDto(domain)));
 	}
-
 }

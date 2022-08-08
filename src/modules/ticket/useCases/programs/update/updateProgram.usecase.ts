@@ -11,16 +11,11 @@ import { ProgramMap } from '../../../mapper/program.mapper';
 import { ProgramRepository } from '../../../repositories/program.repo';
 import { ProgramErrors } from '../program.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error,
-  Result<ProgramDto>
->;
+type Response = Either<AppError.UnexpectedError | ProgramErrors.NotFound | ProgramErrors.Error, Result<ProgramDto>>;
 
 @Injectable()
 export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<Response>> {
-	constructor(
-		@Inject('ProgramRepository') public readonly repo: ProgramRepository
-	) { }
+	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(dto: UpdateProgramDto, userId: number): Promise<Response> {
 		const domain = await this.repo.findById(dto.id);
@@ -47,5 +42,4 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 		domain.changeStartDate(dto.startDate);
 		return domain;
 	}
-
 }

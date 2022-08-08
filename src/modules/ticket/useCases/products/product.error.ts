@@ -5,7 +5,7 @@ export namespace ProductErrors {
 	export class NotFound extends Result<UseCaseError> {
 		constructor() {
 			super(false, {
-				message: 'The product is not found',
+				message: 'Không tìm thấy sản phẩm này!',
 			} as UseCaseError);
 		}
 	}

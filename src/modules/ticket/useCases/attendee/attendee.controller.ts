@@ -82,13 +82,13 @@ export class AttendeeController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProgramErrors.NotFound:
-			case AttendeeErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case AttendeeErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProgramErrors.NotFound:
+				case AttendeeErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -136,14 +136,14 @@ export class AttendeeController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case AttendeeErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case AttendeeErrors.Forbidden:
-				throw new ForbiddenException(err.errorValue());
-			case AttendeeErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case AttendeeErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case AttendeeErrors.Forbidden:
+					throw new ForbiddenException(err.errorValue());
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -191,14 +191,14 @@ export class AttendeeController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case AttendeeErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case AttendeeErrors.Forbidden:
-				throw new ForbiddenException(err.errorValue());
-			case AttendeeErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case AttendeeErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case AttendeeErrors.Forbidden:
+					throw new ForbiddenException(err.errorValue());
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -246,14 +246,14 @@ export class AttendeeController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case AttendeeErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			case AttendeeErrors.Forbidden:
-				throw new ForbiddenException(err.errorValue());
-			case AttendeeErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case AttendeeErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case AttendeeErrors.Forbidden:
+					throw new ForbiddenException(err.errorValue());
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 

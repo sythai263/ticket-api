@@ -10,10 +10,7 @@ import { UserMap } from '../../../mapper';
 import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
-type Response = Either<
-  AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<UserDto>
->;
+type Response = Either<AppError.UnexpectedError | GetUserErrors.UserNotFound, Result<UserDto>>;
 
 @Injectable()
 export class ChangeAvatarUserUseCase implements IUseCase<Express.Multer.File, Promise<Response>> {
@@ -31,7 +28,5 @@ export class ChangeAvatarUserUseCase implements IUseCase<Express.Multer.File, Pr
 		entity.updatedBy = userId;
 		await this.repo.save(entity);
 		return right(Result.ok(UserMap.toDto(user)));
-
 	}
-
 }

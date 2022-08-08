@@ -6,25 +6,23 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
-type Response = Either<
-  AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<boolean>
->;
+type Response = Either<AppError.UnexpectedError | GetUserErrors.UserNotFound, Result<boolean>>;
 
 @Injectable()
 export class DeleteUserUsecase implements IUseCase<string, Promise<Response>> {
 	constructor(@Inject('UserRepository') public readonly repo: UserRepository) {}
 
 	async execute(username: string, userId?: number): Promise<Response> {
-		const isSuccess = await this.repo.softDelete({
-			username
-		}, userId);
+		const isSuccess = await this.repo.softDelete(
+			{
+				username,
+			},
+			userId,
+		);
 		if (!isSuccess) {
-			return left(new GetUserErrors.ErrorUser('Can\'t delete this user !'));
+			return left(new GetUserErrors.ErrorUser('Không thể xóa tài khoản này !'));
 		}
 
 		return right(Result.ok(isSuccess));
-
 	}
-
 }

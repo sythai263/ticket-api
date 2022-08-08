@@ -11,12 +11,12 @@ import { ProgramErrors } from '../../programs';
 import { ProgramItemErrors } from '../programItem.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	ProgramItemErrors.NotFound |
-	ProgramItemErrors.Error |
-	ProductErrors.NotFound |
-	ProgramErrors.NotFound,
-  Result<ProgramItemsDto>
+	| AppError.UnexpectedError
+	| ProgramItemErrors.NotFound
+	| ProgramItemErrors.Error
+	| ProductErrors.NotFound
+	| ProgramErrors.NotFound,
+	Result<ProgramItemsDto>
 >;
 
 @Injectable()
@@ -24,11 +24,10 @@ export class GetProgramItemUsecase implements IUseCase<number, Promise<Response>
 	constructor(
 		@Inject('ProgramItemRepository') public readonly repo: ProgramItemRepository,
 		@Inject('ProgramRepository') public readonly programRepo: ProgramRepository,
-		@Inject('ProductRepository') public readonly productRepo: ProductRepository
-	) { }
+		@Inject('ProductRepository') public readonly productRepo: ProductRepository,
+	) {}
 
 	async execute(programId: number, userId?: number): Promise<Response> {
-
 		const programDomain = await this.programRepo.getProducts(programId);
 		if (programDomain) {
 			return right(Result.ok(ProgramMap.toProgramItemDto(programDomain)));
@@ -36,5 +35,4 @@ export class GetProgramItemUsecase implements IUseCase<number, Promise<Response>
 
 		return left(new ProgramErrors.NotFound());
 	}
-
 }

@@ -17,7 +17,7 @@ import {
 	UseGuards,
 	UseInterceptors,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -30,7 +30,7 @@ import {
 	ApiParam,
 	ApiResponse,
 	ApiTags,
-	ApiUnauthorizedResponse
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -46,7 +46,7 @@ import {
 	PaginationProductDto,
 	ProductDto,
 	SearchProductDto,
-	UpdateProductDto
+	UpdateProductDto,
 } from '../../infrastructures/dtos/product';
 import { CreateProductUsecase } from './create/createProduct.usecase';
 import { DeleteProductUsecase } from './delete/deleteProduct.usecase';
@@ -66,32 +66,31 @@ export class ProductController {
 		public readonly updateProduct: UpdateProductUsecase,
 		public readonly deleteProduct: DeleteProductUsecase,
 		public readonly changeAvatar: ChangeAvatarProductUseCase,
-
-	) { }
+	) {}
 
 	@Post()
 	@ApiOperation({
 		description: 'Thêm một sản phẩm mới',
-		summary:'Thêm một sản phẩm mới'
+		summary: 'Thêm một sản phẩm mới',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
 	@ApiResponse({
-		type: ProductDto
+		type: ProductDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async execute(@Req() req: Request, @Body() dto: CreateProductDto): Promise<ProductDto> {
@@ -100,10 +99,10 @@ export class ProductController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -113,31 +112,28 @@ export class ProductController {
 	@Get()
 	@ApiOperation({
 		description: 'Lấy danh sách các sản phẩm ',
-		summary:'Lấy danh sách các sản phẩm '
+		summary: 'Lấy danh sách các sản phẩm ',
 	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: PaginationProductDto,
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async search(
-		@Req() req: Request,
-		@Query() dto: SearchProductDto): Promise<PaginationProductDto> {
-
+	async search(@Req() req: Request, @Query() dto: SearchProductDto): Promise<PaginationProductDto> {
 		const result = await this.getProducts.execute(dto);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -147,141 +143,129 @@ export class ProductController {
 	@Get(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã của sản phẩm'
+		description: 'Mã của sản phẩm',
 	})
 	@ApiOperation({
 		description: 'Lấy thồng tin về 1 sản phẩm',
-		summary:'Lấy thồng tin về 1 sản phẩm'
+		summary: 'Lấy thồng tin về 1 sản phẩm',
 	})
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
-		type: ProductDto
+		type: ProductDto,
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async getById(
-		@Req() req: Request,
-		@Param('id') id: number): Promise<ProductDto> {
-
+	async getById(@Req() req: Request, @Param('id') id: number): Promise<ProductDto> {
 		const result = await this.getProductById.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case ProductErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
 		return result.value.getValue();
-
 	}
 
 	@Patch(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã của sản phẩm'
+		description: 'Mã của sản phẩm',
 	})
 	@ApiOperation({
 		description: 'Cập nhật thông tin 1 sản phẩm',
-		summary:'Cập nhật thông tin 1 sản phẩm'
+		summary: 'Cập nhật thông tin 1 sản phẩm',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
 	@ApiResponse({
-		type: ProductDto
+		type: ProductDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async updateById(
-		@Req() req: Request,
-		@Param('id') id: number,
-		@Body() dto: UpdateProductDto
-	): Promise<ProductDto> {
+	async updateById(@Req() req: Request, @Param('id') id: number, @Body() dto: UpdateProductDto): Promise<ProductDto> {
 		dto.id = id;
 		const user = req.user as JwtPayload;
 		const result = await this.updateProduct.execute(dto, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case ProductErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
 		return result.value.getValue();
-
 	}
 
 	@Delete(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã của sản phẩm'
+		description: 'Mã của sản phẩm',
 	})
 	@ApiOperation({
 		description: 'Xóa thông tin của 1 sản phẩm',
-		summary:'Xóa thông tin của 1 sản phẩm'
+		summary: 'Xóa thông tin của 1 sản phẩm',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@Roles(RoleType.ADMIN)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@ApiResponse({
-		type: SuccessNotification
+		type: SuccessNotification,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async delete(
-		@Req() req: Request,
-		@Param('id') id: number,
-	): Promise<SuccessNotification> {
+	async delete(@Req() req: Request, @Param('id') id: number): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		const result = await this.deleteProduct.execute(id, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case ProductErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case ProductErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case ProductErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -289,11 +273,11 @@ export class ProductController {
 	}
 
 	@Post(':id/avatar')
-  @ApiBearerAuth()
-  @ApiOperation({
-  	description: 'Thay đổi avatar',
-  	summary: 'Thay đổi avatar',
-  })
+	@ApiBearerAuth()
+	@ApiOperation({
+		description: 'Thay đổi avatar',
+		summary: 'Thay đổi avatar',
+	})
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -308,45 +292,42 @@ export class ProductController {
 	})
 	@ApiParam({
 		name: 'id',
-		description:'id sản phẩm cần đổi avatar'
+		description: 'id sản phẩm cần đổi avatar',
 	})
-  @UseGuards(JwtAuthGuard, RolesGuard)
+	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
-  @UseInterceptors(
-  	FilesInterceptor({
-  		fieldName: 'avatar',
-  		path:'./'
-  	}),
-  )
+	@UseInterceptors(
+		FilesInterceptor({
+			fieldName: 'avatar',
+			path: './',
+		}),
+	)
 	@ApiResponse({
-		type: ProductDto
+		type: ProductDto,
 	})
-  @ApiUnauthorizedResponse({
-  	description: 'Unauthorized',
-  })
-  @ApiForbiddenResponse({
-  	description: 'Forbidden',
-  })
-  @ApiBadRequestResponse({
-  	description: 'Bad Request',
-  })
-  @ApiInternalServerErrorResponse({
-  	description: 'Internal Server Error',
-  })
-	async uploadAvatar(
-    @Req() req: Request,
-    @UploadedFile() file: Express.Multer.File,
-	): Promise<ProductDto> {
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized',
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden',
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error',
+	})
+	async uploadAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File): Promise<ProductDto> {
 		const user = req.user as JwtPayload;
-  	const result = await this.changeAvatar.execute(file, user.id);
-  	if (result.isLeft()) {
-  		const err = result.value;
-  		switch (err.constructor) {
-			case ProductErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-  		default:
-  			throw new InternalServerErrorException(err.errorValue());
-  		}
+		const result = await this.changeAvatar.execute(file, user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+				case ProductErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
+			}
 		}
 
 		return result.value.getValue();

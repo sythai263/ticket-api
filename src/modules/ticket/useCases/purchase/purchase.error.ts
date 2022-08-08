@@ -28,7 +28,7 @@ export namespace PurchaseErrors {
 	export class Forbidden extends Result<UseCaseError> {
 		constructor() {
 			super(false, {
-				message: 'Forbidden !',
+				message: 'Không đủ quyền truy cập!',
 			} as UseCaseError);
 		}
 	}

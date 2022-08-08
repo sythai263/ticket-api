@@ -81,13 +81,13 @@ export class DiscountController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case DiscountErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case DiscountErrors.NotFound:
-			case ProgramErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case DiscountErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case DiscountErrors.NotFound:
+				case ProgramErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -118,10 +118,10 @@ export class DiscountController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case DiscountErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case DiscountErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -156,10 +156,10 @@ export class DiscountController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case DiscountErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case DiscountErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -206,13 +206,13 @@ export class DiscountController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case DiscountErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case DiscountErrors.NotFound:
-			case ProgramErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case DiscountErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case DiscountErrors.NotFound:
+				case ProgramErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 
@@ -258,12 +258,12 @@ export class DiscountController {
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {
-			case DiscountErrors.Error:
-				throw new BadRequestException(err.errorValue());
-			case DiscountErrors.NotFound:
-				throw new NotFoundException(err.errorValue());
-			default:
-				throw new InternalServerErrorException(err.errorValue());
+				case DiscountErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				case DiscountErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
 			}
 		}
 

@@ -6,10 +6,7 @@ import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { ProductRepository } from '../../../repositories';
 import { ProductErrors } from '../product.error';
 
-type Response = Either<
-  AppError.UnexpectedError | ProductErrors.Error| ProductErrors.NotFound,
-  Result<boolean>
->;
+type Response = Either<AppError.UnexpectedError | ProductErrors.Error | ProductErrors.NotFound, Result<boolean>>;
 
 @Injectable()
 export class DeleteProductUsecase implements IUseCase<number, Promise<Response>> {
@@ -23,11 +20,9 @@ export class DeleteProductUsecase implements IUseCase<number, Promise<Response>>
 
 		const isSuccess = await this.repo.softDelete({ id }, userId);
 		if (!isSuccess) {
-			return left(new ProductErrors.Error('Can\'t delete this product!'));
+			return left(new ProductErrors.Error('Không thể xóa sản phẩm này!'));
 		}
 
 		return right(Result.ok(isSuccess));
-
 	}
-
 }

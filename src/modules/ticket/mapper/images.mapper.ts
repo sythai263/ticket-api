@@ -8,7 +8,7 @@ import { ProductMap } from './product.mapper';
 export class ImageMap {
 	static entityToDto(entity: ImageEntity): ImageDto {
 		const configService = new ConfigService();
-		const url = configService.get('UPLOAD_URL');
+		const url = configService.get('DOMAIN');
 		const img = new ImageDto();
 		img.alt = entity.alt;
 		img.url = url + entity.url;
@@ -44,13 +44,12 @@ export class ImageMap {
 
 	static toDto(domain: ImageDomain): ImageDto {
 		const configService = new ConfigService();
-		const url = configService.get('UPLOAD_URL');
+		const url = configService.get('DOMAIN');
 		const dto = new ImageDto();
-		dto.url = url+domain.url;
+		dto.url = url + domain.url;
 		dto.alt = domain.alt;
 		dto.id = domain.id.toValue();
 		return dto;
-
 	}
 
 	static entitiesToDomains(entities: ImageEntity[]): ImageDomain[] {
@@ -67,5 +66,4 @@ export class ImageMap {
 		const entities = domains.map((entity) => this.toEntity(entity));
 		return entities;
 	}
-
 }

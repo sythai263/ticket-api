@@ -9,7 +9,7 @@ export class UserAuthMap {
 	static entityToDto(entity: UserEntity): UserLoginDto {
 		const userDto = new UserLoginDto();
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		userDto.id = entity.id;
 		userDto.avatar = url + entity.avatar;
 		userDto.email = entity.email;
@@ -37,10 +37,7 @@ export class UserAuthMap {
 		return entity;
 	}
 
-	static async hashPassword(
-		password: string,
-		genSalt: number,
-	): Promise<string> {
+	static async hashPassword(password: string, genSalt: number): Promise<string> {
 		const hashPwd = await bcrypt.hash(password, genSalt);
 		return hashPwd;
 	}

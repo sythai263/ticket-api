@@ -10,19 +10,12 @@ import { PurchaseRepository } from '../../../repositories';
 import { PaymentErrors } from '../payment.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	PaymentErrors.NotFound |
-	PaymentErrors.Forbidden|
-	PaymentErrors.Error,
-  Result<PaymentDto>
+	AppError.UnexpectedError | PaymentErrors.NotFound | PaymentErrors.Forbidden | PaymentErrors.Error,
+	Result<PaymentDto>
 >;
 @Injectable()
 export class PaymentOrderUsecase implements IUseCase<number, Promise<Response>> {
-	constructor(
-		@Inject('PurchaseRepository') public readonly repo: PurchaseRepository,
-		private config: ConfigService
-
-	) { }
+	constructor(@Inject('PurchaseRepository') public readonly repo: PurchaseRepository, private config: ConfigService) {}
 
 	async execute(id: number): Promise<Response> {
 		const domain = await this.repo.getDetails(id);
@@ -41,8 +34,6 @@ export class PaymentOrderUsecase implements IUseCase<number, Promise<Response>> 
 		const amount = domain.invoice.amount * 100;
 		const { info } = domain.invoice;
 
-		return right(Result.ok(new PaymentDto(tmnCode, orderId, info, amount.toString(), returnUrl,date)));
-
+		return right(Result.ok(new PaymentDto(tmnCode, orderId, info, amount.toString(), returnUrl, date)));
 	}
-
 }

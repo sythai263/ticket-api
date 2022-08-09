@@ -12,7 +12,7 @@ import { UserMap } from './user.mapper';
 export class ProgramMap {
 	static entityToDto(entity: ProgramEntity): ProgramDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new ProgramDto();
 		dto.id = entity.id;
 		dto.total = entity.total;
@@ -67,9 +67,7 @@ export class ProgramMap {
 
 		let attendees = new Array<UserDomain>();
 		if (entity.attendees) {
-			attendees = entity.attendees.map((attendee) =>
-				UserMap.entityToDomain(attendee.user),
-			);
+			attendees = entity.attendees.map((attendee) => UserMap.entityToDomain(attendee.user));
 		}
 
 		const { id } = entity;
@@ -112,7 +110,7 @@ export class ProgramMap {
 
 	static toDto(domain: ProgramDomain): ProgramDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new ProgramDto();
 		dto.id = domain.id.toValue();
 		dto.total = domain.total;
@@ -125,7 +123,7 @@ export class ProgramMap {
 		dto.remain = domain.remain;
 		dto.description = domain.description;
 		dto.place = domain.place;
-		dto.imageQR =url + domain.imageQR;
+		dto.imageQR = url + domain.imageQR;
 		dto.allowCheckIn = domain.allowCheckIn;
 
 		return dto;

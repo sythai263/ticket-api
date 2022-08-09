@@ -24,7 +24,7 @@
 		"indent": [
 			"error",
 			"tab",
-			{ "SwitchCase": 1, "MemberExpression": 1, "ImportDeclaration": "first" }
+			{ "SwitchCase": 1, "MemberExpression": 1, "ImportDeclaration": "first", "ignoredNodes": ["PropertyDefinition"] }
 		],
 		"no-useless-constructor": "off",
 		"no-case-declarations": "off",

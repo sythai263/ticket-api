@@ -12,7 +12,7 @@ import { ReviewProductMap } from './reviewProduct.mapper';
 export class ProductMap {
 	static entityToDto(entity: ProductEntity): ProductDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new ProductDto();
 		dto.id = entity.id;
 		dto.total = entity.total;
@@ -66,9 +66,7 @@ export class ProductMap {
 		if (programOrError.isSuccess) {
 			const domain = programOrError.getValue();
 			if (entity.reviewedProducts) {
-				domain.reviews = ReviewProductMap.entitiesToDomains(
-					entity.reviewedProducts,
-				);
+				domain.reviews = ReviewProductMap.entitiesToDomains(entity.reviewedProducts);
 			} else {
 				domain.reviews = [];
 			}
@@ -125,7 +123,7 @@ export class ProductMap {
 
 	static toDto(domain: ProductDomain): ProductDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new ProductDto();
 		dto.id = domain.id.toValue();
 		dto.total = domain.total;
@@ -149,7 +147,7 @@ export class ProductMap {
 
 	static toDtoReview(domain: ProductDomain): ProductDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new ProductDto();
 		dto.id = domain.id.toValue();
 		dto.total = domain.total;

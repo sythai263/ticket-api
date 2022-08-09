@@ -13,12 +13,9 @@ import { MailEvent } from './mail.event';
 
 @Injectable()
 export class EventListener {
+	constructor(public configService: ConfigService) {}
 
-	constructor(
-		public configService: ConfigService,
-	) {}
-
-  @OnEvent('password.reset')
+	@OnEvent('password.reset')
 	async handlePasswordResetEvent(dto: MailEvent): Promise<void> {
 		const clientId = this.configService.get('GOOGLE_CLIENT_ID');
 		const secret = this.configService.get('GOOGLE_SECRET');
@@ -27,22 +24,20 @@ export class EventListener {
 		const auth = new OAuth2Client(clientId, secret);
 
 		auth.setCredentials({
-			refresh_token: refreshToken
+			refresh_token: refreshToken,
 		});
 		const accessTokenObject = await auth.getAccessToken();
 		const accessToken = accessTokenObject?.token;
-		const transport = nodemailer.createTransport(
-			{
-				service: 'gmail',
-				auth: {
-					accessToken,
-					clientId,
-					refreshToken,
-					type: 'OAuth2',
-					user: admin,
-				}
-			}
-		);
+		const transport = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				accessToken,
+				clientId,
+				refreshToken,
+				type: 'OAuth2',
+				user: admin,
+			},
+		});
 		const mailOption = {
 			from: 'Ticket App',
 			to: dto.email,
@@ -53,47 +48,48 @@ export class EventListener {
 					<b>${dto.password}</b>
 				</p>
 				<h3>Hãy đăng nhập bằng mật khẩu mới và thay đổi nó ngay lập tức !</h3>
-				`
+				`,
 		};
 		await transport.sendMail(mailOption);
-
 	}
 
 	@OnEvent('program.register')
-  async handleSendQRCodeEvent(dto: AttendeeDto): Promise<void> {
-  	const clientId = this.configService.get('GOOGLE_CLIENT_ID');
-  	const secret = this.configService.get('GOOGLE_SECRET');
-  	const refreshToken = this.configService.get('GOOGLE_REFRESH_TOKEN');
-  	const admin = this.configService.get('EMAIL_ADMIN');
-  	const domain = this.configService.get('DOMAIN');
-  	const auth = new OAuth2Client(clientId, secret);
-  	const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
+	async handleSendQRCodeEvent(dto: AttendeeDto): Promise<void> {
+		const clientId = this.configService.get('GOOGLE_CLIENT_ID');
+		const secret = this.configService.get('GOOGLE_SECRET');
+		const refreshToken = this.configService.get('GOOGLE_REFRESH_TOKEN');
+		const admin = this.configService.get('EMAIL_ADMIN');
+		const homeUrl = this.configService.get('DOMAIN');
+		const auth = new OAuth2Client(clientId, secret);
+		const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
 
-  	auth.setCredentials({
-  		refresh_token: refreshToken
-  	});
-  	const accessTokenObject = await auth.getAccessToken();
-  	const accessToken = accessTokenObject?.token;
-  	const transport = nodemailer.createTransport(
-  		{
-  			service: 'gmail',
-  			auth: {
-  				accessToken,
-  				clientId,
-  				refreshToken,
-  				type: 'OAuth2',
-  				user: admin,
-  			}
-  		}
-  	);
-  	let subject = `Vé tham dự ${dto.program.name}`;
-  	const attachments = [{
-  			filename: dto.program.avatar.split('/').pop(),
-  			path: join(publicFolder, dto.program.avatar),
-  			cid: 'avatar'
-  		}];
+		auth.setCredentials({
+			refresh_token: refreshToken,
+		});
 
-  	let html = `
+		dto.program.avatar = dto.program.avatar.replace(homeUrl, '');
+		const accessTokenObject = await auth.getAccessToken();
+		const accessToken = accessTokenObject?.token;
+		const transport = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				accessToken,
+				clientId,
+				refreshToken,
+				type: 'OAuth2',
+				user: admin,
+			},
+		});
+		let subject = `Vé tham dự ${dto.program.name}`;
+		const attachments = [
+			{
+				filename: dto.program.avatar.split('/').pop(),
+				path: join(publicFolder, dto.program.avatar),
+				cid: 'avatar',
+			},
+		];
+
+		let html = `
 		<div style="margin: auto; width: 50%; padding: 10px;">
 			<div style=" margin-bottom: 3rem;">
 				<img style="width: 90%; margin: auto;" src="cid:avatar" />
@@ -104,12 +100,23 @@ export class EventListener {
 				<li style ="line-height: 2rem;">Mã đăng ký: <b>${dto.id}</b> </li>
 				<li style ="line-height: 2rem;">Họ tên: ${dto.user.lastName} <b>${dto.user.firstName}</b> </li>
 				<li style ="line-height: 2rem;">Tên chương trình: <b>${dto.program.name}</b> </li>
-				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b></li>
-				<li style ="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán' }</b></li>
-				<li style ="line-height: 2rem;">Hình thức thanh toán: <b>${dto.invoice.cardType? dto.invoice.cardType:'Chương trình miễn phí'}</b></li>
-				<li style ="line-height: 2rem;">Mã ngân hàng thanh toán: <b>${dto.invoice.bankCode ? dto.invoice.bankCode:'Chương trình miễn phí'}</b></li>
-				<li style ="line-height: 2rem;">Mã tham chiếu: <b>${dto.invoice.bankTransNo ? dto.invoice.bankTransNo:'Chương trình miễn phí'}</b></li>
-				<li style ="line-height: 2rem;">Ngày thanh toán: <b>${moment(dto.invoice.payDate).format('HH:mm:ss DD/MM/YYYY')}</b></li>
+				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', {
+					style: 'currency',
+					currency: 'VND',
+				})}</b></li>
+				<li style ="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</b></li>
+				<li style ="line-height: 2rem;">Hình thức thanh toán: <b>${
+					dto.invoice.cardType ? dto.invoice.cardType : 'Chương trình miễn phí'
+				}</b></li>
+				<li style ="line-height: 2rem;">Mã ngân hàng thanh toán: <b>${
+					dto.invoice.bankCode ? dto.invoice.bankCode : 'Chương trình miễn phí'
+				}</b></li>
+				<li style ="line-height: 2rem;">Mã tham chiếu: <b>${
+					dto.invoice.bankTransNo ? dto.invoice.bankTransNo : 'Chương trình miễn phí'
+				}</b></li>
+				<li style ="line-height: 2rem;">Ngày thanh toán: <b>${moment(dto.invoice.payDate).format(
+					'HH:mm:ss DD/MM/YYYY',
+				)}</b></li>
 			</ul>
 			<h2> Mã QRCode tham gia của bạn: </h2>
 			<div>
@@ -118,17 +125,18 @@ export class EventListener {
 			</div>
 		</div>
 		`;
-  	if (dto.invoice.isPaid) {
-  		attachments.push({
-  			filename: dto.imageQR.split('/').pop(),
-  			path: join(publicFolder, dto.imageQR),
-  			cid: 'qrcode'
-  		});
-  	}
+		if (dto.invoice.isPaid) {
+			dto.imageQR = dto.imageQR.replace(homeUrl, '');
+			attachments.push({
+				filename: dto.imageQR.split('/').pop(),
+				path: join(publicFolder, dto.imageQR),
+				cid: 'qrcode',
+			});
+		}
 
-  	if (!dto.invoice.isPaid) {
-  		subject = `Đăng ký tham gia ${dto.program.name}`;
-  		html = `
+		if (!dto.invoice.isPaid) {
+			subject = `Đăng ký tham gia ${dto.program.name}`;
+			html = `
 		<div style="margin: auto; width: 50%; padding: 10px;">
 			<div style=" margin-bottom: 3rem;">
 				<img style="width: 90%; margin: auto;" src="cid:avatar" />
@@ -139,53 +147,55 @@ export class EventListener {
 				<li style ="line-height: 2rem;">Mã đăng ký: <b>${dto.id}</b> </li>
 				<li style ="line-height: 2rem;">Họ tên: ${dto.user.lastName} <b>${dto.user.firstName}</b> </li>
 				<li style ="line-height: 2rem;">Tên chương trình: <b>${dto.program.name}</b> </li>
-				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b></li>
+				<li style ="line-height: 2rem;">Phí tham gia: <b>${dto.program.price.toLocaleString('vi-VN', {
+					style: 'currency',
+					currency: 'VND',
+				})}</b></li>
 				<li style ="line-height: 2rem;">Thanh toán: <b>${dto.invoice.isPaid ? 'Đã thanh toán' : 'Chưa thanh toán'}</b></li>
 			</ul>
 			<h2>Bạn chưa thanh toán cho đơn đăng ký này, vui lòng thanh toán trong vòng <b>12 tiếng </b></h2>
-			<a target="_blank" style="display: block; width: 90%; border: none; background-color: #325ca8; padding: 14px; font-size: 16px; text-align: center; text-decoration: none; color: #fff; border-radius: 10px; font-size: large; text-transform: uppercase;" href="${domain}/api/payment/invoice/${dto.invoice.id}">Thanh toán ngay</a>
+			<a target="_blank" style="display: block; width: 90%; border: none; background-color: #325ca8; padding: 14px; font-size: 16px; text-align: center; text-decoration: none; color: #fff; border-radius: 10px; font-size: large; text-transform: uppercase;" href="${homeUrl}api/payment/invoice/${
+				dto.invoice.id
+			}">Thanh toán ngay</a>
 		</div>
 `;
-  	}
+		}
 
-  	const mailOption = {
-  		from: 'Ticket App',
-  		to: dto.user.email,
-  		subject,
-  		html,
-  		attachments
-  	};
-  	await transport.sendMail(mailOption);
-
-  }
+		const mailOption = {
+			from: 'Ticket App',
+			to: dto.user.email,
+			subject,
+			html,
+			attachments,
+		};
+		await transport.sendMail(mailOption);
+	}
 
 	@OnEvent('purchase.order')
 	async handlePurchaseEvent(dto: PurchaseDto): Promise<void> {
-  	const clientId = this.configService.get('GOOGLE_CLIENT_ID');
-  	const secret = this.configService.get('GOOGLE_SECRET');
-  	const refreshToken = this.configService.get('GOOGLE_REFRESH_TOKEN');
-  	const admin = this.configService.get('EMAIL_ADMIN');
-  	const domain = this.configService.get('DOMAIN');
-  	const auth = new OAuth2Client(clientId, secret);
-  	const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
+		const clientId = this.configService.get('GOOGLE_CLIENT_ID');
+		const secret = this.configService.get('GOOGLE_SECRET');
+		const refreshToken = this.configService.get('GOOGLE_REFRESH_TOKEN');
+		const admin = this.configService.get('EMAIL_ADMIN');
+		const domain = this.configService.get('HOME_URL');
+		const auth = new OAuth2Client(clientId, secret);
+		const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
 
-  	auth.setCredentials({
-  		refresh_token: refreshToken
-  	});
-  	const accessTokenObject = await auth.getAccessToken();
-  	const accessToken = accessTokenObject?.token;
-  	const transport = nodemailer.createTransport(
-  		{
-  			service: 'gmail',
-  			auth: {
-  				accessToken,
-  				clientId,
-  				refreshToken,
-  				type: 'OAuth2',
-  				user: admin,
-  			}
-  		}
-  	);
+		auth.setCredentials({
+			refresh_token: refreshToken,
+		});
+		const accessTokenObject = await auth.getAccessToken();
+		const accessToken = accessTokenObject?.token;
+		const transport = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				accessToken,
+				clientId,
+				refreshToken,
+				type: 'OAuth2',
+				user: admin,
+			},
+		});
 
 		const info = `
 			<div>
@@ -214,10 +224,19 @@ export class EventListener {
 			<tr style="border: 1px solid; height: 2rem;">
 					<td style="text-align: center;">${index + 1}</td>
 					<td>${curr.product.name}</td>
-					<td style="text-align: right;">${curr.product.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+					<td style="text-align: right;">${curr.product.price.toLocaleString('vi-VN', {
+						style: 'currency',
+						currency: 'VND',
+					})}</td>
 					<td style="text-align: right;">${curr.amount}</td>
-					<td style="text-align: right;">${curr.discountAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
-					<td style="text-align: right;  padding-right: 10px;">${curr.total.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+					<td style="text-align: right;">${curr.discountAmount.toLocaleString('vi-VN', {
+						style: 'currency',
+						currency: 'VND',
+					})}</td>
+					<td style="text-align: right;  padding-right: 10px;">${curr.total.toLocaleString('vi-VN', {
+						style: 'currency',
+						currency: 'VND',
+					})}</td>
 				</tr>
 			`;
 			return prev + row;
@@ -230,17 +249,29 @@ export class EventListener {
 					<td></td>
 					<td></td>
 					<td style="text-align: right;"><b>Tổng: </b></td>
-					<td style="text-align: right; padding-right: 10px;">${dto.invoice.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</td>
+					<td style="text-align: right; padding-right: 10px;">${dto.invoice.amount.toLocaleString('vi-VN', {
+						style: 'currency',
+						currency: 'VND',
+					})}</td>
 				</tr>
 		`;
 		const detailSum = `
 			<div>
 				<ul style="list-style: circle;">
-					<li style="line-height: 2rem; list-style: none; text-align: right;">Tổng tiền (đ): <b>${dto.summary.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Tổng tiền (đ): <b>${dto.summary.toLocaleString(
+						'vi-VN',
+						{ style: 'currency', currency: 'VND' },
+					)}</b>
 					</li>
-					<li style="line-height: 2rem; list-style: none; text-align: right;">Giảm giá (đ): <b>${dto.discountAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Giảm giá (đ): <b>${dto.discountAmount.toLocaleString(
+						'vi-VN',
+						{ style: 'currency', currency: 'VND' },
+					)}</b>
 					</li>
-					<li style="line-height: 2rem; list-style: none; text-align: right;">Thành tiền (đ): <b>${dto.invoice.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</b>
+					<li style="line-height: 2rem; list-style: none; text-align: right;">Thành tiền (đ): <b>${dto.invoice.amount.toLocaleString(
+						'vi-VN',
+						{ style: 'currency', currency: 'VND' },
+					)}</b>
 					</li>
 				</ul>
 			</div>
@@ -266,7 +297,7 @@ export class EventListener {
 			payment = '<h2>Đơn hàng đã được xác nhận và sẽ giao tới bạn sớm nhất !</h2>';
 		}
 
-  	const subject = `Xác nhận đơn hàng #${dto.id}`;
+		const subject = `Xác nhận đơn hàng #${dto.id}`;
 		const html = `
 		<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: auto; width: 800px;">
 		${info}
@@ -276,13 +307,12 @@ export class EventListener {
 		</div>
 		`;
 
-  	const mailOption = {
-  		from: 'Ticket App',
-  		to: dto.user.email,
-  		subject,
-  		html,
-  	};
-  	await transport.sendMail(mailOption);
-
+		const mailOption = {
+			from: 'Ticket App',
+			to: dto.user.email,
+			subject,
+			html,
+		};
+		await transport.sendMail(mailOption);
 	}
 }

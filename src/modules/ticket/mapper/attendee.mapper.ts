@@ -2,10 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { AttendeeDomain, ProgramDomain, UserDomain } from '../../../domain';
 import { AttendeeEntity, ProgramEntity, UserEntity } from '../../../entities';
 import { ConfigService } from '../../../shared/services/config.service';
-import {
-	AttendeeDto,
-	CreateAttendeeDto,
-} from '../infrastructures/dtos/attendee';
+import { AttendeeDto, CreateAttendeeDto } from '../infrastructures/dtos/attendee';
 import { InvoiceMap } from './invoice.mapper';
 import { ProgramMap } from './program.mapper';
 import { UserMap } from './user.mapper';
@@ -84,7 +81,7 @@ export class AttendeeMap {
 
 	static toDto(domain: AttendeeDomain): AttendeeDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const dto = new AttendeeDto();
 		dto.id = domain.id.toValue();
 		dto.program = ProgramMap.toDto(domain.program);

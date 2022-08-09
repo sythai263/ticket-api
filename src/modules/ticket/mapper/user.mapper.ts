@@ -8,7 +8,7 @@ import { CreateUserDto } from '../infrastructures/dtos/user/createUser.dto';
 export class UserMap {
 	static entityToDto(entity: UserEntity): UserDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const userDto = new UserDto();
 		userDto.avatar = url + entity.avatar;
 		userDto.email = entity.email;
@@ -57,7 +57,7 @@ export class UserMap {
 				avatar: entity.avatar,
 				birthday: entity.birthday,
 				password: entity.password,
-				gender: entity.gender
+				gender: entity.gender,
 			},
 			new UniqueEntityID(id),
 		);
@@ -82,7 +82,7 @@ export class UserMap {
 
 	static toDto(domain: UserDomain): UserDto {
 		const config = new ConfigService();
-		const url = config.get('UPLOAD_URL');
+		const url = config.get('DOMAIN');
 		const userDto = new UserDto();
 		userDto.id = domain.id.toValue();
 		userDto.avatar = url + domain.avatar;
@@ -116,7 +116,7 @@ export class UserMap {
 			avatar: dto.avatar,
 			birthday: dto.birthday,
 			password: dto.password,
-			gender: dto.gender
+			gender: dto.gender,
 		});
 		return userOrError.isSuccess ? userOrError.getValue() : null;
 	}

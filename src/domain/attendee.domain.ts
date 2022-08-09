@@ -2,25 +2,25 @@ import * as moment from 'moment';
 import { join } from 'path';
 import { toFile } from 'qrcode';
 
+import { InvoiceDomain, ProgramDomain, UserDomain } from '.';
 import { QR_FOLDER, STATIC_FOLDER } from '../common/constants/system';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
-import { InvoiceDomain, ProgramDomain, UserDomain } from '.';
 
 interface IAttendeeProps {
-  user?: UserDomain;
+	user?: UserDomain;
 	program?: ProgramDomain;
 	invoice?: InvoiceDomain;
 	imageQR?: string;
 	isCheckIn?: boolean;
 }
 
-const urlQR = join(__dirname,'..', '..',STATIC_FOLDER, QR_FOLDER);
+const urlQR = join(__dirname, '..', '..', STATIC_FOLDER, QR_FOLDER);
 
-export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
-	get user(): UserDomain{
+export class AttendeeDomain extends AggregateRoot<IAttendeeProps> {
+	get user(): UserDomain {
 		return this.props.user;
 	}
 
@@ -28,7 +28,7 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 		this.props.user = val;
 	}
 
-	get program(): ProgramDomain{
+	get program(): ProgramDomain {
 		return this.props.program;
 	}
 
@@ -36,7 +36,7 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 		this.props.program = val;
 	}
 
-	get invoice(): InvoiceDomain{
+	get invoice(): InvoiceDomain {
 		return this.props.invoice;
 	}
 
@@ -44,7 +44,7 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 		this.props.invoice = val;
 	}
 
-	get imageQR(): string{
+	get imageQR(): string {
 		return this.props.imageQR;
 	}
 
@@ -52,7 +52,7 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 		this.props.imageQR = imageQR;
 	}
 
-	get isCheckIn(): boolean{
+	get isCheckIn(): boolean {
 		return this.props.isCheckIn;
 	}
 
@@ -74,13 +74,9 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps>{
 			type: 'png',
 		});
 		this.props.imageQR = join(QR_FOLDER, qrFilename);
-
 	}
 
-	public static create(
-		props: IAttendeeProps,
-		id?: UniqueEntityID,
-	): Result<AttendeeDomain> {
+	public static create(props: IAttendeeProps, id?: UniqueEntityID): Result<AttendeeDomain> {
 		const propsResult = Guard.againstNullOrUndefinedBulk([]);
 		if (!propsResult.succeeded) {
 			return Result.fail<AttendeeDomain>(propsResult.message);

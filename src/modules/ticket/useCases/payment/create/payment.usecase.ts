@@ -10,19 +10,12 @@ import { InvoiceRepository } from '../../../repositories';
 import { PaymentErrors } from '../payment.error';
 
 type Response = Either<
-	AppError.UnexpectedError |
-	PaymentErrors.NotFound |
-	PaymentErrors.Forbidden|
-	PaymentErrors.Error,
-  Result<PaymentDto>
+	AppError.UnexpectedError | PaymentErrors.NotFound | PaymentErrors.Forbidden | PaymentErrors.Error,
+	Result<PaymentDto>
 >;
 @Injectable()
 export class PaymentAttendanceUsecase implements IUseCase<number, Promise<Response>> {
-	constructor(
-		@Inject('InvoiceRepository') public readonly repo: InvoiceRepository,
-		private config: ConfigService
-
-	) { }
+	constructor(@Inject('InvoiceRepository') public readonly repo: InvoiceRepository, private config: ConfigService) {}
 
 	async execute(id: number): Promise<Response> {
 		const domain = await this.repo.findById(id);
@@ -35,14 +28,12 @@ export class PaymentAttendanceUsecase implements IUseCase<number, Promise<Respon
 		}
 
 		const tmnCode = this.config.get('vnp_TmnCode');
-		const returnUrl = this.config.get('DOMAIN') + '/api/payment/attendance-return';
+		const returnUrl = this.config.get('DOMAIN') + 'api/payment/attendance-return';
 		const date = moment().add(7, 'h').format('YYYYMMDDHHmmss');
 		const orderId = `${domain.id.toString()}-${moment().format('HHmmss')}`;
 		const amount = domain.amount * 100;
 		const { info } = domain;
 
-		return right(Result.ok(new PaymentDto(tmnCode, orderId, info, amount.toString(), returnUrl,date)));
-
+		return right(Result.ok(new PaymentDto(tmnCode, orderId, info, amount.toString(), returnUrl, date)));
 	}
-
 }

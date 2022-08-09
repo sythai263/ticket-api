@@ -1,40 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEmail, IsOptional } from 'class-validator';
+import { IsDateString, IsEmail, IsOptional, IsString } from 'class-validator';
 
 import { Gender } from '../../../../../common/constants/gender';
 
 export class UpdateUserDto {
+	@IsOptional()
+	@ApiProperty({ example: 'Thái' })
+	firstName?: string;
 
 	@IsOptional()
-  @ApiProperty({ example: 'Thái' })
-  	firstName?: string;
+	@ApiProperty({ example: 'Lê Sỹ' })
+	@IsString()
+	lastName?: string;
 
 	@IsOptional()
-  @ApiProperty({ example: 'Lê Sỹ' })
-  	lastName?: string;
-
-	@IsOptional()
-  @ApiProperty({ example: 'thai.ls@geekup.vn' })
-  @IsEmail()
-  	email?: string;
+	@ApiProperty({ example: 'thai.ls@geekup.vn' })
+	@IsEmail()
+	email?: string;
 
 	@ApiProperty({ example: '0984786432' })
-  	phone?: string;
+	@IsString()
+	phone?: string;
 
 	@ApiProperty({
 		enum: Gender,
-		example: Gender.MALE
+		example: Gender.MALE,
 	})
 	@IsOptional()
-  	gender?: Gender;
-
-  @ApiProperty({ example: 'http://localhost/avatar' })
-	@IsOptional()
-  	avatar?: string;
+	@IsString()
+	gender?: Gender;
 
 	@ApiProperty({ example: new Date() })
 	@IsDateString()
-  @IsOptional()
-		birthday?: Date;
-
+	@IsOptional()
+	birthday?: Date;
 }

@@ -183,7 +183,7 @@ export class AttendeeController {
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async getByProgram(@Req() req: Request, @Param('id') id: number): Promise<CheckAttendee> {
 		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-		if (!token) {
+		if (token === 'null') {
 			return new CheckAttendee(false);
 		}
 

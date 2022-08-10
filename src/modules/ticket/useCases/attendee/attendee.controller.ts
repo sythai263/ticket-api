@@ -30,11 +30,14 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { verify } from 'jsonwebtoken';
+import { ExtractJwt } from 'passport-jwt';
 
 import { RoleType } from '../../../../common/constants/roleType';
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
+import { ConfigService } from '../../../../shared/services/config.service';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { AttendeeDto, CheckAttendee, CreateAttendeeDto } from '../../infrastructures/dtos/attendee';
@@ -54,6 +57,7 @@ export class AttendeeController {
 		public readonly getProgram: GetAttendeeByProgramUsecase,
 		public readonly deleteItem: DeleteAttendeeUsecase,
 		public readonly checkIn: AdminCheckInAttendeeUsecase,
+		public config: ConfigService,
 	) {}
 
 	@Post()
@@ -158,12 +162,10 @@ export class AttendeeController {
 	}
 
 	@Get('program/:id')
-	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: CheckAttendee,
 	})
-	@UseGuards(JwtAuthGuard)
 	@ApiParam({
 		name: 'id',
 		description: 'Mã chương trình',
@@ -180,8 +182,18 @@ export class AttendeeController {
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async getByProgram(@Req() req: Request, @Param('id') id: number): Promise<CheckAttendee> {
-		const user = req.user as JwtPayload;
-		const result = await this.getProgram.execute(id, user ? user.id : -10);
+		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+		if (!token) {
+			return new CheckAttendee(false);
+		}
+
+		const secret = this.config.get('JWT_SECRET');
+		const user = verify(token, secret) as JwtPayload;
+		if (!user) {
+			return new CheckAttendee(false);
+		}
+
+		const result = await this.getProgram.execute(id, user.id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {

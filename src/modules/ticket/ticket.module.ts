@@ -38,6 +38,7 @@ import {
 	AttendeeController,
 	CreateAttendeeUsecase,
 	DeleteAttendeeUsecase,
+	GetAttendeeByProgramUsecase,
 	GetAttendeeUsecase,
 } from './useCases/attendee';
 import {
@@ -164,6 +165,7 @@ import {
 		ChangeCheckInProgramUsecase,
 		CreateAttendeeUsecase,
 		GetAttendeeUsecase,
+		GetAttendeeByProgramUsecase,
 		DeleteAttendeeUsecase,
 		AdminCheckInAttendeeUsecase,
 		GetInvoiceUsecase,

@@ -1,21 +1,33 @@
 import {
 	BadRequestException,
 	Body,
-	Controller, Delete, ForbiddenException, Get, HttpCode,
+	Controller,
+	Delete,
+	ForbiddenException,
+	Get,
+	HttpCode,
 	HttpStatus,
-	InternalServerErrorException, NotFoundException, Param, Patch, Post, Req,
+	InternalServerErrorException,
+	NotFoundException,
+	Param,
+	Patch,
+	Post,
+	Req,
 	UseGuards,
 	UsePipes,
-	ValidationPipe
+	ValidationPipe,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBearerAuth,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
-	ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse,
+	ApiNotFoundResponse,
+	ApiOperation,
+	ApiParam,
+	ApiResponse,
 	ApiTags,
-	ApiUnauthorizedResponse
+	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -25,12 +37,13 @@ import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
-import { AttendeeDto, CreateAttendeeDto } from '../../infrastructures/dtos/attendee';
+import { AttendeeDto, CheckAttendee, CreateAttendeeDto } from '../../infrastructures/dtos/attendee';
 import { ProgramErrors } from '../programs';
 import { AttendeeErrors } from './attendee.error';
 import { CreateAttendeeUsecase } from './create/createAttendee.usecase';
 import { DeleteAttendeeUsecase } from './delete/deleteAttendee.usecase';
 import { GetAttendeeUsecase } from './get/getAttendee.usecase';
+import { GetAttendeeByProgramUsecase } from './get/getProgram.usecase';
 import { AdminCheckInAttendeeUsecase } from './update/adminCheckInAttendee.usecase';
 @Controller('api/attendees')
 @ApiTags('Attendee')
@@ -38,43 +51,40 @@ export class AttendeeController {
 	constructor(
 		public readonly createAttendee: CreateAttendeeUsecase,
 		public readonly getAttendee: GetAttendeeUsecase,
+		public readonly getProgram: GetAttendeeByProgramUsecase,
 		public readonly deleteItem: DeleteAttendeeUsecase,
 		public readonly checkIn: AdminCheckInAttendeeUsecase,
-
-	) { }
+	) {}
 
 	@Post()
 	@ApiOperation({
 		description: 'Đăng ký tham dự hoặc check-in 1 chương trình, sự kiện',
-		summary:'Đăng ký tham dự hoặc check-in 1 chương trình, sự kiện'
+		summary: 'Đăng ký tham dự hoặc check-in 1 chương trình, sự kiện',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: AttendeeDto
+		type: AttendeeDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
-
 	@ApiNotFoundResponse({
-		description: 'Not found'
+		description: 'Not found',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async execute(
-		@Req() req: Request,
-		@Body() dto: CreateAttendeeDto): Promise<AttendeeDto> {
+	async execute(@Req() req: Request, @Body() dto: CreateAttendeeDto): Promise<AttendeeDto> {
 		const user = req.user as JwtPayload;
 		dto.userId = user.id;
 		dto.username = user.username;
@@ -101,36 +111,33 @@ export class AttendeeController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: AttendeeDto
+		type: AttendeeDto,
 	})
 	@ApiParam({
 		name: 'id',
-		description:'Mã đăng ký tham gia'
+		description: 'Mã đăng ký tham gia',
 	})
 	@ApiOperation({
 		description: 'Lấy thông tin đăng ký của người dùng',
-		summary:'Lấy thông tin đăng ký của người dùng'
+		summary: 'Lấy thông tin đăng ký của người dùng',
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
-
 	@ApiNotFoundResponse({
-		description: 'Not found'
+		description: 'Not found',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async getData(
-		@Req() req: Request,
-		@Param('id') id: number): Promise<AttendeeDto> {
+	async getData(@Req() req: Request, @Param('id') id: number): Promise<AttendeeDto> {
 		const user = req.user as JwtPayload;
 		const result = await this.getAttendee.execute(id, user.id);
 		if (result.isLeft()) {
@@ -150,42 +157,77 @@ export class AttendeeController {
 		return result.value.getValue();
 	}
 
+	@Get('program/:id')
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.OK)
+	@ApiResponse({
+		type: CheckAttendee,
+	})
+	@UseGuards(JwtAuthGuard)
+	@ApiParam({
+		name: 'id',
+		description: 'Mã chương trình',
+	})
+	@ApiOperation({
+		description: 'Lấy thông tin đăng ký của người dùng đang đăng nhập',
+		summary: 'Lấy thông tin đăng ký của người dùng đang đăng nhập',
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error',
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async getByProgram(@Req() req: Request, @Param('id') id: number): Promise<CheckAttendee> {
+		const user = req.user as JwtPayload;
+		const result = await this.getProgram.execute(id, user ? user.id : -10);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+				case AttendeeErrors.NotFound:
+					return new CheckAttendee(false);
+				default:
+					throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return new CheckAttendee(true);
+	}
+
 	@Delete(':id')
 	@ApiParam({
 		name: 'id',
-		description:'Mã đăng ký tham gia'
+		description: 'Mã đăng ký tham gia',
 	})
 	@ApiOperation({
 		description: 'Xóa đăng ký tham gia chương trình, sự kiện',
-		summary:'Xóa đăng ký tham gia chương trình, sự kiện'
+		summary: 'Xóa đăng ký tham gia chương trình, sự kiện',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: AttendeeDto
+		type: AttendeeDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
-
 	@ApiNotFoundResponse({
-		description: 'Not found'
+		description: 'Not found',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async delete(
-		@Req() req: Request,
-		@Param('id') id: number): Promise<SuccessNotification> {
+	async delete(@Req() req: Request, @Param('id') id: number): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		const result = await this.deleteItem.execute(id, user.id);
 		if (result.isLeft()) {
@@ -208,39 +250,36 @@ export class AttendeeController {
 	@Patch(':id/check-in')
 	@ApiParam({
 		name: 'id',
-		description:'Mã đăng ký tham gia'
+		description: 'Mã đăng ký tham gia',
 	})
 	@ApiOperation({
 		description: 'Admin check-in cho người tham gia',
-		summary:'Admin check-in cho người tham gia'
+		summary: 'Admin check-in cho người tham gia',
 	})
 	@ApiBearerAuth()
 	@HttpCode(HttpStatus.CREATED)
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN)
 	@ApiResponse({
-		type: AttendeeDto
+		type: AttendeeDto,
 	})
 	@ApiUnauthorizedResponse({
-		description: 'Unauthorized'
+		description: 'Unauthorized',
 	})
 	@ApiForbiddenResponse({
-		description: 'Forbidden'
+		description: 'Forbidden',
 	})
 	@ApiBadRequestResponse({
-		description: 'Bad Request'
+		description: 'Bad Request',
 	})
 	@ApiInternalServerErrorResponse({
-		description: 'Internal Server Error'
+		description: 'Internal Server Error',
 	})
-
 	@ApiNotFoundResponse({
-		description: 'Not found'
+		description: 'Not found',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async checkInAttendee(
-		@Req() req: Request,
-		@Param('id') id: number): Promise<SuccessNotification> {
+	async checkInAttendee(@Req() req: Request, @Param('id') id: number): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		const result = await this.checkIn.execute(id, user.id);
 		if (result.isLeft()) {
@@ -259,5 +298,4 @@ export class AttendeeController {
 
 		return new SuccessNotification('Check-in thành công !', HttpStatus.CREATED);
 	}
-
 }

@@ -15,7 +15,12 @@ export class GetProgramByIdUsecase implements IUseCase<number, Promise<Response>
 	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(id: number): Promise<Response> {
-		const domain = await this.repo.findById(id);
+		const domain = await this.repo.findOne({
+			where: {
+				id,
+			},
+			relations: ['attendees', 'reviewedPrograms'],
+		});
 		if (!domain) {
 			return left(new ProgramErrors.NotFound());
 		}

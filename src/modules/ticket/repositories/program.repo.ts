@@ -12,7 +12,6 @@ import { ProductMap, ProgramMap } from '../mapper';
 
 @Injectable()
 export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
-
 	constructor(
 		@InjectRepository(ProgramEntity)
 		protected repo: Repository<ProgramEntity>,
@@ -94,15 +93,19 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 		}
 	}
 
-	async softDelete(criteria: string |
-		number |
-		Date |
-		UniqueEntityID |
-		string[] |
-		number[] |
-		Date[] |
-		UniqueEntityID[] |
-		FindOptionsWhere<ProgramEntity>, userId?: number): Promise<boolean> {
+	async softDelete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<ProgramEntity>,
+		userId?: number,
+	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
@@ -110,7 +113,7 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 			await queryRunner.manager.softDelete(ProgramEntity, criteria);
 			await queryRunner.manager.update(ProgramEntity, criteria, {
 				deletedBy: userId,
-				updatedBy: userId
+				updatedBy: userId,
 			});
 			await queryRunner.commitTransaction();
 			return true;
@@ -121,14 +124,16 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 	}
 
 	async search(search?: SearchProgramDto): Promise<[ProgramDomain[], number]> {
-
-		const queryBuilder = this.repo.createQueryBuilder('program')
+		const queryBuilder = this.repo
+			.createQueryBuilder('program')
 			.where('program.startDate >= :now', { now: moment().add(7, 'h').toDate() })
 			.orderBy('program.id', search.order)
+			.leftJoinAndSelect('program.attendees', 'attendees')
 			.skip(search.skip)
 			.take(search.take);
 		if (search.keyword) {
-			queryBuilder.andWhere('program.name like :name', { name: `%${search.keyword}%` })
+			queryBuilder
+				.andWhere('program.name like :name', { name: `%${search.keyword}%` })
 				.orWhere('program.description like :name');
 		}
 
@@ -148,34 +153,31 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 			queryBuilder.andWhere('program.price <= :max', { max: search.max });
 		}
 
-		const [entities, count ]= await queryBuilder.getManyAndCount();
+		queryBuilder.relation('program.attendees');
+
+		const [entities, count] = await queryBuilder.getManyAndCount();
 
 		if (entities) {
 			return [ProgramMap.entitiesToDomains(entities), count];
 		}
 
 		return null;
-
 	}
 
 	async getProducts(programId: number) {
-
 		const entity = await this.repo.findOne({
 			where: {
-				id: programId
+				id: programId,
 			},
-			relations: [
-				'items', 'items.product'
-			]
+			relations: ['items', 'items.product'],
 		});
 		if (entity) {
 			const domain = ProgramMap.entityToDomain(entity);
-			const products = entity.items.map(item => ProductMap.entityToDomain(item.product));
-			domain.products= products;
+			const products = entity.items.map((item) => ProductMap.entityToDomain(item.product));
+			domain.products = products;
 			return domain;
 		}
 
 		return null;
-
 	}
 }

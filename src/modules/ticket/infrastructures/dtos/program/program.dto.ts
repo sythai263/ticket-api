@@ -1,69 +1,80 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsString } from 'class-validator';
 
-export class ProgramDto{
+import { ReviewProgramDto } from '../reviewProgram';
 
+export class ProgramDto {
 	@ApiProperty({
-		example: 123
+		example: 123,
 	})
-		id: number;
+	id: number;
 
 	@ApiProperty({
-		example: 'Tên sự kiện'
+		example: 'Tên sự kiện',
 	})
-		name: string;
+	name: string;
 
 	@ApiProperty({
-		example: new Date()
-	})
-	@IsDateString()
-		startDate: Date;
-
-	@ApiProperty({
-		example: new Date()
+		example: new Date(),
 	})
 	@IsDateString()
-		endDate: Date;
+	startDate: Date;
 
 	@ApiProperty({
-		example: 150
+		example: new Date(),
 	})
-		total: number;
+	@IsDateString()
+	endDate: Date;
 
 	@ApiProperty({
-		example: 92
+		example: 150,
 	})
-		remain: number;
+	total: number;
 
 	@ApiProperty({
-		example: 99000
+		example: 92,
 	})
-		price?: number = 0;
+	remain: number;
 
 	@ApiProperty({
-		example: 'http://localhost/avatar'
+		example: 99000,
 	})
-		avatar: string;
+	price?: number = 0;
 
 	@ApiProperty({
-		example: 'Địa điểm tổ chức'
+		example: 'http://localhost/avatar',
+	})
+	avatar: string;
+
+	@ApiProperty({
+		example: 'Địa điểm tổ chức',
 	})
 	@IsString()
-		place?: string;
+	place?: string;
 
 	@ApiProperty({
-		example: 'Mô tả sự kiện'
+		example: 'Mô tả sự kiện',
 	})
-		description: string;
+	description: string;
 
 	@ApiProperty({
-		example:'image/qrcode.png'
+		example: 'image/qrcode.png',
 	})
-		imageQR: string;
+	imageQR: string;
 
 	@ApiProperty({
-		example: true
+		example: true,
 	})
-		allowCheckIn: boolean;
+	allowCheckIn: boolean;
 
+	@ApiProperty({
+		type: ReviewProgramDto,
+		isArray: true,
+	})
+	reviews: ReviewProgramDto[];
+
+	@ApiProperty({
+		example: 5,
+	})
+	starAvg?: number = 5;
 }

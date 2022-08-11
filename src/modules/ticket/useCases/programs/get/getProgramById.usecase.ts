@@ -19,12 +19,12 @@ export class GetProgramByIdUsecase implements IUseCase<number, Promise<Response>
 			where: {
 				id,
 			},
-			relations: ['attendees', 'reviewedPrograms'],
+			relations: ['attendees', 'reviewedPrograms', 'reviewedPrograms.user'],
 		});
 		if (!domain) {
 			return left(new ProgramErrors.NotFound());
 		}
 
-		return right(Result.ok(ProgramMap.toDto(domain)));
+		return right(Result.ok(ProgramMap.toDetailDto(domain)));
 	}
 }

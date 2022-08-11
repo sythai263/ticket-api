@@ -7,6 +7,7 @@ import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.
 import { ProgramDto } from '../infrastructures/dtos/program/program.dto';
 import { ProgramItemsDto } from '../infrastructures/dtos/programItem';
 import { ProductMap } from './product.mapper';
+import { ReviewProgramMap } from './reviewProgram.mapper';
 import { UserMap } from './user.mapper';
 
 export class ProgramMap {
@@ -88,6 +89,17 @@ export class ProgramMap {
 			},
 			new UniqueEntityID(id),
 		);
+		if (programOrError.isSuccess) {
+			const domain = programOrError.getValue();
+			if (entity.reviewedPrograms) {
+				domain.reviews = ReviewProgramMap.entitiesToDomains(entity.reviewedPrograms);
+			} else {
+				domain.reviews = [];
+			}
+
+			return domain;
+		}
+
 		return programOrError.isSuccess ? programOrError.getValue() : null;
 	}
 
@@ -119,6 +131,7 @@ export class ProgramMap {
 		dto.avatar = url + domain.avatar;
 		dto.startDate = domain.startDate;
 		dto.endDate = domain.endDate;
+		dto.starAvg = domain.starAvg;
 		dto.name = domain.name;
 		dto.remain = domain.remain;
 		dto.description = domain.description;
@@ -126,6 +139,28 @@ export class ProgramMap {
 		dto.imageQR = url + domain.imageQR;
 		dto.allowCheckIn = domain.allowCheckIn;
 
+		return dto;
+	}
+
+	static toDetailDto(domain: ProgramDomain): ProgramDto {
+		const config = new ConfigService();
+		const url = config.get('DOMAIN');
+		const dto = new ProgramDto();
+		dto.id = domain.id.toValue();
+		dto.total = domain.total;
+		dto.avatar = domain.avatar;
+		dto.price = domain.price;
+		dto.avatar = url + domain.avatar;
+		dto.startDate = domain.startDate;
+		dto.endDate = domain.endDate;
+		dto.starAvg = domain.starAvg;
+		dto.name = domain.name;
+		dto.remain = domain.remain;
+		dto.description = domain.description;
+		dto.place = domain.place;
+		dto.imageQR = url + domain.imageQR;
+		dto.allowCheckIn = domain.allowCheckIn;
+		dto.reviews = ReviewProgramMap.toDtos(domain.reviews);
 		return dto;
 	}
 

@@ -2,7 +2,7 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { UserDomain } from '../../../domain/user.domain';
 import { UserEntity } from '../../../entities/user.entity';
 import { ConfigService } from '../../../shared/services/config.service';
-import { UserDto } from '../infrastructures/dtos/user';
+import { UserDto, UserShortDto } from '../infrastructures/dtos/user';
 import { CreateUserDto } from '../infrastructures/dtos/user/createUser.dto';
 
 export class UserMap {
@@ -119,5 +119,15 @@ export class UserMap {
 			gender: dto.gender,
 		});
 		return userOrError.isSuccess ? userOrError.getValue() : null;
+	}
+
+	static toShortDto(domain: UserDomain): UserShortDto {
+		const config = new ConfigService();
+		const url = config.get('DOMAIN');
+		const userDto = new UserShortDto();
+		userDto.avatar = url + domain.avatar;
+		userDto.firstName = domain.firstName;
+		userDto.lastName = domain.lastName;
+		return userDto;
 	}
 }

@@ -1,26 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Min } from 'class-validator';
 
-import { UserDto } from '../user';
+import { UserShortDto } from '../user';
 
-export class ReviewProgramDto{
+export class ReviewProgramDto {
+	@ApiProperty({
+		example: 123,
+	})
+	id: number;
 
 	@ApiProperty({
-		example: 123
+		type: UserShortDto,
 	})
-		id: number;
-
-	@ApiProperty({
-		type: UserDto
-	})
-		user: UserDto;
+	user: UserShortDto;
 
 	@ApiProperty()
 	@Min(0)
-		star: number;
+	star: number;
 
 	@ApiProperty()
 	@IsString()
-		comment: string;
-
+	comment: string;
 }

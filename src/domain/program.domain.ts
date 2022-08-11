@@ -9,12 +9,13 @@ import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 import { ProductDomain } from './product.domain';
 import { ProgramItemDomain } from './programItem.domain';
+import { ReviewProgramDomain } from './reviewProgram.domain';
 import { UserDomain } from './user.domain';
 
-const urlQR = join(__dirname,'..', '..',STATIC_FOLDER, QR_FOLDER);
+const urlQR = join(__dirname, '..', '..', STATIC_FOLDER, QR_FOLDER);
 
 interface IProgramProps {
-  name?: string;
+	name?: string;
 	startDate?: Date;
 	endDate?: Date;
 	total?: number;
@@ -27,11 +28,11 @@ interface IProgramProps {
 	items?: ProgramItemDomain[];
 	attendees?: UserDomain[];
 	products?: ProductDomain[];
+	reviews?: ReviewProgramDomain[];
 }
 
 export class ProgramDomain extends AggregateRoot<IProgramProps> {
-
-	get name(): string{
+	get name(): string {
 		return this.props.name;
 	}
 
@@ -39,7 +40,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.name = name;
 	}
 
-	get startDate(): Date{
+	get startDate(): Date {
 		return this.props.startDate;
 	}
 
@@ -47,7 +48,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.startDate = startDate;
 	}
 
-	get endDate(): Date{
+	get endDate(): Date {
 		return this.props.endDate;
 	}
 
@@ -55,25 +56,23 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.endDate = endDate;
 	}
 
-	get total(): number{
+	get total(): number {
 		return this.props.total;
-
 	}
 
 	set total(total: number) {
 		this.props.total = total;
 	}
 
-	get price(): number{
+	get price(): number {
 		return this.props.price;
-
 	}
 
 	set price(price: number) {
 		this.props.price = price;
 	}
 
-	get avatar(): string{
+	get avatar(): string {
 		return this.props.avatar;
 	}
 
@@ -81,7 +80,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.avatar = avatar;
 	}
 
-	get place(): string{
+	get place(): string {
 		return this.props.place;
 	}
 
@@ -89,7 +88,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.place = place;
 	}
 
-	get imageQR(): string{
+	get imageQR(): string {
 		return this.props.imageQR;
 	}
 
@@ -97,7 +96,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.imageQR = imageQR;
 	}
 
-	get description(): string{
+	get description(): string {
 		return this.props.description;
 	}
 
@@ -105,12 +104,11 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.description = description;
 	}
 
-	get remain(): number{
+	get remain(): number {
 		return this.props.total - this.props.attendees.length;
-
 	}
 
-	get items(): ProgramItemDomain[]{
+	get items(): ProgramItemDomain[] {
 		return this.props.items;
 	}
 
@@ -118,7 +116,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.items = items;
 	}
 
-	get attendees(): UserDomain[]{
+	get attendees(): UserDomain[] {
 		return this.props.attendees;
 	}
 
@@ -126,7 +124,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.attendees = attendees;
 	}
 
-	get products(): ProductDomain[]{
+	get products(): ProductDomain[] {
 		return this.props.products;
 	}
 
@@ -134,7 +132,15 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.products = products;
 	}
 
-	get allowCheckIn(): boolean{
+	get reviews(): ReviewProgramDomain[] {
+		return this.props.reviews;
+	}
+
+	set reviews(reviews: ReviewProgramDomain[]) {
+		this.props.reviews = reviews;
+	}
+
+	get allowCheckIn(): boolean {
 		return this.props.allowCheckIn;
 	}
 
@@ -197,6 +203,15 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		return true;
 	}
 
+	get starAvg(): number {
+		if (this.props.reviews.length > 0) {
+			const sum = this.props.reviews.reduce((prev, curr) => prev + curr.star, 0);
+			return sum / this.props.reviews.length;
+		}
+
+		return 5;
+	}
+
 	async generateQRCode() {
 		const now = moment().format('YYYYMMDD');
 		const qrFilename = `qrcode_program_${this.id.toValue()}_${now}.png`;
@@ -209,13 +224,9 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 			type: 'png',
 		});
 		this.props.imageQR = join(QR_FOLDER, qrFilename);
-
 	}
 
-	public static create(
-		props: IProgramProps,
-		id?: UniqueEntityID,
-	): Result<ProgramDomain> {
+	public static create(props: IProgramProps, id?: UniqueEntityID): Result<ProgramDomain> {
 		const propsResult = Guard.againstNullOrUndefinedBulk([]);
 		if (!propsResult.succeeded) {
 			return Result.fail<ProgramDomain>(propsResult.message);

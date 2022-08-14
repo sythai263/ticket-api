@@ -182,10 +182,17 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		}
 	}
 
-	changePrice(price: number) {
+	changePrice(price: number): boolean {
+		if (this.amountAttendee > 0) {
+			return false;
+		}
+
 		if (price && price !== this.props.price) {
 			this.props.price = price;
+			return true;
 		}
+
+		return false;
 	}
 
 	changeDescription(description: string) {

@@ -39,6 +39,7 @@ import {
 	CreateAttendeeUsecase,
 	DeleteAttendeeUsecase,
 	GetAttendeeByProgramUsecase,
+	GetAttendeeByUserUsecase,
 	GetAttendeeUsecase,
 } from './useCases/attendee';
 import {
@@ -166,6 +167,7 @@ import {
 		CreateAttendeeUsecase,
 		GetAttendeeUsecase,
 		GetAttendeeByProgramUsecase,
+		GetAttendeeByUserUsecase,
 		DeleteAttendeeUsecase,
 		AdminCheckInAttendeeUsecase,
 		GetInvoiceUsecase,

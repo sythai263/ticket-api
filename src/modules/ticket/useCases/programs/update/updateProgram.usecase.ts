@@ -28,10 +28,6 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 			return left(new ProgramErrors.Error('Không thể sửa chương trình này, bỏi vì đã hoàn thành rồi!'));
 		}
 
-		if (domain.amountAttendee > 0) {
-			return left(new ProgramErrors.Error('Không thể sửa giá khi đã có người đăng ký !'));
-		}
-
 		if (domain.checkQuantity(dto.total)) {
 			return left(new ProgramErrors.Error('Số lượng không được nhỏ hơn số người đã đăng ký !'));
 		}
@@ -41,6 +37,10 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 		}
 
 		const change = this.checkChange(domain, dto);
+		if (!change.changePrice(dto.price)) {
+			return left(new ProgramErrors.Error('Không thể thay đổi phí tham gia khi đã có người đăng ký!'));
+		}
+
 		const entity = ProgramMap.toEntity(change);
 		entity.updatedBy = userId;
 		const update = await this.repo.save(entity);
@@ -54,7 +54,6 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 		domain.changeDescription(dto.description);
 		domain.changeEndDate(dto.endDate);
 		domain.changeName(dto.name);
-		domain.changePrice(dto.price);
 		domain.changeStartDate(dto.startDate);
 		return domain;
 	}

@@ -15,7 +15,7 @@ import {
 	Req,
 	UseGuards,
 	UsePipes,
-	ValidationPipe,
+	ValidationPipe
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -27,7 +27,7 @@ import {
 	ApiParam,
 	ApiResponse,
 	ApiTags,
-	ApiUnauthorizedResponse,
+	ApiUnauthorizedResponse
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { verify } from 'jsonwebtoken';

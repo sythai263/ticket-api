@@ -3,6 +3,7 @@ import {
 	Body,
 	Controller,
 	Delete,
+	ForbiddenException,
 	Get,
 	HttpCode,
 	HttpStatus,
@@ -24,6 +25,7 @@ import {
 	ApiConsumes,
 	ApiForbiddenResponse,
 	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
@@ -35,8 +37,17 @@ import { SuccessNotification } from '../../../../core/infra/Success';
 import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
+import { AttendeeDto } from '../../infrastructures/dtos/attendee';
 import { CreateUserDto, ForgotPasswordDto, PasswordDto, UpdateUserDto, UserDto } from '../../infrastructures/dtos/user';
-import { ChangePasswordUseCase, CreateUserUsecase, DeleteUserUsecase, ForgotPasswordUseCase, GetUserUseCase, UpdateUserUseCase } from './';
+import { AttendeeErrors, GetAttendeeByUserUsecase } from '../attendee';
+import {
+	ChangePasswordUseCase,
+	CreateUserUsecase,
+	DeleteUserUsecase,
+	ForgotPasswordUseCase,
+	GetUserUseCase,
+	UpdateUserUseCase,
+} from './';
 import { ChangeAvatarUserUseCase } from './update/changeAvatar.usecase';
 import { GetUserErrors } from './user.error';
 
@@ -51,6 +62,7 @@ export class UserController {
 		public readonly deleteUser: DeleteUserUsecase,
 		public readonly forgotPassword: ForgotPasswordUseCase,
 		public readonly changeAvatar: ChangeAvatarUserUseCase,
+		public readonly getByUser: GetAttendeeByUserUsecase,
 	) {}
 
 	@Get()
@@ -252,6 +264,54 @@ export class UserController {
 			switch (err.constructor) {
 				case GetUserErrors.UserNotFound:
 					throw new NotFoundException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return result.value.getValue();
+	}
+
+	@Get('attendees')
+	@ApiOperation({
+		description: 'Lấy danh sách đăng ký của người đang đăng nhập',
+		summary: 'Lấy danh sách đăng ký của người đang đăng nhập',
+	})
+	@ApiBearerAuth()
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard)
+	@ApiResponse({
+		type: AttendeeDto,
+		isArray: true,
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized',
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden',
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error',
+	})
+	@ApiNotFoundResponse({
+		description: 'Not found',
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async getAttendeeByUser(@Req() req: Request): Promise<AttendeeDto[]> {
+		const user = req.user as JwtPayload;
+		const result = await this.getByUser.execute(user.id);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+				case AttendeeErrors.NotFound:
+					throw new NotFoundException(err.errorValue());
+				case AttendeeErrors.Forbidden:
+					throw new ForbiddenException(err.errorValue());
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
 				default:
 					throw new InternalServerErrorException(err.errorValue());
 			}

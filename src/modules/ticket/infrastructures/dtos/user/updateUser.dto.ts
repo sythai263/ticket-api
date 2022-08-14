@@ -5,6 +5,7 @@ import { Gender } from '../../../../../common/constants/gender';
 
 export class UpdateUserDto {
 	@IsOptional()
+	@IsString()
 	@ApiProperty({ example: 'Thái' })
 	firstName?: string;
 
@@ -19,6 +20,7 @@ export class UpdateUserDto {
 	email?: string;
 
 	@ApiProperty({ example: '0984786432' })
+	@IsOptional()
 	@IsString()
 	phone?: string;
 

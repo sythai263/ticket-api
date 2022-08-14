@@ -1,80 +1,83 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsInt, IsNotEmpty, IsString, Min } from 'class-validator';
-export class CreateProgramDto{
-
+export class CreateProgramDto {
 	@ApiProperty({
-		example: 'Tên sự kiện'
+		example: 'Tên sự kiện',
 	})
-	@IsString()
+	@IsString({
+		message: ' Tên sự kiện phải là một chuỗi !',
+	})
 	@IsNotEmpty({
-		message:'Tên chương trình không để trống !'
+		message: 'Tên chương trình không để trống !',
 	})
-		name: string;
+	name: string;
 
 	@ApiProperty({
-		example: new Date()
+		example: new Date(),
 	})
 	@IsDateString()
 	@IsNotEmpty({
-		message:'Ngày bắt đầu không để trống !'
+		message: ' Ngày bắt đầu không để trống !',
 	})
 	// @MinDate(moment().add(1, 'd').toDate())
-		startDate?: Date;
+	startDate?: Date;
 
 	@ApiProperty({
-		example: new Date()
+		example: new Date(),
 	})
 	@IsDateString()
 	@IsNotEmpty({
-		message:'Ngày kết thúc không để trống !'
+		message: 'Ngày kết thúc không để trống !',
 	})
 	// @MinDate(moment().add(1, 'd').toDate())
-		endDate?: Date;
+	endDate?: Date;
 
 	@ApiProperty({
 		example: 150,
-		minimum: 1
+		minimum: 1,
 	})
-	@IsInt()
+	@IsInt({
+		message: ' Số lượng người tham gia phải là 1 số nguyên',
+	})
 	@IsNotEmpty({
-		message:'Tổng số lượng người tham gia không để trống !'
+		message: 'Tổng số lượng người tham gia không để trống !',
 	})
-	@Min(1,{
-		message:'Tổng số lượng người tham gia phải lớn hơn 1'
+	@Min(1, {
+		message: 'Tổng số lượng người tham gia phải lớn hơn 1',
 	})
-		total?: number;
+	total?: number;
 
 	@ApiProperty({
 		example: 99000,
 		default: 0,
-		minimum: 0
+		minimum: 0,
 	})
 	@IsInt()
 	@Min(0, {
-		message:'Giá tiền phải là số dương !'
+		message: 'Giá tiền phải là số dương !',
 	})
-		price = 0;
+	price = 0;
 
 	@ApiProperty({
-		example: 'Địa điểm tổ chức'
+		example: 'Địa điểm tổ chức',
 	})
 	@IsString()
 	@IsNotEmpty({
-		message:'Địa điểm không để trống !'
+		message: 'Địa điểm không để trống !',
 	})
-		place: string;
+	place: string;
 
 	@ApiProperty({
-		example: 'http://localhost/avatar'
+		example: 'http://localhost/avatar',
 	})
-	@IsString()
-		avatar?: string;
+	@IsString({
+		message: ' Avatar sự kiện phải là 1 chuỗi',
+	})
+	avatar?: string;
 
 	@ApiProperty({
-		example: 'Mô tả sự kiện'
+		example: 'Mô tả sự kiện',
 	})
 	@IsString()
-		description?: string;
-
+	description?: string;
 }

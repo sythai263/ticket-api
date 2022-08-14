@@ -1,68 +1,87 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { IsDateString, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
-export class UpdateProgramDto{
+export class UpdateProgramDto {
+	id?: number;
 
-	@ApiProperty({
-		example: 10
+	@ApiPropertyOptional({
+		example: 'Tên sự kiện',
 	})
-		@IsOptional()
-	@IsNumber()
-		id?: number;
-
-	@ApiProperty({
-		example: 'Tên sự kiện'
+	@IsString({
+		message: ' Tên sự kiện phải là một chuỗi !',
 	})
 	@IsOptional()
-	@IsString()
-		name?: string;
+	name?: string;
 
-	@ApiProperty({
-		example: new Date()
+	@ApiPropertyOptional({
+		example: new Date(),
 	})
 	@IsOptional()
-	@IsDateString()
-		startDate?: Date;
+	@IsDateString({
+		message: ' Ngày bắt đầu không hợp lệ',
+	})
+	// @MinDate(moment().add(1, 'd').toDate())
+	startDate?: Date;
 
-	@ApiProperty({
-		example: new Date()
+	@ApiPropertyOptional({
+		example: new Date(),
 	})
 	@IsOptional()
-	@IsDateString()
-		endDate?: Date;
+	@IsDateString({
+		message: ' Ngày kết thúc không hợp lệ',
+	})
+	// @MinDate(moment().add(1, 'd').toDate())
+	endDate?: Date;
 
-	@ApiProperty({
-		example: 150
+	@ApiPropertyOptional({
+		example: 150,
+		minimum: 1,
+	})
+	@IsInt({
+		message: ' Số lượng người tham gia phải là 1 số nguyên',
+	})
+	@Min(1, {
+		message: 'Tổng số lượng người tham gia phải lớn hơn 1',
 	})
 	@IsOptional()
+	total?: number;
+
+	@ApiPropertyOptional({
+		example: 99000,
+		default: 0,
+		minimum: 0,
+	})
 	@IsInt()
-		total?: number;
-
-	@ApiProperty({
-		example: 99000
+	@Min(0, {
+		message: 'Giá tiền phải là số dương !',
 	})
 	@IsOptional()
-	@IsInt()
-		price?: number;
+	price? = 0;
 
-	@ApiProperty({
-		example: 'Địa điểm tổ chức'
-	})
-	@IsString()
-		place?: string;
-
-	@ApiProperty({
-		example: 'http://localhost/avatar'
+	@ApiPropertyOptional({
+		example: 'Địa điểm tổ chức',
 	})
 	@IsOptional()
-	@IsString()
-		avatar?: string;
+	@IsString({
+		message: ' Địa điểm sự kiện phải là 1 chuỗi',
+	})
+	place?: string;
 
-	@ApiProperty({
-		example: 'Mô tả sự kiện'
+	@ApiPropertyOptional({
+		example: 'http://localhost/avatar',
+	})
+	@IsString({
+		message: ' Avatar sự kiện phải là 1 chuỗi',
 	})
 	@IsOptional()
-	@IsString()
-		description?: string;
+	avatar?: string;
 
+	@ApiPropertyOptional({
+		example: 'Mô tả sự kiện',
+	})
+	@IsOptional()
+	@IsString({
+		message: 'Mô tả sự kiện phải là 1 chuỗi',
+	})
+	description?: string;
 }

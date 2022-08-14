@@ -140,8 +140,24 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.reviews = reviews;
 	}
 
+	get amountAttendee(): number {
+		return this.attendees.length;
+	}
+
 	get allowCheckIn(): boolean {
 		return this.props.allowCheckIn;
+	}
+
+	checkCanUpdate(): boolean {
+		if (this.startDate > moment().add(7, 'h').toDate()) {
+			return false;
+		}
+	}
+
+	checkQuantity(quantity: number): boolean {
+		if (this.amountAttendee > quantity) {
+			return false;
+		}
 	}
 
 	changeStatusCheckIn() {

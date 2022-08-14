@@ -18,7 +18,23 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
 	async execute(dto: UpdateProgramDto, userId: number): Promise<Response> {
-		const domain = await this.repo.findById(dto.id);
+		const domain = await this.repo.findOne({
+			where: {
+				id: dto.id,
+			},
+			relations: ['attendees'],
+		});
+		if (domain.canRegister()) {
+			return left(new ProgramErrors.Error('Không thể sửa chương trình này, bỏi vì đã hoàn thành rồi!'));
+		}
+
+		if (domain.amountAttendee > 0) {
+			return left(new ProgramErrors.Error('Không thể sửa giá khi đã có người đăng ký !'));
+		}
+
+		if (domain.checkQuantity(dto.total)) {
+			return left(new ProgramErrors.Error('Số lượng không được nhỏ hơn số người đã đăng ký !'));
+		}
 
 		if (!domain) {
 			return left(new ProgramErrors.NotFound());

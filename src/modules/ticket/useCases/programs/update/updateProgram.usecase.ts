@@ -24,7 +24,7 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 			},
 			relations: ['attendees'],
 		});
-		if (domain.canRegister()) {
+		if (domain.checkCanUpdate()) {
 			return left(new ProgramErrors.Error('Không thể sửa chương trình này, bỏi vì đã hoàn thành rồi!'));
 		}
 

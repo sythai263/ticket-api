@@ -149,15 +149,24 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 	}
 
 	checkCanUpdate(): boolean {
-		if (this.startDate > moment().add(7, 'h').toDate()) {
+		const now = moment().add(7, 'h').toDate();
+		if (this.startDate < now) {
 			return false;
 		}
+
+		return true;
 	}
 
 	checkQuantity(quantity: number): boolean {
+		if (!quantity) {
+			return true;
+		}
+
 		if (this.amountAttendee > quantity) {
 			return false;
 		}
+
+		return true;
 	}
 
 	changeStatusCheckIn() {

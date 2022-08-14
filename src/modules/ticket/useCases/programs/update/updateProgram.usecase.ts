@@ -24,16 +24,16 @@ export class UpdateProgramUsecase implements IUseCase<CreateProgramDto, Promise<
 			},
 			relations: ['attendees'],
 		});
-		if (domain.checkCanUpdate()) {
+		if (!domain) {
+			return left(new ProgramErrors.NotFound());
+		}
+
+		if (!domain.checkCanUpdate()) {
 			return left(new ProgramErrors.Error('Không thể sửa chương trình này, bỏi vì đã hoàn thành rồi!'));
 		}
 
-		if (domain.checkQuantity(dto.total)) {
+		if (!domain.checkQuantity(dto.total)) {
 			return left(new ProgramErrors.Error('Số lượng không được nhỏ hơn số người đã đăng ký !'));
-		}
-
-		if (!domain) {
-			return left(new ProgramErrors.NotFound());
 		}
 
 		const change = this.checkChange(domain, dto);

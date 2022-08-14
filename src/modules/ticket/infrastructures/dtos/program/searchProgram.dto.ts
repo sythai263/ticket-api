@@ -5,52 +5,50 @@ import { IsDateString, IsNumber, IsOptional, IsString, Min } from 'class-validat
 
 import { PageOptionsDto } from '../../../../../common/dto/PageOptionsDto';
 
-export class SearchProgramDto extends PageOptionsDto{
-
+export class SearchProgramDto extends PageOptionsDto {
 	@ApiProperty({
 		required: false,
-		description:'Keyword search'
+		description: 'Từ khóa tìm kiếm',
 	})
 	@IsOptional()
-  @IsString()
-		keyword?: string;
+	@IsString()
+	keyword?: string;
 
 	@ApiProperty({
 		required: false,
-		description: 'Start date program'
-	})
-	@IsOptional()
-	@IsDateString()
-		startDate?: Date;
-
-	@ApiProperty({
-		required: false,
-		description: 'End date program'
+		description: 'Ngày tối thiểu',
 	})
 	@IsOptional()
 	@IsDateString()
-		endDate?: Date;
+	startDate?: Date;
 
 	@ApiProperty({
 		required: false,
-		description: 'Min price program'
+		description: 'Ngày tối đa',
+	})
+	@IsOptional()
+	@IsDateString()
+	endDate?: Date;
+
+	@ApiProperty({
+		required: false,
+		description: 'Phí nhỏ nhất của sự kiện',
 	})
 	@IsOptional()
 	@IsNumber()
 	@Min(0, {
-		message:'Min value more than 0'
+		message: 'min Phải là số dương ',
 	})
-		min?: number;
+	min?: number;
 
 	@ApiProperty({
 		required: false,
-		description: 'Max price program'
+		description: 'Phí tối đa của sự kiện',
 	})
 	@IsOptional()
 	@IsNumber()
 	@Min(0, {
-		message:'Max value more than 0'
+		message: 'Max phải là số dương',
 	})
-		max?: number;
-
+	max?: number;
 }

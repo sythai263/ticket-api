@@ -13,4 +13,6 @@ export class UserShortDto {
 	@ApiProperty({ example: 'http://localhost/avatar' })
 	@IsFQDN()
 	avatar: string;
+
+	email: string;
 }

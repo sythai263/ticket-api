@@ -3,45 +3,43 @@ import { IsOptional } from 'class-validator';
 
 import { InvoiceDto } from '../invoice';
 import { ProgramDto } from '../program';
-import { UserDto } from '../user';
+import { UserDto, UserShortDto } from '../user';
 
-export class AttendeeDto{
-
+export class AttendeeDto {
 	@ApiProperty({
 		example: 123,
-		description: 'Mã đăng ký tham gia'
+		description: 'Mã đăng ký tham gia',
 	})
-		id: number;
+	id: number;
 
 	@ApiProperty({
 		type: ProgramDto,
-		description:'Chương trình người dùng đăng ký tham gia'
+		description: 'Chương trình người dùng đăng ký tham gia',
 	})
-		program: ProgramDto;
+	program: ProgramDto;
 
 	@ApiProperty({
 		type: UserDto,
-		description: 'Người dùng nào tham gia'
+		description: 'Người dùng nào tham gia',
 	})
-		user: UserDto;
+	user: UserShortDto;
 
 	@ApiProperty({
 		type: InvoiceDto,
-		description: 'Hóa đơn cho đơn đăng ký'
+		description: 'Hóa đơn cho đơn đăng ký',
 	})
 	@IsOptional()
-		invoice?: InvoiceDto;
+	invoice?: InvoiceDto;
 
 	@ApiProperty({
 		example: 'https://localhost/qrcode1',
-		description: 'Mã QR chứa thông tin đăng ký'
+		description: 'Mã QR chứa thông tin đăng ký',
 	})
-		imageQR: string;
+	imageQR: string;
 
 	@ApiProperty({
 		example: true,
-		description: 'Đã check-in chưa'
+		description: 'Đã check-in chưa',
 	})
-		isCheckIn: boolean;
-
+	isCheckIn: boolean;
 }

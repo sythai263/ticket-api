@@ -6,11 +6,11 @@ import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { IRepo } from '../../../core/infra/Repo';
 import { AttendeeDomain } from '../../../domain';
 import { AttendeeEntity } from '../../../entities';
+import { SearchAttendeeDto } from '../infrastructures/dtos/attendee';
 import { AttendeeMap } from '../mapper';
 
 @Injectable()
 export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain> {
-
 	constructor(
 		@InjectRepository(AttendeeEntity)
 		protected repo: Repository<AttendeeEntity>,
@@ -26,7 +26,9 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 		return null;
 	}
 
-	async findBy(where: FindOptionsWhere<AttendeeEntity> | FindOptionsWhere<AttendeeEntity>[]): Promise<AttendeeDomain[]> {
+	async findBy(
+		where: FindOptionsWhere<AttendeeEntity> | FindOptionsWhere<AttendeeEntity>[],
+	): Promise<AttendeeDomain[]> {
 		const entities = await this.repo.findBy(where);
 		if (entities) {
 			return AttendeeMap.entitiesToDomains(entities);
@@ -53,7 +55,9 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 		return null;
 	}
 
-	async findOneBy(where: FindOptionsWhere<AttendeeEntity> | FindOptionsWhere<AttendeeEntity>[]): Promise<AttendeeDomain> {
+	async findOneBy(
+		where: FindOptionsWhere<AttendeeEntity> | FindOptionsWhere<AttendeeEntity>[],
+	): Promise<AttendeeDomain> {
 		const entity = await this.repo.findOneBy(where);
 		if (entity) {
 			return AttendeeMap.entityToDomain(entity);
@@ -92,15 +96,19 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 		}
 	}
 
-	async softDelete(criteria: string
-		| number
-		| Date
-		| UniqueEntityID
-		| string[]
-		| number[]
-		| Date[]
-		| UniqueEntityID[]
-		| FindOptionsWhere<AttendeeEntity>, userId?: number): Promise<boolean> {
+	async softDelete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<AttendeeEntity>,
+		userId?: number,
+	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
@@ -108,7 +116,7 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 			await queryRunner.manager.softDelete(AttendeeEntity, criteria);
 			await queryRunner.manager.update(AttendeeEntity, criteria, {
 				deletedBy: userId,
-				updatedBy: userId
+				updatedBy: userId,
 			});
 			await queryRunner.commitTransaction();
 			return true;
@@ -118,15 +126,19 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 		}
 	}
 
-	async delete(criteria: string
-		| number
-		| Date
-		| UniqueEntityID
-		| string[]
-		| number[]
-		| Date[]
-		| UniqueEntityID[]
-		| FindOptionsWhere<AttendeeEntity>, userId?: number): Promise<boolean> {
+	async delete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<AttendeeEntity>,
+		userId?: number,
+	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
@@ -134,7 +146,7 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 			await queryRunner.manager.delete(AttendeeEntity, criteria);
 			await queryRunner.manager.update(AttendeeEntity, criteria, {
 				deletedBy: userId,
-				updatedBy: userId
+				updatedBy: userId,
 			});
 			await queryRunner.commitTransaction();
 			return true;
@@ -144,4 +156,36 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 		}
 	}
 
+	async search(search?: SearchAttendeeDto): Promise<[AttendeeDomain[], number]> {
+		const queryBuilder = this.repo
+			.createQueryBuilder('attendee')
+			.leftJoinAndSelect('attendee.user', 'user')
+			.leftJoinAndSelect('attendee.program', 'program')
+			.leftJoinAndSelect('attendee.invoice', 'invoice')
+			.where('program.id = :programId', { programId: search.idProgram })
+			.orderBy('attendee.id', search.order)
+			.skip(search.skip)
+			.take(search.take);
+		if (search.keyword) {
+			queryBuilder
+				.andWhere('program.name like :name', { name: `%${search.keyword}%` })
+				.orWhere('program.description like :name');
+		}
+
+		if (search.username) {
+			queryBuilder.andWhere('user.username= :username', { username: search.username });
+		}
+
+		if (search.paid) {
+			queryBuilder.andWhere('invoice.status = :paid', { paid: search.paid });
+		}
+
+		const [entities, count] = await queryBuilder.getManyAndCount();
+
+		if (entities) {
+			return [AttendeeMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+	}
 }

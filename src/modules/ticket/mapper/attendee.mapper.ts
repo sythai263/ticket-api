@@ -25,7 +25,6 @@ export class AttendeeMap {
 		const entity = new AttendeeEntity();
 		entity.id = dto.id;
 		entity.program = ProgramMap.dtoToEntity(dto.program);
-		entity.user = UserMap.dtoToEntity(dto.user);
 		if (entity.invoice) {
 			entity.invoice = InvoiceMap.dtoToEntity(entity.invoice);
 		}
@@ -85,7 +84,21 @@ export class AttendeeMap {
 		const dto = new AttendeeDto();
 		dto.id = domain.id.toValue();
 		dto.program = ProgramMap.toDto(domain.program);
-		dto.user = UserMap.toDto(domain.user);
+		dto.user = UserMap.toShortDto(domain.user);
+		dto.invoice = InvoiceMap.toDto(domain.invoice);
+		dto.imageQR = url + domain.imageQR;
+		dto.isCheckIn = domain.isCheckIn;
+		return dto;
+	}
+
+	static toDtoShort(domain: AttendeeDomain): AttendeeDto {
+		const config = new ConfigService();
+		const url = config.get('DOMAIN');
+		const dto = new AttendeeDto();
+		dto.id = domain.id.toValue();
+		dto.program = ProgramMap.toDto(domain.program);
+		dto.user = UserMap.toShortDto(domain.user);
+		dto.user.email = undefined;
 		dto.invoice = InvoiceMap.toDto(domain.invoice);
 		dto.imageQR = url + domain.imageQR;
 		dto.isCheckIn = domain.isCheckIn;
@@ -95,6 +108,15 @@ export class AttendeeMap {
 	static toDtos(domains: AttendeeDomain[]): AttendeeDto[] {
 		if (domains) {
 			const dto = domains.map((domain) => this.toDto(domain));
+			return dto;
+		}
+
+		return null;
+	}
+
+	static toDtosShort(domains: AttendeeDomain[]): AttendeeDto[] {
+		if (domains) {
+			const dto = domains.map((domain) => this.toDtoShort(domain));
 			return dto;
 		}
 

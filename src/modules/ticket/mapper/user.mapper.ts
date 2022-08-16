@@ -128,6 +128,7 @@ export class UserMap {
 		userDto.avatar = url + domain.avatar;
 		userDto.firstName = domain.firstName;
 		userDto.lastName = domain.lastName;
+		userDto.email = domain.email;
 		return userDto;
 	}
 }

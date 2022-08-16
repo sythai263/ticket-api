@@ -41,10 +41,13 @@ import { RolesGuard } from '../../../../guards/roles.guard';
 import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
+import { PaginationAttendeeDto, SearchAttendeeDto } from '../../infrastructures/dtos/attendee';
 import { PaginationProgramDto } from '../../infrastructures/dtos/program';
 import { CreateProgramDto, ProgramDto, SearchProgramDto, UpdateProgramDto } from '../../infrastructures/dtos/program/';
+import { AttendeeErrors } from '../attendee';
 import { CreateProgramUsecase } from './create/createProgram.usecase';
 import { DeleteProgramUsecase } from './delete/deleteProgram.usecase';
+import { GetListAttendeeUsecase } from './get/getAttendees.usecase';
 import { GetProgramByIdUsecase } from './get/getProgramById.usecase';
 import { GetProgramsUsecase } from './get/getPrograms.usecase';
 import { ProgramErrors } from './program.error';
@@ -63,6 +66,7 @@ export class ProgramController {
 		public readonly changeStatus: ChangeCheckInProgramUsecase,
 		public readonly deleteProgram: DeleteProgramUsecase,
 		public readonly changeAvatar: ChangeAvatarProgramUseCase,
+		public readonly getListAttendee: GetListAttendeeUsecase,
 	) {}
 
 	@Post()
@@ -128,6 +132,51 @@ export class ProgramController {
 			const err = result.value;
 			switch (err.constructor) {
 				case ProgramErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return result.value.getValue();
+	}
+
+	@Get(':id/attendees')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy danh sách đăng ký tham gia sự kiện',
+		summary: 'Lấy danh sách đăng ký tham gia sự kiện',
+	})
+	@ApiBearerAuth()
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+	@ApiParam({
+		name: 'id',
+		description: 'Mã của chương trình, sự kiện',
+	})
+	@ApiResponse({
+		type: PaginationAttendeeDto,
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error',
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized',
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden',
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async searchAttendee(@Query() dto: SearchAttendeeDto, @Param('id') id: number): Promise<PaginationAttendeeDto> {
+		dto.idProgram = id;
+		const result = await this.getListAttendee.execute(dto);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+				case AttendeeErrors.Error:
 					throw new BadRequestException(err.errorValue());
 				default:
 					throw new InternalServerErrorException(err.errorValue());

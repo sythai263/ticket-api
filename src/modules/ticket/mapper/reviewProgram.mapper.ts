@@ -66,6 +66,7 @@ export class ReviewProgramMap {
 		dto.comment = domain.comment;
 		dto.star = domain.star;
 		dto.user = UserMap.toShortDto(domain.user);
+		dto.user.email = undefined;
 		return dto;
 	}
 

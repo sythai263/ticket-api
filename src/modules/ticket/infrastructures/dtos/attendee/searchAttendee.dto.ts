@@ -3,31 +3,34 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
 
+import { StatusInvoice } from '../../../../../common/constants/statusReceipt';
 import { PageOptionsDto } from '../../../../../common/dto/PageOptionsDto';
 
-export class SearchAttendeeDto extends PageOptionsDto{
+export class SearchAttendeeDto extends PageOptionsDto {
+	@ApiProperty({
+		required: false,
+		description: 'Tìm theo username',
+	})
+	@IsOptional()
+	@IsString()
+	username?: string;
 
 	@ApiProperty({
 		required: false,
-		description:'Từ khóa cần tìm trong tên và mô tả sự kiện'
+		description: 'Tìm theo tên chương trình',
 	})
 	@IsOptional()
-  @IsString()
-		nameProgram?: string;
+	@IsString()
+	keyword?: string;
 
 	@ApiProperty({
 		required: false,
-		description:'Tìm theo username'
+		description: 'Trạng thái thanh toán',
+		enum: StatusInvoice,
 	})
 	@IsOptional()
-  @IsString()
-		username?: string;
+	@IsString()
+	paid?: StatusInvoice;
 
-	@ApiProperty({
-		required: false,
-		description:'Tìm theo tên chương trình'
-	})
-	@IsOptional()
-  @IsString()
-		name?: string;
+	idProgram?: number;
 }

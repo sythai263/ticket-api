@@ -21,7 +21,10 @@ export class ChangeCheckInProgramUsecase implements IUseCase<number, Promise<Res
 			return left(new ProgramErrors.NotFound());
 		}
 
-		domain.changeStatusCheckIn();
+		if (!domain.changeStatusCheckIn()) {
+			return left(new ProgramErrors.Error('Chương trình này đã hoàn thàn, không thể thay đổi trạng thái!'));
+		}
+
 		const entity = ProgramMap.toEntity(domain);
 		entity.updatedBy = userId;
 		const update = await this.repo.save(entity);

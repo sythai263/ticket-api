@@ -145,6 +145,11 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 	}
 
 	get allowCheckIn(): boolean {
+		const now = moment().add(7, 'h').toDate();
+		if (this.startDate < now) {
+			return false;
+		}
+
 		return this.props.allowCheckIn;
 	}
 
@@ -169,8 +174,14 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		return true;
 	}
 
-	changeStatusCheckIn() {
+	changeStatusCheckIn(): boolean {
+		const now = moment().add(7, 'h').toDate();
+		if (this.endDate < now) {
+			return false;
+		}
+
 		this.props.allowCheckIn = !this.props.allowCheckIn;
+		return true;
 	}
 
 	changeName(name: string) {

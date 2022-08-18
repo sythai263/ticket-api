@@ -27,7 +27,7 @@ export class DeleteAttendeeUsecase implements IUseCase<number, Promise<Response>
 			return left(new AttendeeErrors.Forbidden());
 		}
 
-		if (domain.program.checkCanUpdate()) {
+		if (!domain.program.checkCanUpdate()) {
 			return left(new AttendeeErrors.Error('Không thể xóa do chương trình đã diễn ra rồi !'));
 		}
 

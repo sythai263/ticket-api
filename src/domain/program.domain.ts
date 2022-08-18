@@ -155,7 +155,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 
 	checkCanUpdate(): boolean {
 		const now = moment().add(7, 'h').toDate();
-		if (this.startDate < now) {
+		if (this.startDate > now) {
 			return false;
 		}
 

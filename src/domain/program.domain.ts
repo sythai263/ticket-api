@@ -162,6 +162,23 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		return true;
 	}
 
+	checkCanDelete(): boolean {
+		if (this.reviews.length > 0) {
+			return false;
+		}
+
+		if (this.attendees.length > 0) {
+			return false;
+		}
+
+		const now = moment().add(7, 'h').toDate();
+		if (this.startDate > now) {
+			return false;
+		}
+
+		return true;
+	}
+
 	checkQuantity(quantity: number): boolean {
 		if (!quantity) {
 			return true;

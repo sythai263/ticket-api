@@ -22,7 +22,7 @@ export class ChangeCheckInProgramUsecase implements IUseCase<number, Promise<Res
 		}
 
 		if (!domain.changeStatusCheckIn()) {
-			return left(new ProgramErrors.Error('Chương trình này đã hoàn thàn, không thể thay đổi trạng thái!'));
+			return left(new ProgramErrors.Error('Chương trình này đã hoàn thành, không thể thay đổi trạng thái!'));
 		}
 
 		const entity = ProgramMap.toEntity(domain);

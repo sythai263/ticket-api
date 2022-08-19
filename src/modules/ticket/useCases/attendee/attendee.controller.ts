@@ -162,6 +162,7 @@ export class AttendeeController {
 	}
 
 	@Get('program/:id')
+	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiResponse({
 		type: CheckAttendee,

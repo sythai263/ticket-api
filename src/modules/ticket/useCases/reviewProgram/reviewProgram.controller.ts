@@ -65,6 +65,7 @@ export class ReviewProgramController {
 	) {}
 
 	@Get('program/:id')
+	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		description: 'Lấy danh sách các đánh giá',
@@ -91,7 +92,7 @@ export class ReviewProgramController {
 	): Promise<PaginationReviewProgramDto> {
 		let userId = -1;
 		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-		if (token === 'null') {
+		if (token !== 'null') {
 			const secret = this.config.get('JWT_SECRET');
 			const user = verify(token, secret) as JwtPayload;
 			if (user) {

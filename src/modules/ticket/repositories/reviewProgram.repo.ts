@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 
+import { PageOptionsDto } from '../../../common/dto/PageOptionsDto';
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
 import { IRepo } from '../../../core/infra/Repo';
 import { ReviewProgramDomain } from '../../../domain';
@@ -10,7 +11,6 @@ import { ReviewProgramMap } from '../mapper';
 
 @Injectable()
 export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, ReviewProgramDomain> {
-
 	constructor(
 		@InjectRepository(ReviewProgramEntity)
 		protected repo: Repository<ReviewProgramEntity>,
@@ -26,7 +26,9 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 		return null;
 	}
 
-	async findBy(where: FindOptionsWhere<ReviewProgramEntity> | FindOptionsWhere<ReviewProgramEntity>[]): Promise<ReviewProgramDomain[]> {
+	async findBy(
+		where: FindOptionsWhere<ReviewProgramEntity> | FindOptionsWhere<ReviewProgramEntity>[],
+	): Promise<ReviewProgramDomain[]> {
 		const entities = await this.repo.findBy(where);
 		if (entities) {
 			return ReviewProgramMap.entitiesToDomains(entities);
@@ -53,7 +55,9 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 		return null;
 	}
 
-	async findOneBy(where: FindOptionsWhere<ReviewProgramEntity> | FindOptionsWhere<ReviewProgramEntity>[]): Promise<ReviewProgramDomain> {
+	async findOneBy(
+		where: FindOptionsWhere<ReviewProgramEntity> | FindOptionsWhere<ReviewProgramEntity>[],
+	): Promise<ReviewProgramDomain> {
 		const entity = await this.repo.findOneBy(where);
 		if (entity) {
 			return ReviewProgramMap.entityToDomain(entity);
@@ -92,15 +96,19 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 		}
 	}
 
-	async softDelete(criteria: string
-		| number
-		| Date
-		| UniqueEntityID
-		| string[]
-		| number[]
-		| Date[]
-		| UniqueEntityID[]
-		| FindOptionsWhere<ReviewProgramEntity>, userId?: number): Promise<boolean> {
+	async softDelete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<ReviewProgramEntity>,
+		userId?: number,
+	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
@@ -108,7 +116,7 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 			await queryRunner.manager.softDelete(ReviewProgramEntity, criteria);
 			await queryRunner.manager.update(ReviewProgramEntity, criteria, {
 				deletedBy: userId,
-				updatedBy: userId
+				updatedBy: userId,
 			});
 			await queryRunner.commitTransaction();
 			return true;
@@ -118,4 +126,50 @@ export class ReviewProgramRepository implements IRepo<ReviewProgramEntity, Revie
 		}
 	}
 
+	async delete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<ReviewProgramEntity>,
+	): Promise<boolean> {
+		const queryRunner = this.dataSource.createQueryRunner();
+		await queryRunner.connect();
+		await queryRunner.startTransaction();
+		try {
+			await queryRunner.manager.delete(ReviewProgramEntity, criteria);
+			await queryRunner.commitTransaction();
+			return true;
+		} catch (error) {
+			await queryRunner.rollbackTransaction();
+			return false;
+		}
+	}
+
+	async search(id: number, search?: PageOptionsDto): Promise<[ReviewProgramDomain[], number]> {
+		const queryBuilder = this.repo
+			.createQueryBuilder('review')
+			.orderBy('review.id', search.order)
+			.leftJoinAndSelect('review.user', 'user')
+			.leftJoinAndSelect('review.program', 'program')
+			.skip(search.skip)
+			.take(search.take);
+
+		queryBuilder.andWhere('program.id= :id', { id });
+		queryBuilder.relation('review.user');
+		queryBuilder.relation('review.program');
+
+		const [entities, count] = await queryBuilder.getManyAndCount();
+
+		if (entities) {
+			return [ReviewProgramMap.entitiesToDomains(entities), count];
+		}
+
+		return null;
+	}
 }

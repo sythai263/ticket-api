@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString, Max, Min } from 'class-validator';
 
-export class CreateReviewProgramDto {
+export class UpdateReviewProgramDto {
 	userId?: number;
 
 	@ApiProperty({
 		example: 2,
 	})
 	@IsNumber()
-	programId: number;
+	id: number;
 
 	@ApiProperty({
 		example: 5,

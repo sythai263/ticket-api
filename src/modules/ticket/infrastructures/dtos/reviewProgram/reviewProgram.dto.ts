@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, Min } from 'class-validator';
+import { IsBoolean, IsString, Min } from 'class-validator';
 
 import { UserShortDto } from '../user';
 
@@ -15,10 +15,17 @@ export class ReviewProgramDto {
 	user: UserShortDto;
 
 	@ApiProperty()
+	createAt: Date;
+
+	@ApiProperty()
 	@Min(0)
 	star: number;
 
 	@ApiProperty()
 	@IsString()
 	comment: string;
+
+	@ApiProperty()
+	@IsBoolean()
+	canUpdate: boolean;
 }

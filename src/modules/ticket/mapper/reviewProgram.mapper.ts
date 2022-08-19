@@ -29,6 +29,8 @@ export class ReviewProgramMap {
 		entity.comment = dto.comment;
 		entity.star = dto.star;
 		entity.user = new UserEntity(dto.userId);
+		entity.createdBy = dto.userId;
+		entity.updatedBy = dto.userId;
 		return entity;
 	}
 
@@ -44,6 +46,7 @@ export class ReviewProgramMap {
 				program: ProgramMap.entityToDomain(entity.program),
 				comment: entity.comment,
 				star: entity.star,
+				createdAt: entity.createdAt,
 			},
 			new UniqueEntityID(id),
 		);
@@ -57,22 +60,30 @@ export class ReviewProgramMap {
 		entity.comment = domain.comment;
 		entity.star = domain.star;
 		entity.user = UserMap.toEntity(domain.user);
+		entity.createdAt = domain.createdAt;
 		return entity;
 	}
 
-	static toDto(domain: ReviewProgramDomain): ReviewProgramDto {
+	static toDto(domain: ReviewProgramDomain, userId?: number): ReviewProgramDto {
 		const dto = new ReviewProgramDto();
 		dto.id = domain.id.toValue();
 		dto.comment = domain.comment;
 		dto.star = domain.star;
 		dto.user = UserMap.toShortDto(domain.user);
 		dto.user.email = undefined;
+		dto.createAt = domain.createdAt;
+		if (domain.user.isMe(userId)) {
+			dto.canUpdate = true;
+		} else {
+			dto.canUpdate = false;
+		}
+
 		return dto;
 	}
 
-	static toDtos(domains: ReviewProgramDomain[]): ReviewProgramDto[] {
+	static toDtos(domains: ReviewProgramDomain[], userId?: number): ReviewProgramDto[] {
 		if (domains) {
-			const dto = domains.map((domain) => this.toDto(domain));
+			const dto = domains.map((domain) => this.toDto(domain, userId));
 			return dto;
 		}
 

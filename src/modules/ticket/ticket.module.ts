@@ -84,6 +84,7 @@ import {
 	GetListAttendeeUsecase,
 	GetProgramByIdUsecase,
 	GetProgramsUsecase,
+	GetSaleProgramUsecase,
 	ProgramController,
 	UpdateProgramUsecase,
 } from './useCases/programs';
@@ -198,6 +199,7 @@ import {
 		CreateReviewsProgramsUsecase,
 		UpdateReviewsProgramsUsecase,
 		DeleteReviewProgramUsecase,
+		GetSaleProgramUsecase,
 		{
 			provide: 'UserRepository',
 			useClass: UserRepository,

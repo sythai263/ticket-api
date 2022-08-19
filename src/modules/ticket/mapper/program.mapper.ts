@@ -1,14 +1,15 @@
 import { UniqueEntityID } from '../../../core/domain/UniqueEntityID';
-import { UserDomain } from '../../../domain';
+import { AttendeeDomain } from '../../../domain';
 import { ProgramDomain } from '../../../domain/program.domain';
 import { ProgramEntity } from '../../../entities/program.entity';
 import { ConfigService } from '../../../shared/services/config.service';
+import { SaleProgramDto } from '../infrastructures/dtos/program';
 import { CreateProgramDto } from '../infrastructures/dtos/program/createProgram.dto';
 import { ProgramDto } from '../infrastructures/dtos/program/program.dto';
 import { ProgramItemsDto } from '../infrastructures/dtos/programItem';
+import { AttendeeMap } from './attendee.mapper';
 import { ProductMap } from './product.mapper';
 import { ReviewProgramMap } from './reviewProgram.mapper';
-import { UserMap } from './user.mapper';
 
 export class ProgramMap {
 	static entityToDto(entity: ProgramEntity): ProgramDto {
@@ -66,9 +67,9 @@ export class ProgramMap {
 			return null;
 		}
 
-		let attendees = new Array<UserDomain>();
+		let attendees = new Array<AttendeeDomain>();
 		if (entity.attendees) {
-			attendees = entity.attendees.map((attendee) => UserMap.entityToDomain(attendee.user));
+			attendees = AttendeeMap.entitiesToDomains(entity.attendees);
 		}
 
 		const { id } = entity;
@@ -171,6 +172,18 @@ export class ProgramMap {
 		}
 
 		return null;
+	}
+
+	static toSaleProgram(domain: ProgramDomain): SaleProgramDto {
+		const dto = new SaleProgramDto();
+		dto.amountCheckIn = domain.amountCheckIn;
+		dto.avgStar = domain.starAvg;
+		dto.sumMoney = domain.sumMoney;
+		dto.paidMoney = domain.amountPaid;
+		dto.total = domain.total;
+		dto.amountRate = domain.amountRate;
+		dto.quantity = domain.amountAttendee;
+		return dto;
 	}
 
 	static toProgramItemDto(domain: ProgramDomain): ProgramItemsDto {

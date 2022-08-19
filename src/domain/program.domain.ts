@@ -7,10 +7,10 @@ import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
+import { AttendeeDomain } from './attendee.domain';
 import { ProductDomain } from './product.domain';
 import { ProgramItemDomain } from './programItem.domain';
 import { ReviewProgramDomain } from './reviewProgram.domain';
-import { UserDomain } from './user.domain';
 
 const urlQR = join(__dirname, '..', '..', STATIC_FOLDER, QR_FOLDER);
 
@@ -26,7 +26,7 @@ interface IProgramProps {
 	description?: string;
 	allowCheckIn?: boolean;
 	items?: ProgramItemDomain[];
-	attendees?: UserDomain[];
+	attendees?: AttendeeDomain[];
 	products?: ProductDomain[];
 	reviews?: ReviewProgramDomain[];
 }
@@ -116,11 +116,11 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.items = items;
 	}
 
-	get attendees(): UserDomain[] {
+	get attendees(): AttendeeDomain[] {
 		return this.props.attendees;
 	}
 
-	set attendees(attendees: UserDomain[]) {
+	set attendees(attendees: AttendeeDomain[]) {
 		this.props.attendees = attendees;
 	}
 
@@ -140,8 +140,41 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		this.props.reviews = reviews;
 	}
 
+	get amountRate(): number {
+		return this.reviews.length;
+	}
+
 	get amountAttendee(): number {
 		return this.attendees.length;
+	}
+
+	get amountCheckIn(): number {
+		const count = this.attendees.reduce((sum, curr) => {
+			if (curr.isCheckIn) {
+				return sum + 1;
+			}
+
+			return sum;
+		}, 0);
+
+		return count;
+	}
+
+	get sumMoney(): number {
+		const summary = this.attendees.reduce((sum, curr) => sum + curr.invoice.amount, 0);
+		return summary;
+	}
+
+	get amountPaid(): number {
+		const summary = this.attendees.reduce((sum, curr) => {
+			if (curr.invoice.isPaid()) {
+				return sum + curr.invoice.amount;
+			}
+
+			return sum;
+		}, 0);
+
+		return summary;
 	}
 
 	get allowCheckIn(): boolean {

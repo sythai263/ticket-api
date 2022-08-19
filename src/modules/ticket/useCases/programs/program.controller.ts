@@ -42,7 +42,7 @@ import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { PaginationAttendeeDto, SearchAttendeeDto } from '../../infrastructures/dtos/attendee';
-import { PaginationProgramDto } from '../../infrastructures/dtos/program';
+import { PaginationProgramDto, SaleProgramDto } from '../../infrastructures/dtos/program';
 import { CreateProgramDto, ProgramDto, SearchProgramDto, UpdateProgramDto } from '../../infrastructures/dtos/program/';
 import { AttendeeErrors } from '../attendee';
 import { CreateProgramUsecase } from './create/createProgram.usecase';
@@ -50,6 +50,7 @@ import { DeleteProgramUsecase } from './delete/deleteProgram.usecase';
 import { GetListAttendeeUsecase } from './get/getAttendees.usecase';
 import { GetProgramByIdUsecase } from './get/getProgramById.usecase';
 import { GetProgramsUsecase } from './get/getPrograms.usecase';
+import { GetSaleProgramUsecase } from './get/getSale.usecase';
 import { ProgramErrors } from './program.error';
 import { ChangeAvatarProgramUseCase } from './update/changeAvatar.usecase';
 import { ChangeCheckInProgramUsecase } from './update/changeCheckInProgram.usecase';
@@ -67,6 +68,7 @@ export class ProgramController {
 		public readonly deleteProgram: DeleteProgramUsecase,
 		public readonly changeAvatar: ChangeAvatarProgramUseCase,
 		public readonly getListAttendee: GetListAttendeeUsecase,
+		public readonly getSale: GetSaleProgramUsecase,
 	) {}
 
 	@Post()
@@ -173,6 +175,50 @@ export class ProgramController {
 	async searchAttendee(@Query() dto: SearchAttendeeDto, @Param('id') id: number): Promise<PaginationAttendeeDto> {
 		dto.idProgram = id;
 		const result = await this.getListAttendee.execute(dto);
+		if (result.isLeft()) {
+			const err = result.value;
+			switch (err.constructor) {
+				case AttendeeErrors.Error:
+					throw new BadRequestException(err.errorValue());
+				default:
+					throw new InternalServerErrorException(err.errorValue());
+			}
+		}
+
+		return result.value.getValue();
+	}
+
+	@Get(':id/sales')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({
+		description: 'Lấy danh sách chi tiết doanh số sự kiện',
+		summary: 'Lấy danh sách chi tiết doanh số sự kiện',
+	})
+	@ApiBearerAuth()
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(RoleType.ADMIN)
+	@ApiParam({
+		name: 'id',
+		description: 'Mã của chương trình, sự kiện',
+	})
+	@ApiResponse({
+		type: SaleProgramDto,
+	})
+	@ApiBadRequestResponse({
+		description: 'Bad Request',
+	})
+	@ApiInternalServerErrorResponse({
+		description: 'Internal Server Error',
+	})
+	@ApiUnauthorizedResponse({
+		description: 'Unauthorized',
+	})
+	@ApiForbiddenResponse({
+		description: 'Forbidden',
+	})
+	@UsePipes(new ValidationPipe({ transform: true }))
+	async salesProgram(@Param('id') id: number): Promise<SaleProgramDto> {
+		const result = await this.getSale.execute(id);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {

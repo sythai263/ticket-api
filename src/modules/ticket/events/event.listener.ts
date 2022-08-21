@@ -50,7 +50,9 @@ export class EventListener {
 				<h3>Hãy đăng nhập bằng mật khẩu mới và thay đổi nó ngay lập tức !</h3>
 				`,
 		};
-		await transport.sendMail(mailOption);
+		try {
+			await transport.sendMail(mailOption);
+		} catch (error) {}
 	}
 
 	@OnEvent('program.register')
@@ -168,7 +170,9 @@ export class EventListener {
 			html,
 			attachments,
 		};
-		await transport.sendMail(mailOption);
+		try {
+			await transport.sendMail(mailOption);
+		} catch (error) {}
 	}
 
 	@OnEvent('purchase.order')
@@ -313,6 +317,8 @@ export class EventListener {
 			subject,
 			html,
 		};
-		await transport.sendMail(mailOption);
+		try {
+			await transport.sendMail(mailOption);
+		} catch (error) {}
 	}
 }

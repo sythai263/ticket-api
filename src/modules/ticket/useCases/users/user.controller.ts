@@ -38,7 +38,14 @@ import FilesInterceptor from '../../../../interceptors/file.interceptor';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { AttendeeDto } from '../../infrastructures/dtos/attendee';
-import { CreateUserDto, ForgotPasswordDto, PasswordDto, UpdateUserDto, UserDto } from '../../infrastructures/dtos/user';
+import {
+	CreateUserDto,
+	ForgotPasswordDto,
+	PasswordDto,
+	UpdateUserDto,
+	UserDto,
+	UserShortDto,
+} from '../../infrastructures/dtos/user';
 import { AttendeeErrors, GetAttendeeByUserUsecase } from '../attendee';
 import {
 	ChangePasswordUseCase,
@@ -123,9 +130,9 @@ export class UserController {
 		description: 'Đăng ký tài khoản',
 		summary: 'Đăng ký tài khoản',
 	})
-	@ApiResponse({ type: UserDto })
+	@ApiResponse({ type: UserShortDto })
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async createUser(@Req() req: Request, @Body() userDto: CreateUserDto): Promise<UserDto> {
+	async createUser(@Req() req: Request, @Body() userDto: CreateUserDto): Promise<UserShortDto> {
 		const result = await this.create.execute(userDto);
 		if (result.isLeft()) {
 			const err = result.value;
@@ -159,6 +166,8 @@ export class UserController {
 			switch (err.constructor) {
 				case GetUserErrors.UserNotFound:
 					throw new NotFoundException(err.errorValue());
+				case GetUserErrors.ErrorUser:
+					throw new BadRequestException(err.errorValue());
 				default:
 					throw new InternalServerErrorException(err.errorValue());
 			}
@@ -173,11 +182,11 @@ export class UserController {
 		description: 'Thay đổi mật khẩu',
 		summary: 'Thay đổi mật khẩu',
 	})
-	@ApiResponse({ type: UserDto })
+	@ApiResponse({ type: SuccessNotification })
 	@ApiBearerAuth()
 	@UseGuards(JwtAuthGuard)
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async changePassword(@Req() req: Request, @Body() dto: PasswordDto): Promise<UserDto> {
+	async changePassword(@Req() req: Request, @Body() dto: PasswordDto): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		const result = await this.password.execute(dto, user.id);
 		if (result.isLeft()) {
@@ -190,7 +199,7 @@ export class UserController {
 			}
 		}
 
-		return result.value.getValue();
+		return new SuccessNotification('Mật khẩu đã được thay đổi, kiểm tra email !', HttpStatus.CREATED);
 	}
 
 	@Post('password')
@@ -242,7 +251,7 @@ export class UserController {
 		}),
 	)
 	@ApiResponse({
-		type: UserDto,
+		type: UserShortDto,
 	})
 	@ApiUnauthorizedResponse({
 		description: 'Unauthorized',
@@ -256,7 +265,7 @@ export class UserController {
 	@ApiInternalServerErrorResponse({
 		description: 'Internal Server Error',
 	})
-	async uploadAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File): Promise<UserDto> {
+	async uploadAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File): Promise<UserShortDto> {
 		const user = req.user as JwtPayload;
 		const result = await this.changeAvatar.execute(file, user.id);
 		if (result.isLeft()) {

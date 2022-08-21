@@ -15,8 +15,10 @@ export class CreateUserDto {
 
 	@IsOptional()
 	@ApiProperty({ example: 'Thái' })
+	@IsString()
 	firstName?: string;
 
+	@IsString()
 	@IsOptional()
 	@ApiProperty({ example: 'Lê Sỹ' })
 	lastName?: string;
@@ -56,7 +58,7 @@ export class CreateUserDto {
 
 	@ApiProperty({ example: 'Passwordok1qq' })
 	@IsString()
-	@MinLength(8, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
-	@MaxLength(20, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
+	@MinLength(8, { message: 'Mật khẩu nhắc lại phải từ 8 - 20 ký tự !' })
+	@MaxLength(20, { message: 'Mật khẩu nhắc lại phải từ 8 - 20 ký tự !' })
 	rePassword: string;
 }

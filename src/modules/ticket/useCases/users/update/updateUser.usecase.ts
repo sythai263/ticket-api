@@ -11,8 +11,8 @@ import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
 type Response = Either<
-  AppError.UnexpectedError | GetUserErrors.UserNotFound,
-  Result<UserLoginDto>
+	AppError.UnexpectedError | GetUserErrors.UserNotFound | GetUserErrors.ErrorUser,
+	Result<UserLoginDto>
 >;
 
 @Injectable()
@@ -23,6 +23,10 @@ export class UpdateUserUseCase implements IUseCase<UpdateUserDto, Promise<Respon
 		let user = await this.repo.findById(userId);
 		if (!user) {
 			return left(new GetUserErrors.UserNotFound());
+		}
+
+		if (!user.checkPhoneValid()) {
+			return left(new GetUserErrors.ErrorUser('Số điện thoại không hợp lệ!'));
 		}
 
 		user = this.checkChange(user, userDto);

@@ -5,7 +5,7 @@ import { SYSTEM } from '../../../../../common/constants/system';
 import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
-import { UserLoginDto } from '../../../../user/user.dto';
+import { UserShortDto } from '../../../infrastructures/dtos/user';
 import { CreateUserDto } from '../../../infrastructures/dtos/user/createUser.dto';
 import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
@@ -13,7 +13,7 @@ import { GetUserErrors } from '../user.error';
 
 type Response = Either<
 	AppError.UnexpectedError | GetUserErrors.UserNotFound | GetUserErrors.ErrorUser,
-	Result<UserLoginDto>
+	Result<UserShortDto>
 >;
 
 @Injectable()
@@ -45,6 +45,6 @@ export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Respon
 			return left(new GetUserErrors.ErrorPassword('Số điện thoại hoặc email đã được sử dụng !'));
 		}
 
-		return right(Result.ok(UserMap.toDto(user)));
+		return right(Result.ok(UserMap.toShortDto(user)));
 	}
 }

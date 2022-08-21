@@ -92,7 +92,7 @@ export class ReviewProgramController {
 	): Promise<PaginationReviewProgramDto> {
 		let userId = -1;
 		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-		if (token !== 'null') {
+		if (token && token !== 'null') {
 			const secret = this.config.get('JWT_SECRET');
 			const user = verify(token, secret) as JwtPayload;
 			if (user) {

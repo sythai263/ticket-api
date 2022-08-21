@@ -33,7 +33,7 @@ CREATE TABLE user (
 	UNIQUE INDEX UQ_USER_PHONE (phone),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE product (
@@ -51,7 +51,7 @@ CREATE TABLE product (
 	deleted_by int NULL,
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE program (
@@ -74,7 +74,7 @@ CREATE TABLE program (
 	deleted_by int NULL,
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE invoice (
@@ -96,7 +96,7 @@ CREATE TABLE invoice (
 	UNIQUE INDEX IDX_BANK_TRANS_NO (bank_trans_no),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE program_item (
@@ -153,7 +153,7 @@ CREATE TABLE attendee (
 	CONSTRAINT FK_ATTENDEE_INVOICE FOREIGN KEY (invoice_id) REFERENCES invoice(id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE discount (
@@ -194,7 +194,7 @@ CREATE TABLE review_product (
 	CONSTRAINT FK_REVIEW_PRODUCT_USER FOREIGN KEY (user_id) REFERENCES user (id),
 	CONSTRAINT FK_REVIEW_PRODUCT_PRODUCT FOREIGN KEY (product_id) REFERENCES product (id)
 ) ENGINE = InnoDB
-			`);
+`);
 		await queryRunner.query(`
 CREATE TABLE review_program (
 	id int NOT NULL AUTO_INCREMENT,
@@ -213,7 +213,7 @@ CREATE TABLE review_program (
 	CONSTRAINT FK_REVIEW_PROGRAM_PROGRAM FOREIGN KEY (program_id) REFERENCES program (id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-		`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE purchase (
@@ -233,7 +233,7 @@ CREATE TABLE purchase (
 	CONSTRAINT FK_ORDER_USER FOREIGN KEY (user_id) REFERENCES user(id),
 	CONSTRAINT FK_ORDER_INVOICE FOREIGN KEY (invoice_id) REFERENCES invoice(id)
 ) ENGINE = InnoDB
-			`);
+`);
 
 		await queryRunner.query(`
 CREATE TABLE detail_order (
@@ -253,7 +253,7 @@ CREATE TABLE detail_order (
 	CONSTRAINT FK_DETAIL_ORDER_DISCOUNT FOREIGN KEY (discount_id) REFERENCES discount (id),
 	PRIMARY KEY (id)
 ) ENGINE = InnoDB
-				`);
+`);
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {

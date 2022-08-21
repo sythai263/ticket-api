@@ -11,7 +11,10 @@ import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
 import { GetUserErrors } from '../user.error';
 
-type Response = Either<AppError.UnexpectedError | GetUserErrors.UserNotFound, Result<UserLoginDto>>;
+type Response = Either<
+	AppError.UnexpectedError | GetUserErrors.UserNotFound | GetUserErrors.ErrorUser,
+	Result<UserLoginDto>
+>;
 
 @Injectable()
 export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Response>> {
@@ -28,13 +31,18 @@ export class CreateUserUsecase implements IUseCase<CreateUserDto, Promise<Respon
 			return left(new GetUserErrors.ErrorPassword('Xác nhận mật khẩu không khớp !'));
 		}
 
+		if (!user.checkPhoneValid()) {
+			return left(new GetUserErrors.ErrorUser('Số điện thoại không hợp lệ!'));
+		}
+
+		user.hashPassword(user.password);
 		user.role = RoleType.USER;
 		const entity = UserMap.toEntity(user);
 		entity.createdBy = SYSTEM;
 		entity.updatedBy = SYSTEM;
 		user = await this.repo.save(entity);
 		if (!user) {
-			return left(new GetUserErrors.ErrorPassword('Phone or email has been used!'));
+			return left(new GetUserErrors.ErrorPassword('Số điện thoại hoặc email đã được sử dụng !'));
 		}
 
 		return right(Result.ok(UserMap.toDto(user)));

@@ -107,15 +107,19 @@ export class UserMap {
 			return null;
 		}
 
+		if (dto.phone && dto.phone === '') {
+			dto.phone = undefined;
+		}
+
 		const userOrError = UserDomain.create({
-			username: dto.username,
-			email: dto.email,
-			phone: dto.phone,
-			firstName: dto.firstName,
-			lastName: dto.lastName,
+			username: dto.username.trim(),
+			email: dto.email.trim(),
+			phone: dto.phone.trim(),
+			firstName: dto.firstName.trim(),
+			lastName: dto.lastName.trim(),
 			avatar: dto.avatar,
 			birthday: dto.birthday,
-			password: dto.password,
+			password: dto.password.trim(),
 			gender: dto.gender,
 		});
 		return userOrError.isSuccess ? userOrError.getValue() : null;

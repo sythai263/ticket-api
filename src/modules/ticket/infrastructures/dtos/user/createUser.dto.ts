@@ -4,68 +4,59 @@ import { IsDateString, IsEmail, IsOptional, IsString, Matches, MaxLength, MinLen
 import { Gender } from '../../../../../common/constants/gender';
 
 export class CreateUserDto {
-
 	@ApiProperty({ example: 'Thái' })
 	@IsString()
 	@MinLength(4)
 	@MaxLength(255)
 	@Matches(/^[a-z0-9_\.]+$/, {
-		message: 'Invalid username'
+		message: 'Tên tài khoản không hợp lệ',
 	})
-  	username?: string;
+	username?: string;
 
 	@IsOptional()
-  @ApiProperty({ example: 'Thái' })
-  	firstName?: string;
+	@ApiProperty({ example: 'Thái' })
+	firstName?: string;
 
 	@IsOptional()
-  @ApiProperty({ example: 'Lê Sỹ' })
-  	lastName?: string;
+	@ApiProperty({ example: 'Lê Sỹ' })
+	lastName?: string;
 
 	@IsOptional()
-  @ApiProperty({ example: 'thai.ls@geekup.vn' })
-  @IsEmail()
-  	email?: string;
+	@ApiProperty({ example: 'thai.ls@geekup.vn' })
+	@IsEmail()
+	email?: string;
 
 	@ApiProperty({ example: '0984786432' })
 	@IsOptional()
 	@IsString()
-	@Matches(/\(?([0-9]{3})\)?([ .-]?)([0-9]{3})\2([0-9]{4})/,
-		{
-			message: 'Invalid phone number'
-		})
-  	phone?: string;
+	phone?: string;
 
 	@ApiProperty({
 		enum: Gender,
-		example: Gender.MALE
+		example: Gender.MALE,
 	})
 	@IsOptional()
-  	gender?: Gender;
+	gender?: Gender;
 
-  @ApiProperty({ example: 'http://localhost/avatar' })
+	@ApiProperty({ example: 'http://localhost/avatar' })
 	@IsOptional()
-  	avatar?: string;
+	avatar?: string;
 
 	@ApiProperty({ example: new Date() })
 	@IsDateString()
-  @IsOptional()
-		birthday?: Date;
+	@IsOptional()
+	birthday?: Date;
 
-	@ApiProperty({ example: 'new password no hash' })
+	@ApiProperty({ example: 'Passwordok1qq' })
 	@IsString()
-	@MinLength(8)
-	@MaxLength(20)
-	@Matches(
-		/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
-		{ message:'Password too weak !' }
-	)
-		password: string;
+	@MinLength(8, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
+	@MaxLength(20, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
+	@Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, { message: ' Mật khẩu không đủ mạnh' })
+	password: string;
 
-	@ApiProperty({ example: 're password no hash' })
+	@ApiProperty({ example: 'Passwordok1qq' })
 	@IsString()
-	@MinLength(8)
-	@MaxLength(20)
-		rePassword: string;
-
+	@MinLength(8, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
+	@MaxLength(20, { message: 'Mật khẩu phải từ 8 - 20 ký tự !' })
+	rePassword: string;
 }

@@ -2,21 +2,22 @@ import * as bcrypt from 'bcrypt';
 
 import { Gender } from '../common/constants/gender';
 import { RoleType } from '../common/constants/roleType';
+import { REGEX_PHONE_NUMBER } from '../common/constants/system';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
 
 interface IUserProps {
-  username?: string;
-  password?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  email?: string;
-  gender?: Gender;
-  birthday?: Date;
-  avatar?: string;
+	username?: string;
+	password?: string;
+	firstName?: string;
+	lastName?: string;
+	phone?: string;
+	email?: string;
+	gender?: Gender;
+	birthday?: Date;
+	avatar?: string;
 	role?: RoleType;
 	verify?: boolean;
 }
@@ -102,7 +103,7 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 		this.props.password = password;
 	}
 
-	get verify(): boolean{
+	get verify(): boolean {
 		return this.props.verify;
 	}
 
@@ -128,31 +129,31 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 
 	changeLastName(lastName: string) {
 		if (lastName && lastName !== this.lastName) {
-			this.props.lastName= lastName;
+			this.props.lastName = lastName;
 		}
 	}
 
 	changeGender(gender: Gender) {
 		if (gender && gender !== this.gender) {
-			this.props.gender= gender;
+			this.props.gender = gender;
 		}
 	}
 
 	changeFirstName(firstName: string) {
 		if (firstName && firstName !== this.firstName) {
-			this.props.firstName= firstName;
+			this.props.firstName = firstName;
 		}
 	}
 
 	changePhone(phone: string) {
 		if (phone && phone !== this.phone) {
-			this.props.phone= phone;
+			this.props.phone = phone;
 		}
 	}
 
 	changeEmail(email: string) {
 		if (email && email !== this.email) {
-			this.props.email= email;
+			this.props.email = email;
 		}
 	}
 
@@ -173,18 +174,23 @@ export class UserDomain extends AggregateRoot<IUserProps> {
 		return -1;
 	}
 
-	confirmPassword(rePassword: string): boolean{
+	confirmPassword(rePassword: string): boolean {
 		return this.props.password === rePassword;
+	}
+
+	checkPhoneValid(): boolean {
+		if (this.phone && this.phone !== '') {
+			return REGEX_PHONE_NUMBER.test(this.phone);
+		}
+
+		return true;
 	}
 
 	hashPassword(password: string) {
 		this.props.password = bcrypt.hashSync(password, salt);
 	}
 
-	public static create(
-		props: IUserProps,
-		id?: UniqueEntityID,
-	): Result<UserDomain> {
+	public static create(props: IUserProps, id?: UniqueEntityID): Result<UserDomain> {
 		const propsResult = Guard.againstNullOrUndefinedBulk([]);
 		if (!propsResult.succeeded) {
 			return Result.fail<UserDomain>(propsResult.message);

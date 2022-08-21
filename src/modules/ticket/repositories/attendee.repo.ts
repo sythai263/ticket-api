@@ -137,17 +137,12 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 			| Date[]
 			| UniqueEntityID[]
 			| FindOptionsWhere<AttendeeEntity>,
-		userId?: number,
 	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
 		try {
 			await queryRunner.manager.delete(AttendeeEntity, criteria);
-			await queryRunner.manager.update(AttendeeEntity, criteria, {
-				deletedBy: userId,
-				updatedBy: userId,
-			});
 			await queryRunner.commitTransaction();
 			return true;
 		} catch (error) {

@@ -205,7 +205,7 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		}
 
 		const now = moment().add(7, 'h').toDate();
-		if (this.startDate > now) {
+		if (this.startDate < now) {
 			return false;
 		}
 

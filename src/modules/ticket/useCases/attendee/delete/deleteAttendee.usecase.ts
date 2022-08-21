@@ -35,7 +35,7 @@ export class DeleteAttendeeUsecase implements IUseCase<number, Promise<Response>
 			return left(new AttendeeErrors.Error('Không thể xóa do đã check in!'));
 		}
 
-		await this.repo.softDelete(id, userId);
+		await this.repo.delete(id);
 		await this.invoiceRepo.softDelete(domain.invoice.id.toValue(), userId);
 		return right(Result.ok(true));
 	}

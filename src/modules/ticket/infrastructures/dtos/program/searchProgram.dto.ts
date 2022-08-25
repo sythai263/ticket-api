@@ -51,4 +51,6 @@ export class SearchProgramDto extends PageOptionsDto {
 		message: 'Max phải là số dương',
 	})
 	max?: number;
+
+	userId?: number;
 }

@@ -101,8 +101,8 @@ CREATE TABLE invoice (
 		await queryRunner.query(`
 CREATE TABLE program_item (
 	id int NOT NULL AUTO_INCREMENT,
-	program_id int NULL,
-	product_id int NULL,
+	program_id int NOT NULL,
+	product_id int NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
 	deleted_at timestamp NULL,
@@ -119,7 +119,7 @@ CREATE TABLE program_item (
 		await queryRunner.query(`
 CREATE TABLE image (
 	id int NOT NULL AUTO_INCREMENT,
-	product_id int NULL,
+	product_id int NOT NULL,
 	alt varchar(500) NULL,
 	url varchar(255),
 	created_at timestamp NOT NULL DEFAULT NOW(),
@@ -136,8 +136,8 @@ CREATE TABLE image (
 		await queryRunner.query(`
 CREATE TABLE attendee (
 	id int NOT NULL AUTO_INCREMENT,
-	user_id int NULL,
-	program_id int NULL,
+	user_id int NOT NULL,
+	program_id int NOT NULL,
 	invoice_id int NULL,
 	image_qr varchar(255) NULL,
 	is_check_in tinyint(1) NOT NULL DEFAULT 0,
@@ -159,7 +159,7 @@ CREATE TABLE attendee (
 CREATE TABLE discount (
 	id int NOT NULL AUTO_INCREMENT,
 	code varchar(15) NOT NULL,
-	program_id int NULL,
+	program_id int NOT NULL,
 	start_date datetime NOT NULL,
 	expired_date datetime NOT NULL,
 	discount int NOT NULL,
@@ -180,8 +180,8 @@ CREATE TABLE discount (
 CREATE TABLE review_product (
 	id int NOT NULL AUTO_INCREMENT,
 	star int NOT NULL,
-	user_id int NULL,
-	product_id int NULL,
+	user_id int NOT NULL,
+	product_id int NOT NULL,
 	comment text NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),
 	updated_at timestamp NOT NULL DEFAULT NOW() ON UPDATE NOW(),
@@ -198,8 +198,8 @@ CREATE TABLE review_product (
 		await queryRunner.query(`
 CREATE TABLE review_program (
 	id int NOT NULL AUTO_INCREMENT,
-	program_id int NULL,
-	user_id int NULL,
+	program_id int NOT NULL,
+	user_id int NOT NULL,
 	star int NOT NULL,
 	comment text NOT NULL,
 	created_at timestamp NOT NULL DEFAULT NOW(),

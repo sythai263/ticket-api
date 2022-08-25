@@ -121,7 +121,7 @@ export class ProgramMap {
 		return entity;
 	}
 
-	static toDto(domain: ProgramDomain): ProgramDto {
+	static toDto(domain: ProgramDomain, id?: number): ProgramDto {
 		const config = new ConfigService();
 		const url = config.get('DOMAIN');
 		const dto = new ProgramDto();
@@ -139,11 +139,11 @@ export class ProgramMap {
 		dto.place = domain.place;
 		dto.imageQR = url + domain.imageQR;
 		dto.allowCheckIn = domain.allowCheckIn;
-
+		dto.isRegister = domain.isRegister(id);
 		return dto;
 	}
 
-	static toDetailDto(domain: ProgramDomain): ProgramDto {
+	static toDetailDto(domain: ProgramDomain, id?: number): ProgramDto {
 		const config = new ConfigService();
 		const url = config.get('DOMAIN');
 		const dto = new ProgramDto();
@@ -161,13 +161,14 @@ export class ProgramMap {
 		dto.place = domain.place;
 		dto.imageQR = url + domain.imageQR;
 		dto.allowCheckIn = domain.allowCheckIn;
+		dto.isRegister = domain.isRegister(id);
 		dto.reviews = ReviewProgramMap.toDtos(domain.reviews);
 		return dto;
 	}
 
-	static toDtos(domains: ProgramDomain[]): ProgramDto[] {
+	static toDtos(domains: ProgramDomain[], id?: number): ProgramDto[] {
 		if (domains) {
-			const dto = domains.map((domain) => this.toDto(domain));
+			const dto = domains.map((domain) => this.toDto(domain, id));
 			return dto;
 		}
 

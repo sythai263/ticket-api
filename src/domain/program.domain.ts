@@ -186,6 +186,19 @@ export class ProgramDomain extends AggregateRoot<IProgramProps> {
 		return this.props.allowCheckIn;
 	}
 
+	isRegister(id?: number): boolean {
+		if (!id) {
+			return false;
+		}
+
+		const attendee = this.attendees.find((value) => value.user.id.toValue() === id);
+		if (attendee) {
+			return true;
+		}
+
+		return false;
+	}
+
 	checkCanUpdate(): boolean {
 		const now = moment().add(7, 'h').toDate();
 		if (this.startDate > now) {

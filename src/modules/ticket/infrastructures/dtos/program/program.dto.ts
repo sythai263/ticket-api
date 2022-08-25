@@ -77,4 +77,9 @@ export class ProgramDto {
 		example: 5,
 	})
 	starAvg?: number = 5;
+
+	@ApiProperty({
+		example: true,
+	})
+	isRegister: boolean;
 }

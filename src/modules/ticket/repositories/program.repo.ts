@@ -122,11 +122,12 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 		}
 	}
 
-	async search(search?: SearchProgramDto): Promise<[ProgramDomain[], number]> {
+	async search(search?: SearchProgramDto, id?: number): Promise<[ProgramDomain[], number]> {
 		const queryBuilder = this.repo
 			.createQueryBuilder('program')
 			.orderBy('program.startDate', search.order)
 			.leftJoinAndSelect('program.attendees', 'attendees')
+			.leftJoinAndSelect('attendees.user', 'user')
 			.skip(search.skip)
 			.take(search.take);
 		if (search.keyword) {
@@ -152,6 +153,7 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 		}
 
 		queryBuilder.relation('program.attendees');
+		queryBuilder.relation('program.attendees.user');
 
 		const [entities, count] = await queryBuilder.getManyAndCount();
 

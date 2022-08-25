@@ -14,17 +14,17 @@ type Response = Either<AppError.UnexpectedError | ProgramErrors.NotFound | Progr
 export class GetProgramByIdUsecase implements IUseCase<number, Promise<Response>> {
 	constructor(@Inject('ProgramRepository') public readonly repo: ProgramRepository) {}
 
-	async execute(id: number): Promise<Response> {
+	async execute(id: number, userId: number): Promise<Response> {
 		const domain = await this.repo.findOne({
 			where: {
 				id,
 			},
-			relations: ['attendees', 'reviewedPrograms'],
+			relations: ['attendees', 'reviewedPrograms', 'attendees.user'],
 		});
 		if (!domain) {
 			return left(new ProgramErrors.NotFound());
 		}
 
-		return right(Result.ok(ProgramMap.toDto(domain)));
+		return right(Result.ok(ProgramMap.toDto(domain, userId)));
 	}
 }

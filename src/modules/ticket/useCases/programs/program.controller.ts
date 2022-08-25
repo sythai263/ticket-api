@@ -33,12 +33,15 @@ import {
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { verify } from 'jsonwebtoken';
+import { ExtractJwt } from 'passport-jwt';
 
 import { RoleType } from '../../../../common/constants/roleType';
 import { SuccessNotification } from '../../../../core/infra/Success';
 import { Roles } from '../../../../decorators/Roles.decorator';
 import { RolesGuard } from '../../../../guards/roles.guard';
 import FilesInterceptor from '../../../../interceptors/file.interceptor';
+import { ConfigService } from '../../../../shared/services/config.service';
 import { JwtAuthGuard } from '../../../jwtAuth/jwtAuth.guard';
 import { JwtPayload } from '../../../jwtAuth/jwtAuth.strategy';
 import { PaginationAttendeeDto, SearchAttendeeDto } from '../../infrastructures/dtos/attendee';
@@ -69,6 +72,7 @@ export class ProgramController {
 		public readonly changeAvatar: ChangeAvatarProgramUseCase,
 		public readonly getListAttendee: GetListAttendeeUsecase,
 		public readonly getSale: GetSaleProgramUsecase,
+		public readonly config: ConfigService,
 	) {}
 
 	@Post()
@@ -113,6 +117,7 @@ export class ProgramController {
 	}
 
 	@Get()
+	@ApiBearerAuth()
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		description: 'Lấy danh sách các chương trình, sự kiện',
@@ -129,6 +134,14 @@ export class ProgramController {
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async search(@Req() req: Request, @Query() dto: SearchProgramDto): Promise<PaginationProgramDto> {
+		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+		dto.userId = -1;
+		if (token && token !== 'null') {
+			const secret = this.config.get('JWT_SECRET');
+			const user = verify(token, secret) as JwtPayload;
+			dto.userId = user.id;
+		}
+
 		const result = await this.getProgram.execute(dto);
 		if (result.isLeft()) {
 			const err = result.value;
@@ -233,6 +246,7 @@ export class ProgramController {
 	}
 
 	@Get(':id')
+	@ApiBearerAuth()
 	@ApiParam({
 		name: 'id',
 		description: 'Mã của chương trình, sự kiện',
@@ -253,7 +267,15 @@ export class ProgramController {
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
 	async getById(@Req() req: Request, @Param('id') id: number): Promise<ProgramDto> {
-		const result = await this.getProgramById.execute(id);
+		const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+		let userId = -1;
+		if (token && token !== 'null') {
+			const secret = this.config.get('JWT_SECRET');
+			const user = verify(token, secret) as JwtPayload;
+			userId = user.id;
+		}
+
+		const result = await this.getProgramById.execute(id, userId);
 		if (result.isLeft()) {
 			const err = result.value;
 			switch (err.constructor) {

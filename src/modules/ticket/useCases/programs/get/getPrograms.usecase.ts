@@ -25,7 +25,7 @@ export class GetProgramsUsecase implements IUseCase<SearchProgramDto, Promise<Re
 			return left(new ProgramErrors.Error('Không tìm thấy chương trình này!'));
 		}
 
-		const data = ProgramMap.toDtos(result[0]);
+		const data = ProgramMap.toDtos(result[0], dto.userId);
 		const meta = new PageMetaDto(dto, result[1]);
 		const response = new PaginationProgramDto(data, meta);
 

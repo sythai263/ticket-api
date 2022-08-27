@@ -4,7 +4,7 @@ import { IUseCase } from '../../../../../core/domain/UseCase';
 import { AppError } from '../../../../../core/logic/AppError';
 import { Either, left, Result, right } from '../../../../../core/logic/Result';
 import { UserDomain } from '../../../../../domain/user.domain';
-import { UserLoginDto } from '../../../../user/user.dto';
+import { UserDto } from '../../../infrastructures/dtos/user';
 import { UpdateUserDto } from '../../../infrastructures/dtos/user/updateUser.dto';
 import { UserMap } from '../../../mapper/user.mapper';
 import { UserRepository } from '../../../repositories/user.repo';
@@ -12,7 +12,7 @@ import { GetUserErrors } from '../user.error';
 
 type Response = Either<
 	AppError.UnexpectedError | GetUserErrors.UserNotFound | GetUserErrors.ErrorUser,
-	Result<UserLoginDto>
+	Result<UserDto>
 >;
 
 @Injectable()

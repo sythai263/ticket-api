@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  node:
+    build:
+      context: ./.docker/services
+      dockerfile: ./node/Dockerfile
+    working_dir: /var/www/app
+    volumes:
+      - .:/var/www/app
+    tty: true
+
+  nginx:
+    build:
+      context: ./.docker/services/
+      dockerfile: ./nginx/build/Dockerfile
+    ports:
+      - '443:443'
+      - '6969:6969'
+    volumes:
+      - ./.docker/services/nginx/conf:/etc/nginx/conf.d
+      - .:/var/www/app
+    working_dir: /var/www/app
+
+  db:
+    image: mariadb
+    expose:
+      - '3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ticket
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ticket@263

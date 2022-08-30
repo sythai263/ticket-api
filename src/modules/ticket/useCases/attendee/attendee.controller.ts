@@ -70,7 +70,7 @@ export class AttendeeController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(RoleType.ADMIN, RoleType.USER)
 	@ApiResponse({
-		type: AttendeeDto,
+		type: SuccessNotification,
 	})
 	@ApiUnauthorizedResponse({
 		description: 'Unauthorized',
@@ -88,7 +88,7 @@ export class AttendeeController {
 		description: 'Not found',
 	})
 	@UsePipes(new ValidationPipe({ transform: true }))
-	async execute(@Req() req: Request, @Body() dto: CreateAttendeeDto): Promise<AttendeeDto> {
+	async execute(@Req() req: Request, @Body() dto: CreateAttendeeDto): Promise<SuccessNotification> {
 		const user = req.user as JwtPayload;
 		dto.userId = user.id;
 		dto.username = user.username;
@@ -106,7 +106,13 @@ export class AttendeeController {
 			}
 		}
 
-		return result.value.getValue();
+		const attendee = result.value.getValue();
+
+		if (attendee.isCheckIn) {
+			return new SuccessNotification('Check-in thành công, mời bạn tham gia!', HttpStatus.CREATED);
+		}
+
+		return new SuccessNotification('Đăng ký thành công, kiểm tra chi tiết trong mail !', HttpStatus.CREATED);
 	}
 
 	@Get(':id')

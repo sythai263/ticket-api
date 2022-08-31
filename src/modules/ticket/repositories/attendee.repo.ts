@@ -158,6 +158,7 @@ export class AttendeeRepository implements IRepo<AttendeeEntity, AttendeeDomain>
 			.leftJoinAndSelect('attendee.program', 'program')
 			.leftJoinAndSelect('attendee.invoice', 'invoice')
 			.where('program.id = :programId', { programId: search.idProgram })
+			.where('attendee.deleted_at IS NULL')
 			.orderBy('attendee.id', search.order)
 			.skip(search.skip)
 			.take(search.take);

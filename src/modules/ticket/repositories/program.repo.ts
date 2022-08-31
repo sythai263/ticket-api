@@ -128,6 +128,7 @@ export class ProgramRepository implements IRepo<ProgramEntity, ProgramDomain> {
 			.orderBy('program.startDate', search.order)
 			.leftJoinAndSelect('program.attendees', 'attendees')
 			.leftJoinAndSelect('attendees.user', 'user')
+			.where('program.deleted_at IS NULL')
 			.skip(search.skip)
 			.take(search.take);
 		if (search.keyword) {

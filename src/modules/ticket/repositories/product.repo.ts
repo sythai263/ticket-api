@@ -11,12 +11,11 @@ import { ProductMap } from '../mapper';
 
 @Injectable()
 export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
-
 	constructor(
 		@InjectRepository(ProductEntity)
 		protected repo: Repository<ProductEntity>,
 		private dataSource: DataSource,
-	) { }
+	) {}
 
 	async find(options?: FindManyOptions<ProductEntity>): Promise<ProductDomain[]> {
 		const entities = await this.repo.find(options);
@@ -103,17 +102,19 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		}
 	}
 
-	async softDelete(criteria: string
-		| number
-		| Date
-		| UniqueEntityID
-		| string[]
-		| number[]
-		| Date[]
-		| UniqueEntityID[]
-		| FindOptionsWhere<ProductEntity>,
-	userId?: number): Promise<boolean> {
-
+	async softDelete(
+		criteria:
+			| string
+			| number
+			| Date
+			| UniqueEntityID
+			| string[]
+			| number[]
+			| Date[]
+			| UniqueEntityID[]
+			| FindOptionsWhere<ProductEntity>,
+		userId?: number,
+	): Promise<boolean> {
 		const queryRunner = this.dataSource.createQueryRunner();
 		await queryRunner.connect();
 		await queryRunner.startTransaction();
@@ -121,7 +122,7 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 			await queryRunner.manager.softDelete(ProductEntity, criteria);
 			await queryRunner.manager.update(ProductEntity, criteria, {
 				deletedBy: userId,
-				updatedBy: userId
+				updatedBy: userId,
 			});
 			await queryRunner.commitTransaction();
 			return true;
@@ -132,16 +133,18 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 	}
 
 	async search(search?: SearchProductDto): Promise<[ProductDomain[], number]> {
-
-		const queryBuilder = this.repo.createQueryBuilder('product')
+		const queryBuilder = this.repo
+			.createQueryBuilder('product')
 			.leftJoinAndSelect('product.reviewedProducts', 'reviews')
 			.leftJoinAndSelect('reviews.user', 'user')
 			.leftJoinAndSelect('product.detail', 'detail')
+			.where('product.deleted_at IS NULL')
 			.orderBy('product.id', search.order)
 			.skip(search.skip)
 			.take(search.take);
 		if (search.keyword) {
-			queryBuilder.andWhere('product.name like :name', { name: `%${search.keyword}%` })
+			queryBuilder
+				.andWhere('product.name like :name', { name: `%${search.keyword}%` })
 				.orWhere('product.description like :name');
 		}
 
@@ -162,7 +165,5 @@ export class ProductRepository implements IRepo<ProductEntity, ProductDomain> {
 		}
 
 		return null;
-
 	}
-
 }

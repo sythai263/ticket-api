@@ -3,11 +3,12 @@ import { join } from 'path';
 import { toFile } from 'qrcode';
 
 import { InvoiceDomain, ProgramDomain, UserDomain } from '.';
-import { QR_FOLDER, STATIC_FOLDER } from '../common/constants/system';
+import { QR_FOLDER } from '../common/constants/system';
 import { AggregateRoot } from '../core/domain/AggregateRoot';
 import { UniqueEntityID } from '../core/domain/UniqueEntityID';
 import { Guard } from '../core/logic/Guard';
 import { Result } from '../core/logic/Result';
+import { ConfigService } from '../shared/services/config.service';
 
 interface IAttendeeProps {
 	user?: UserDomain;
@@ -16,8 +17,6 @@ interface IAttendeeProps {
 	imageQR?: string;
 	isCheckIn?: boolean;
 }
-
-const urlQR = join(__dirname, '..', '..', STATIC_FOLDER, QR_FOLDER);
 
 export class AttendeeDomain extends AggregateRoot<IAttendeeProps> {
 	get user(): UserDomain {
@@ -61,6 +60,9 @@ export class AttendeeDomain extends AggregateRoot<IAttendeeProps> {
 	}
 
 	async generateQRCode() {
+		const config = new ConfigService();
+		const folder = config.get('UPLOAD_FOLDER');
+		const urlQR = join(folder, 'qr');
 		const now = moment().format('YYYYMMDD');
 		const qrFilename = `${this.props.user.username}_attend_${this.props.program.id.toString()}_${now}.png`;
 		const content = JSON.stringify({

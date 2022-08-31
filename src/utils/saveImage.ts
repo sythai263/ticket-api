@@ -19,7 +19,7 @@ async function saveImage(file: Express.Multer.File, mode: ModeImage): Promise<st
 	}
 
 	const urlImage = configService.get('UPLOAD_FOLDER');
-	await image.writeAsync(join(urlImage, mode, filename));
+	await image.writeAsync(join(urlImage, 'upload', mode, filename));
 	fs.unlinkSync(join(imageURL, file.filename));
 	return `assets/upload/${mode}/${filename}`;
 }

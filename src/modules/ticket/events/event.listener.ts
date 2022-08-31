@@ -65,7 +65,7 @@ export class EventListener {
 			const admin = this.configService.get('EMAIL_ADMIN');
 			const homeUrl = this.configService.get('DOMAIN');
 			const auth = new OAuth2Client(clientId, secret);
-			const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
+			const publicFolder = join(this.configService.get('UPLOAD_FOLDER'), '..');
 
 			auth.setCredentials({
 				refresh_token: refreshToken,
@@ -186,7 +186,7 @@ export class EventListener {
 			const admin = this.configService.get('EMAIL_ADMIN');
 			const domain = this.configService.get('HOME_URL');
 			const auth = new OAuth2Client(clientId, secret);
-			const publicFolder = join(__dirname, '..', '..', '..', '..', 'public');
+			const publicFolder = join(this.configService.get('UPLOAD_FOLDER'), '..');
 
 			auth.setCredentials({
 				refresh_token: refreshToken,

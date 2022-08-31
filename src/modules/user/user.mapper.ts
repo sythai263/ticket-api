@@ -11,7 +11,12 @@ export class UserAuthMap {
 		const config = new ConfigService();
 		const url = config.get('DOMAIN');
 		userDto.id = entity.id;
-		userDto.avatar = url + entity.avatar;
+		if (entity.avatar.includes('https://')) {
+			userDto.avatar = entity.avatar;
+		} else {
+			userDto.avatar = url + entity.avatar;
+		}
+
 		userDto.email = entity.email;
 		userDto.username = entity.username;
 		userDto.password = entity.password;

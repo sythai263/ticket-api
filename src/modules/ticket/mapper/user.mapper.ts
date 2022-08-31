@@ -10,7 +10,12 @@ export class UserMap {
 		const config = new ConfigService();
 		const url = config.get('DOMAIN');
 		const userDto = new UserDto();
-		userDto.avatar = url + entity.avatar;
+		if (entity.avatar.includes('https://')) {
+			userDto.avatar = entity.avatar;
+		} else {
+			userDto.avatar = url + entity.avatar;
+		}
+
 		userDto.email = entity.email;
 		userDto.phone = entity.phone;
 		userDto.username = entity.username;
@@ -85,7 +90,12 @@ export class UserMap {
 		const url = config.get('DOMAIN');
 		const userDto = new UserDto();
 		userDto.id = domain.id.toValue();
-		userDto.avatar = url + domain.avatar;
+		if (domain.avatar.includes('https://')) {
+			userDto.avatar = domain.avatar;
+		} else {
+			userDto.avatar = url + domain.avatar;
+		}
+
 		userDto.email = domain.email;
 		userDto.phone = domain.phone;
 		userDto.username = domain.username;
@@ -129,7 +139,12 @@ export class UserMap {
 		const config = new ConfigService();
 		const url = config.get('DOMAIN');
 		const userDto = new UserShortDto();
-		userDto.avatar = url + domain.avatar;
+		if (domain.avatar.includes('https://')) {
+			userDto.avatar = domain.avatar;
+		} else {
+			userDto.avatar = url + domain.avatar;
+		}
+
 		userDto.firstName = domain.firstName;
 		userDto.lastName = domain.lastName;
 		userDto.email = domain.email;
